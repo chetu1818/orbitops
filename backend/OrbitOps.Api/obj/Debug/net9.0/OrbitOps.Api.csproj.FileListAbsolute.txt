@@ -31,3 +31,4 @@ D:\Important\OrbitOps\backend\OrbitOps.Api\obj\Debug\net9.0\refint\OrbitOps.Api.
 D:\Important\OrbitOps\backend\OrbitOps.Api\obj\Debug\net9.0\OrbitOps.Api.pdb
 D:\Important\OrbitOps\backend\OrbitOps.Api\obj\Debug\net9.0\OrbitOps.Api.genruntimeconfig.cache
 D:\Important\OrbitOps\backend\OrbitOps.Api\obj\Debug\net9.0\ref\OrbitOps.Api.dll
+D:\Important\OrbitOps\backend\OrbitOps.Api\obj\Debug\net9.0\OrbitOps.Api.sourcelink.json
