@@ -9,6 +9,9 @@ builder.Services.AddOpenApi();
 // Register Lead Ingestion Service
 builder.Services.AddScoped<ILeadService, LeadService>();
 
+// Register AI Chat Assistant Service
+builder.Services.AddHttpClient<IChatService, ChatService>();
+
 // Configure CORS for Angular local development
 builder.Services.AddCors(options =>
 {

@@ -16,6 +16,8 @@
   <!-- CDNs for 3D and Animations -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <!-- OrbitBot Chatbot Component -->
+  <link rel="stylesheet" href="chatbot.css">
 
   <style>
     /* CSS Variables & Core Themes (Apple Inspired) */
@@ -36,41 +38,155 @@
       --code-text: #1D1D1F;
       --header-height: 72px;
       --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      
+      /* Chatbot variables */
+      --chatbot-bg: rgba(255, 255, 255, 0.85);
+      --chatbot-border: rgba(0, 0, 0, 0.08);
+      --chatbot-shadow: rgba(0, 0, 0, 0.1);
+      --chatbot-msg-bot: #F1F5F9;
+      --chatbot-msg-bot-text: #1E293B;
+      --chatbot-msg-user: #0071E3;
+      --chatbot-msg-user-text: #FFFFFF;
     }
 
-    [data-theme="dark"] {
-      /* Premium Dark theme */
+    /* 1. Nova (Default Dark Void) */
+    [data-theme="nova"] {
       --primary: #F5F5F7;
-      --secondary: #86868B;
-      --accent: #2997FF;
+      --secondary: #8ba3c7;
+      --accent: #0071E3;
       --accent-secondary: #00B4D8;
-      --bg-light: #000000;
-      --bg-alt: #161617;
-      --bg-subtle: #222224;
-      --border: rgba(255, 255, 255, 0.12);
-      --card-bg: #1D1D1F;
-      --header-bg: rgba(22, 22, 23, 0.85);
-      --header-shadow: rgba(0, 0, 0, 0.3);
-      --code-bg: #161617;
+      --bg-light: #020510;
+      --bg-alt: #080e1a;
+      --bg-subtle: #0c1527;
+      --border: rgba(100, 160, 255, 0.1);
+      --card-bg: rgba(10, 20, 40, 0.55);
+      --header-bg: rgba(2, 5, 16, 0.85);
+      --header-shadow: rgba(0, 0, 0, 0.4);
+      --code-bg: #0c1527;
       --code-text: #F5F5F7;
+      
+      --chatbot-bg: rgba(10, 20, 40, 0.9);
+      --chatbot-border: rgba(100, 160, 255, 0.15);
+      --chatbot-shadow: rgba(0, 0, 0, 0.5);
+      --chatbot-msg-bot: #0c1527;
+      --chatbot-msg-bot-text: #F5F5F7;
+      --chatbot-msg-user: #0071E3;
+      --chatbot-msg-user-text: #FFFFFF;
+    }
+    [data-theme="nova"] body {
+      background-image: radial-gradient(rgba(0, 113, 227, 0.08) 1.5px, transparent 1.5px);
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    /* 2. Cyberpunk Neon (Ultra-Colorful Cyber Dark) */
+    [data-theme="cyber"] {
+      --primary: #ffffff;
+      --secondary: #00F0FF; /* Neon Cyan */
+      --accent: #FF007F; /* Neon Pink */
+      --accent-secondary: #00F0FF;
+      --bg-light: #000000;
+      --bg-alt: #050508;
+      --bg-subtle: #0c0c12;
+      --border: rgba(255, 0, 127, 0.3);
+      --card-bg: rgba(255, 0, 127, 0.06);
+      --header-bg: rgba(5, 5, 8, 0.9);
+      --header-shadow: rgba(255, 0, 127, 0.15);
+      --code-bg: #0c0c12;
+      --code-text: #39FF14; /* Neon Lime */
+      
+      --chatbot-bg: rgba(5, 5, 8, 0.95);
+      --chatbot-border: rgba(255, 0, 127, 0.35);
+      --chatbot-shadow: rgba(0, 0, 0, 0.7);
+      --chatbot-msg-bot: #0c0c12;
+      --chatbot-msg-bot-text: #ffffff;
+      --chatbot-msg-user: #FF007F;
+      --chatbot-msg-user-text: #ffffff;
+    }
+    [data-theme="cyber"] body {
+      background-image: radial-gradient(rgba(255, 0, 127, 0.15) 1.5px, transparent 1.5px);
     }
 
-    html {
-      scroll-behavior: smooth;
-      font-family: 'Inter', sans-serif;
-      color: var(--primary);
-      background-color: var(--bg-light);
+    /* 3. Nordic Aurora (Aurora Ice Light) */
+    [data-theme="aurora"] {
+      --primary: #0F172A; /* Dark Slate */
+      --secondary: #334155; /* Slate Gray */
+      --accent: #10B981; /* Emerald Green */
+      --accent-secondary: #0D9488;
+      --bg-light: #F3F6F8;
+      --bg-alt: #E6ECEF;
+      --bg-subtle: #DEE4E9;
+      --border: rgba(16, 185, 129, 0.18);
+      --card-bg: #ffffff;
+      --header-bg: rgba(243, 246, 248, 0.88);
+      --header-shadow: rgba(16, 185, 129, 0.06);
+      --code-bg: #DEE4E9;
+      --code-text: #0D9488;
+      
+      --chatbot-bg: rgba(255, 255, 255, 0.95);
+      --chatbot-border: rgba(16, 185, 129, 0.18);
+      --chatbot-shadow: rgba(0, 0, 0, 0.1);
+      --chatbot-msg-bot: #E6ECEF;
+      --chatbot-msg-bot-text: #0F172A;
+      --chatbot-msg-user: #10B981;
+      --chatbot-msg-user-text: #ffffff;
+    }
+    [data-theme="aurora"] body {
+      background-image: radial-gradient(rgba(16, 185, 129, 0.12) 1.5px, transparent 1.5px);
     }
 
-    body {
-      overflow-x: hidden;
-      line-height: 1.6;
+    /* 4. Sunset Horizon (Warm Solar Dark) */
+    [data-theme="sunset"] {
+      --primary: #FAF8F5;
+      --secondary: #E2C39B;
+      --accent: #F97316;
+      --accent-secondary: #EF4444;
+      --bg-light: #180816;
+      --bg-alt: #11040f;
+      --bg-subtle: #250c23;
+      --border: rgba(249, 115, 22, 0.22);
+      --card-bg: rgba(249, 115, 22, 0.07);
+      --header-bg: rgba(24, 8, 22, 0.88);
+      --header-shadow: rgba(0, 0, 0, 0.4);
+      --code-bg: #250c23;
+      --code-text: #FAF8F5;
+      
+      --chatbot-bg: rgba(24, 8, 22, 0.95);
+      --chatbot-border: rgba(249, 115, 22, 0.25);
+      --chatbot-shadow: rgba(0, 0, 0, 0.5);
+      --chatbot-msg-bot: #250c23;
+      --chatbot-msg-bot-text: #FAF8F5;
+      --chatbot-msg-user: #F97316;
+      --chatbot-msg-user-text: #ffffff;
+    }
+    [data-theme="sunset"] body {
+      background-image: radial-gradient(rgba(249, 115, 22, 0.14) 1.5px, transparent 1.5px);
+    }
+
+    /* 5. Matrix Code (Phosphor Terminal Black) */
+    [data-theme="matrix"] {
+      --primary: #00FF66;
+      --secondary: #34B36F;
+      --accent: #10B981;
+      --accent-secondary: #34D399;
+      --bg-light: #000000;
+      --bg-alt: #040404;
+      --bg-subtle: #080808;
+      --border: #105e38;
+      --card-bg: #010904;
+      --header-bg: rgba(0, 0, 0, 0.95);
+      --header-shadow: rgba(0, 255, 102, 0.1);
+      --code-bg: #080808;
+      --code-text: #00FF66;
+      
+      --chatbot-bg: rgba(0, 0, 0, 0.98);
+      --chatbot-border: #105e38;
+      --chatbot-shadow: rgba(0, 255, 102, 0.2);
+      --chatbot-msg-bot: #040404;
+      --chatbot-msg-bot-text: #00FF66;
+      --chatbot-msg-user: #10B981;
+      --chatbot-msg-user-text: #000000;
+    }
+    [data-theme="matrix"] body {
+      background-image: radial-gradient(rgba(0, 255, 102, 0.15) 1.5px, transparent 1.5px);
     }
 
     /* Selection & Scrollbar styling */
@@ -1018,6 +1134,136 @@
       color: var(--secondary);
     }
 
+    /* Premium footer styling */
+    .premium-footer {
+      background: linear-gradient(135deg, rgba(8, 2, 16, 0.96) 0%, rgba(2, 5, 16, 0.99) 100%);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 80px 0 40px 0;
+      color: #F5F5F7;
+    }
+    :root:not([data-theme="nova"]):not([data-theme="cyber"]):not([data-theme="sunset"]):not([data-theme="matrix"]):not([data-theme="nordic"]) .premium-footer {
+      background: linear-gradient(135deg, #E9ECF0 0%, #DFE3E8 100%);
+      border-top: 1px solid rgba(0, 0, 0, 0.08);
+      color: #1D1D1F;
+    }
+    
+    .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 4rem;
+      margin-bottom: 4rem;
+    }
+
+    @media (max-width: 768px) {
+      .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
+    }
+
+    .footer-col-brand h4, .footer-col-links h4, .footer-col-info h4 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.03em;
+    }
+
+    .footer-description {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      opacity: 0.8;
+      max-width: 380px;
+    }
+
+    .footer-links-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+    }
+
+    .footer-links-grid a {
+      font-size: 0.95rem;
+      color: inherit;
+      text-decoration: none;
+      opacity: 0.8;
+      transition: var(--transition);
+      display: inline-block;
+    }
+
+    .footer-links-grid a:hover {
+      opacity: 1;
+      color: var(--accent);
+      transform: translateX(3px);
+    }
+
+    .footer-address {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      opacity: 0.8;
+      margin-bottom: 1rem;
+    }
+
+    .footer-email-link {
+      font-size: 0.95rem;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+
+    .footer-email-link:hover {
+      text-decoration: underline;
+    }
+
+    .footer-divider {
+      height: 1px;
+      background: rgba(255, 255, 255, 0.08);
+      margin-bottom: 2rem;
+    }
+    :root:not([data-theme="nova"]):not([data-theme="cyber"]):not([data-theme="sunset"]):not([data-theme="matrix"]):not([data-theme="nordic"]) .footer-divider {
+      background: rgba(0, 0, 0, 0.08);
+    }
+
+    .footer-bottom-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+
+    .footer-socials {
+      display: flex;
+      gap: 1.25rem;
+    }
+
+    .footer-social-link {
+      color: inherit;
+      opacity: 0.75;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .footer-social-link svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .footer-social-link:hover {
+      opacity: 1;
+      color: var(--accent);
+      transform: translateY(-2px);
+    }
+
     /* Responsive Adjustments */
     @media (max-width: 1024px) {
       header {
@@ -1101,28 +1347,29 @@
       fill: currentColor;
     }
 
-    /* Preloader styling */
+    /* Glassmorphic Preloader styling */
     #preloader {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: transparent;
-      backdrop-filter: none;
-      -webkit-backdrop-filter: none;
+      background: #020510; /* Default dark */
       z-index: 9999;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: opacity 0.5s ease, visibility 0.5s ease;
-      pointer-events: none;
+      transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
+    [data-theme="nova"] #preloader { background: #020510; }
+    [data-theme="cyber"] #preloader { background: #000000; }
+    [data-theme="sunset"] #preloader { background: #0b0202; }
+    [data-theme="matrix"] #preloader { background: #000000; }
+    [data-theme="aurora"] #preloader { background: #F4F6F9; }
     
     #preloader.fade-out {
       opacity: 0;
       visibility: hidden;
-      pointer-events: none;
     }
 
     .loader-wrapper {
@@ -1130,29 +1377,69 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 20px;
-      width: 180px;
+      gap: 24px;
+      padding: 30px;
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      text-align: center;
+    }
+    :root:not([data-theme="nova"]):not([data-theme="cyber"]):not([data-theme="sunset"]):not([data-theme="matrix"]):not([data-theme="aurora"]) .loader-wrapper {
+      background: rgba(255, 255, 255, 0.6);
+      border: 1px solid rgba(0, 0, 0, 0.06);
     }
 
-    .logo-loader-svg {
-      width: 100px;
-      height: 100px;
-      overflow: visible;
+    /* Circular progress ring */
+    .loader-circle-container {
+      position: relative;
+      width: 120px;
+      height: 120px;
     }
 
-    .loader-globe {
-      transform-origin: 50px 50px;
-      animation: pulse-globe 1.8s ease-in-out infinite alternate;
+    .loader-circle-container svg {
+      width: 120px;
+      height: 120px;
+      transform: rotate(-90deg);
     }
 
-    .orbit-teal {
-      transform-origin: 50px 50px;
-      animation: spin-clockwise 2.2s linear infinite;
+    .loader-circle-bg {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.05);
+      stroke-width: 8;
+    }
+    [data-theme="nova"] .loader-circle-bg,
+    [data-theme="cyber"] .loader-circle-bg,
+    [data-theme="sunset"] .loader-circle-bg,
+    [data-theme="matrix"] .loader-circle-bg,
+    [data-theme="aurora"] .loader-circle-bg {
+      stroke: rgba(255, 255, 255, 0.06);
+    }
+    :root:not([data-theme="nova"]):not([data-theme="cyber"]):not([data-theme="sunset"]):not([data-theme="matrix"]):not([data-theme="aurora"]) .loader-circle-bg {
+      stroke: rgba(0, 0, 0, 0.06);
     }
 
-    .orbit-purple {
-      transform-origin: 50px 50px;
-      animation: spin-counterclockwise 2.6s linear infinite;
+    .loader-circle-progress {
+      fill: none;
+      stroke: url(#loader-gradient);
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-dasharray: 339.292; /* 2 * PI * r (r=54) */
+      stroke-dashoffset: 339.292;
+      transition: stroke-dashoffset 0.1s ease;
+    }
+
+    .loader-percentage {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
     }
 
     .loader-text {
@@ -1163,27 +1450,658 @@
       letter-spacing: 0.05em;
       white-space: nowrap;
       opacity: 0.8;
-      animation: pulse-text 1.5s ease-in-out infinite alternate;
     }
 
-    @keyframes spin-clockwise {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
+    /* Floating Chatbot FAB */
+    .chatbot-fab {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-secondary) 100%);
+      color: #FFFFFF;
+      border: none;
+      box-shadow: 0 4px 20px rgba(0, 113, 227, 0.3);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9998;
+      transition: var(--transition);
+      animation: fab-float 3s ease-in-out infinite;
     }
 
-    @keyframes spin-counterclockwise {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(-360deg); }
+    .chatbot-fab::before {
+      content: '';
+      position: absolute;
+      top: -6px;
+      left: -6px;
+      right: -6px;
+      bottom: -6px;
+      border-radius: 50%;
+      background: rgba(0, 113, 227, 0.15);
+      z-index: -1;
+      animation: fab-pulse 2s infinite;
+      pointer-events: none;
     }
 
-    @keyframes pulse-globe {
-      from { transform: scale(0.92); }
-      to { transform: scale(1.08); }
+    .chatbot-fab:hover {
+      transform: scale(1.08) translateY(-2px);
+      box-shadow: 0 6px 24px rgba(0, 113, 227, 0.45);
+      animation-play-state: paused; /* Pause float on hover */
     }
 
-    @keyframes pulse-text {
-      from { opacity: 0.5; }
+    .chatbot-fab:active {
+      transform: scale(0.95);
+    }
+
+    .chatbot-fab-avatar {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Robot Logo SVG Animations */
+    .mia-logo-svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .mia-bg-ring {
+      transform-origin: 50px 50px;
+      animation: spin-clockwise 8s linear infinite;
+    }
+
+    .mia-head-circle {
+      transform-origin: 50px 50px;
+      animation: mia-head-pulse 3s ease-in-out infinite alternate;
+    }
+
+    .mia-eye {
+      animation: mia-blink 4s infinite;
+    }
+    
+    .mia-eye.left {
+      transform-origin: 38px 48px;
+    }
+
+    .mia-eye.right {
+      transform-origin: 62px 48px;
+    }
+
+    .mia-mouth {
+      transform-origin: 50px 60px;
+      animation: mia-talk 1.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes fab-pulse {
+      0% {
+        transform: scale(0.95);
+        opacity: 1;
+        box-shadow: 0 0 0 0 rgba(0, 113, 227, 0.4);
+      }
+      70% {
+        transform: scale(1.2);
+        opacity: 0;
+        box-shadow: 0 0 0 12px rgba(0, 113, 227, 0);
+      }
+      100% {
+        transform: scale(0.95);
+        opacity: 0;
+        box-shadow: 0 0 0 0 rgba(0, 113, 227, 0);
+      }
+    }
+
+    @keyframes fab-float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    @keyframes mia-head-pulse {
+      from { transform: scale(0.96); }
+      to { transform: scale(1.04); }
+    }
+
+    @keyframes mia-blink {
+      0%, 90%, 100% { transform: scaleY(1); }
+      95% { transform: scaleY(0.15); }
+    }
+
+    @keyframes mia-talk {
+      0% { d: path("M36 62 Q50 56 64 62"); }
+      100% { d: path("M36 62 Q50 68 64 62"); }
+    }
+
+    .chatbot-fab-tooltip {
+      position: absolute;
+      right: 70px;
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--primary);
+      padding: 0.5rem 0.85rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      white-space: nowrap;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateX(10px);
+      transition: var(--transition);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    .chatbot-fab:hover .chatbot-fab-tooltip {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(0);
+    }
+
+    /* Chatbot Window */
+    .chatbot-window {
+      position: fixed;
+      bottom: 96px;
+      right: 24px;
+      width: 380px;
+      height: 520px;
+      border-radius: 16px;
+      background-color: var(--chatbot-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--chatbot-border);
+      box-shadow: 0 12px 36px -4px var(--chatbot-shadow);
+      z-index: 9997;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(20px) scale(0.95);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .chatbot-window.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0) scale(1);
+    }
+
+    /* Header */
+    .chatbot-header {
+      padding: 1rem 1.25rem;
+      background: linear-gradient(135deg, rgba(0, 113, 227, 0.05) 0%, rgba(0, 180, 216, 0.05) 100%);
+      border-bottom: 1px solid var(--chatbot-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .chatbot-header-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .chatbot-avatar-container {
+      position: relative;
+      width: 38px;
+      height: 38px;
+    }
+
+    .chatbot-avatar-svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .chatbot-status-dot {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 10px;
+      height: 10px;
+      background-color: #10B981;
+      border: 2px solid var(--card-bg);
+      border-radius: 50%;
+    }
+
+    .chatbot-header h4 {
+      font-size: 0.95rem;
+      color: var(--primary);
+      margin-bottom: 2px;
+    }
+
+    .chatbot-status-text {
+      font-size: 0.725rem;
+      color: var(--secondary);
+    }
+
+    .chatbot-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .chatbot-close-btn, .chatbot-settings-btn {
+      background: transparent;
+      border: none;
+      color: var(--secondary);
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+
+    .chatbot-close-btn:hover, .chatbot-settings-btn:hover {
+      background-color: rgba(0,0,0,0.05);
+      color: var(--primary);
+    }
+
+    [data-theme="dark"] .chatbot-close-btn:hover,
+    [data-theme="dark"] .chatbot-settings-btn:hover {
+      background-color: rgba(255,255,255,0.05);
+    }
+
+    /* Settings dropdown panel styling */
+    .chatbot-settings {
+      background-color: var(--chatbot-msg-bot);
+      border-bottom: 1px solid var(--chatbot-border);
+      padding: 0.75rem 1.25rem;
+      display: none;
+      flex-direction: column;
+      gap: 6px;
+      animation: slide-down 0.25s ease forwards;
+    }
+
+    .chatbot-settings.active {
+      display: flex;
+    }
+
+    @keyframes slide-down {
+      from { transform: translateY(-10px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .chatbot-settings label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .settings-input-row {
+      display: flex;
+      gap: 6px;
+    }
+
+    .chatbot-settings input {
+      flex: 1;
+      padding: 6px 10px;
+      font-size: 0.8rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background-color: var(--bg-light);
+      color: var(--primary);
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .chatbot-settings input:focus {
+      border-color: var(--accent);
+    }
+
+    .chatbot-settings button {
+      padding: 6px 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: 6px;
+    }
+
+    .settings-note {
+      font-size: 0.675rem;
+      color: var(--secondary);
+    }
+
+    .settings-note a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    /* Messages container */
+    .chatbot-messages {
+      flex: 1;
+      padding: 1.25rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      scroll-behavior: smooth;
+    }
+
+    /* Message Bubbles */
+    .chat-message {
+      display: flex;
+      flex-direction: column;
+      max-width: 80%;
+      animation: message-appear 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes message-appear {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .chat-message.bot {
+      align-self: flex-start;
+    }
+
+    .chat-message.user {
+      align-self: flex-end;
+    }
+
+    .message-bubble {
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+      font-size: 0.875rem;
+      line-height: 1.45;
+      word-break: break-word;
+    }
+
+    .chat-message.bot .message-bubble {
+      background-color: var(--chatbot-msg-bot);
+      color: var(--chatbot-msg-bot-text);
+      border-top-left-radius: 4px;
+    }
+
+    .chat-message.bot .message-bubble ul, .chat-message.bot .message-bubble ol {
+      margin-left: 1.25rem;
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .chat-message.bot .message-bubble li {
+      margin-bottom: 0.25rem;
+    }
+
+    .chat-message.user .message-bubble {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-secondary) 100%);
+      color: var(--chatbot-msg-user-text);
+      border-top-right-radius: 4px;
+      box-shadow: 0 2px 8px rgba(0, 113, 227, 0.15);
+    }
+
+    /* Suggestion Chips */
+    .chat-chips-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 4px;
+      margin-bottom: 4px;
+      align-self: flex-start;
+      animation: message-appear 0.25s ease forwards;
+    }
+
+    .chat-chip {
+      background-color: transparent;
+      border: 1px solid var(--border);
+      color: var(--accent);
+      padding: 6px 12px;
+      border-radius: 16px;
+      font-size: 0.775rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .chat-chip:hover {
+      background-color: var(--accent);
+      border-color: var(--accent);
+      color: #FFFFFF;
+      transform: translateY(-1px);
+    }
+
+    /* Typing Indicator */
+    .typing-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 0.65rem 0.95rem;
+      background-color: var(--chatbot-msg-bot);
+      border-radius: 12px;
+      border-top-left-radius: 4px;
+      width: fit-content;
+      animation: message-appear 0.25s ease forwards;
+    }
+
+    .typing-dot {
+      width: 6px;
+      height: 6px;
+      background-color: var(--secondary);
+      border-radius: 50%;
+      opacity: 0.4;
+      animation: typing-bounce 1.4s infinite ease-in-out;
+    }
+
+    .typing-dot:nth-child(1) { animation-delay: 0s; }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typing-bounce {
+      0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+      40% { transform: translateY(-4px); opacity: 1; }
+    }
+
+    /* Input area */
+    .chatbot-input-area {
+      padding: 1rem 1.25rem;
+      border-top: 1px solid var(--chatbot-border);
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      background-color: rgba(255,255,255,0.02);
+    }
+
+    .chatbot-input-area input {
+      flex: 1;
+      padding: 0.65rem 1rem;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background-color: var(--bg-light);
+      color: var(--primary);
+      font-family: inherit;
+      font-size: 0.875rem;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .chatbot-input-area input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.08);
+    }
+
+    .chatbot-send-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-secondary) 100%);
+      color: #FFFFFF;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+      flex-shrink: 0;
+    }
+
+    .chatbot-send-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 2px 8px rgba(0, 113, 227, 0.2);
+    }
+
+    /* Responsive style for chatbot */
+    @media (max-width: 480px) {
+      .chatbot-window {
+        width: calc(100% - 32px);
+        height: 480px;
+        bottom: 84px;
+        right: 16px;
+      }
+      .chatbot-fab {
+        bottom: 16px;
+        right: 16px;
+      }
+    }
+    /* AI Terminal and Model Badge Styles */
+    .ai-terminal {
+      margin-top: 2.25rem;
+      border-radius: 12px;
+      background: rgba(17, 19, 24, 0.85);
+      border: 1px solid rgba(0, 113, 227, 0.25);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+      overflow: hidden;
+      width: 100%;
+      max-width: 580px;
+      transition: var(--transition);
+    }
+    [data-theme="dark"] .ai-terminal {
+      background: rgba(10, 10, 12, 0.9);
+      border-color: rgba(41, 151, 255, 0.3);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(41, 151, 255, 0.05);
+    }
+    .terminal-header {
+      background: rgba(0, 0, 0, 0.2);
+      padding: 0.65rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+    .terminal-dots {
+      display: flex;
+      gap: 6px;
+    }
+    .terminal-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .terminal-dot.red { background-color: #FF5F56; }
+    .terminal-dot.yellow { background-color: #FFBD2E; }
+    .terminal-dot.green { background-color: #27C93F; }
+    
+    .terminal-title {
+      font-size: 0.725rem;
+      font-weight: 600;
+      color: var(--secondary);
+      letter-spacing: 0.05em;
+    }
+    .terminal-status {
+      font-size: 0.675rem;
+      font-weight: 700;
+      color: #10B981;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .pulse-dot {
+      width: 6px;
+      height: 6px;
+      background-color: #10B981;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #10B981;
+      animation: status-pulse 1.5s infinite alternate;
+    }
+    @keyframes status-pulse {
+      from { opacity: 0.4; }
       to { opacity: 1; }
+    }
+    .terminal-body {
+      padding: 1rem 1.25rem;
+      height: 165px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.775rem;
+      line-height: 1.45;
+      color: #E2E8F0;
+      text-align: left;
+    }
+    .terminal-body::-webkit-scrollbar {
+      width: 4px;
+    }
+    .terminal-body::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.1);
+      border-radius: 2px;
+    }
+    .terminal-line {
+      animation: terminal-appear 0.2s ease forwards;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    @keyframes terminal-appear {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .t-time { color: #64748B; margin-right: 6px; }
+    .t-agent { color: #AF52DE; font-weight: 600; }
+    .t-success { color: #34C759; font-weight: 600; }
+    .t-warning { color: #FF9500; font-weight: 600; }
+    
+    .chat-model-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.625rem;
+      font-weight: 700;
+      color: var(--secondary);
+      background-color: var(--bg-alt);
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-top: 6px;
+      border: 1px solid var(--border);
+      width: fit-content;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    
+    /* Typewriter & RGB Title Styles */
+    .rgb-text {
+      background: linear-gradient(to right, #ff3366, #ff00ff, #3333ff, #00ffff, #33ff33, #ffff33, #ff3366);
+      background-size: 400% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: rgbFlow 8s linear infinite;
+      display: inline;
+    }
+    @keyframes rgbFlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .hero-type-cursor {
+      color: #00F0FF;
+      animation: blink 0.8s step-end infinite;
+      display: inline;
+      margin-left: 2px;
+    }
+    @keyframes blink {
+      50% { opacity: 0; }
     }
   </style>
 </head>
@@ -1192,26 +2110,19 @@
   <!-- Preloader / Orbit Animated Loader -->
   <div id="preloader">
     <div class="loader-wrapper">
-      <svg viewBox="0 0 100 100" class="logo-loader-svg">
-        <defs>
-          <radialGradient id="sphereGrad" cx="35%" cy="35%" r="65%">
-            <stop offset="0%" stop-color="#60a5fa" />
-            <stop offset="40%" stop-color="#2563eb" />
-            <stop offset="100%" stop-color="#1d4ed8" />
-          </radialGradient>
-          <filter id="globeGlow" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur stdDeviation="3" result="blur" />
-            <feComposite in="SourceGraphic" in2="blur" operator="over" />
-          </filter>
-        </defs>
-        <circle cx="50" cy="50" r="18" fill="url(#sphereGrad)" class="loader-globe" filter="url(#globeGlow)" />
-        <g class="orbit-teal">
-          <ellipse cx="50" cy="50" rx="32" ry="9" fill="none" stroke="#0d9488" stroke-width="2.5" stroke-dasharray="6 4" transform="rotate(35 50 50)" />
-        </g>
-        <g class="orbit-purple">
-          <ellipse cx="50" cy="50" rx="32" ry="9" fill="none" stroke="#7c3aed" stroke-width="2.5" transform="rotate(-35 50 50)" />
-        </g>
-      </svg>
+      <div class="loader-circle-container">
+        <svg viewBox="0 0 120 120">
+          <defs>
+            <linearGradient id="loader-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="var(--accent)" />
+              <stop offset="100%" stop-color="var(--accent-secondary)" />
+            </linearGradient>
+          </defs>
+          <circle cx="60" cy="60" r="54" class="loader-circle-bg" />
+          <circle cx="60" cy="60" r="54" class="loader-circle-progress" />
+        </svg>
+        <div id="loader-percentage" class="loader-percentage">0%</div>
+      </div>
       <div class="loader-text">Synchronizing Orbit Matrix...</div>
     </div>
   </div>
@@ -1238,11 +2149,14 @@
       <a href="#contact" class="nav-link">Contact</a>
     </nav>
 
-    <!-- Theme Toggle Button -->
-    <button id="theme-toggle-btn" class="theme-toggle" aria-label="Toggle Dark/Light Mode">
-      <svg id="sun-icon" viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.01c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>
-      <svg id="moon-icon" viewBox="0 0 24 24" style="display: none;"><path d="M12.3 22h-.1c-5.5 0-10-4.5-10-10 0-4.8 3.5-9 8.3-9.9.5-.1.9.3.8.8-.1.4-.1.9-.1 1.3 0 5 4 9 9 9 .4 0 .9 0 1.3-.1.5-.1.9.3.8.8-.9 4.8-5.1 8.3-9.9 8.3z"/></svg>
-    </button>
+    <!-- Theme Selector Unit -->
+    <div class="theme-selector" id="theme-selector">
+      <button class="theme-pill active" data-theme="nova" title="Nova Void" style="--theme-accent: #0071E3;"></button>
+      <button class="theme-pill" data-theme="cyber" title="Cyber Neon" style="--theme-accent: #FF007F;"></button>
+      <button class="theme-pill" data-theme="aurora" title="Nordic Aurora" style="--theme-accent: #10B981;"></button>
+      <button class="theme-pill" data-theme="sunset" title="Sunset Horizon" style="--theme-accent: #F97316;"></button>
+      <button class="theme-pill" data-theme="matrix" title="Matrix Code" style="--theme-accent: #00FF66;"></button>
+    </div>
 
     <!-- Hamburger menu -->
     <button class="hamburger" id="hamburger-btn" aria-label="Toggle Navigation">
@@ -1272,11 +2186,28 @@
     <div class="container">
       <div class="hero-content">
         <span class="hero-tag">ENTERPRISE OPERATIONS AUTOMATION</span>
-        <h1>Automate Manual Operations & Repetitive Workflows</h1>
+        <h1><span class="rgb-text" id="hero-type-target"></span><span id="hero-type-cursor" class="hero-type-cursor">-</span></h1>
         <p>We build and orchestrate secure data pipelines, custom API connections, and tool sync routines. Eliminate tedious spreadsheets, manual entries, and duplicate records across your entire business stack.</p>
         <div class="hero-ctas">
           <a href="#videos" class="btn btn-primary">See Our Workflows</a>
           <a href="#contact" class="btn btn-secondary">Get a Demo</a>
+        </div>
+        <!-- Live AI Operations Terminal -->
+        <div class="ai-terminal">
+          <div class="terminal-header">
+            <div class="terminal-dots">
+              <span class="terminal-dot red"></span>
+              <span class="terminal-dot yellow"></span>
+              <span class="terminal-dot green"></span>
+            </div>
+            <div class="terminal-title">Mia Operations Log v1.2</div>
+            <div class="terminal-status"><span class="pulse-dot"></span> LIVE FEED</div>
+          </div>
+          <div class="terminal-body" id="terminal-logs">
+            <div class="terminal-line"><span class="t-time">[08:04:12]</span> <span class="t-agent">[Mia Agent]:</span> Initializing semantic vector classification engine...</div>
+            <div class="terminal-line"><span class="t-time">[08:04:13]</span> <span class="t-agent">[Mia Agent]:</span> Loaded vocabulary space (N=60, terms=142).</div>
+            <div class="terminal-line"><span class="t-time">[08:04:15]</span> <span class="t-success">[SUCCESS]:</span> Operational sync channel BambooHR -> NetSuite online.</div>
+          </div>
         </div>
       </div>
       <div id="hero-3d-container">
@@ -1720,7 +2651,7 @@
             </div>
             <div>
               <h4>Email Us</h4>
-              <p>hello@orbitops.io</p>
+              <p><a href="mailto:cpatil7350638164@gmail.com" style="color: inherit; text-decoration: none;">cpatil7350638164@gmail.com</a></p>
             </div>
           </div>
           
@@ -1729,8 +2660,8 @@
               <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
             </div>
             <div>
-              <h4>London Office</h4>
-              <p>Floor 4, 12 Old Street<br>London, EC1V 9BD<br>United Kingdom</p>
+              <h4>India Office</h4>
+              <p>Studio Complex, Gota<br>Ahmedabad, Gujarat<br>India</p>
             </div>
           </div>
         </div>
@@ -1745,25 +2676,72 @@
   </div>
 
   <!-- Footer -->
-  <footer>
-    <div class="footer-content">
-      <div class="logo-container" style="cursor: default;">
-        <span class="wordmark" style="font-size: 1.25rem;">OrbitOps.ai</span>
+  <footer class="premium-footer">
+    <div class="footer-container">
+      <div class="footer-grid">
+        <!-- Brand Column -->
+        <div class="footer-col-brand">
+          <div class="logo-container" style="cursor: default; margin-bottom: 1rem;">
+            <span class="wordmark" style="font-size: 1.5rem; font-weight: 800;">OrbitOps<span style="color: var(--accent);">.ai</span></span>
+          </div>
+          <p class="footer-description">
+            Intelligent workflow automation, custom API architectures, and self-healing enterprise integrations.
+          </p>
+        </div>
+        
+        <!-- Links Column -->
+        <div class="footer-col-links">
+          <h4>Platform</h4>
+          <div class="footer-links-grid">
+            <a href="#services">Services</a>
+            <a href="#integrations">HR Integrations</a>
+            <a href="#payroll">Payroll</a>
+            <a href="#pipeline">Pipelines</a>
+            <a href="#case-studies">Cases</a>
+            <a href="#about">About</a>
+          </div>
+        </div>
+
+        <!-- Contact & Location Column -->
+        <div class="footer-col-info">
+          <h4>Studio Complex</h4>
+          <p class="footer-address">
+            Studio Complex, Gota,<br>
+            Ahmedabad, India
+          </p>
+          <a href="mailto:cpatil7350638164@gmail.com" class="footer-email-link">cpatil7350638164@gmail.com</a>
+        </div>
       </div>
-      <div class="footer-links">
-        <a href="#services">Services</a>
-        <a href="#integrations">HR Integrations</a>
-        <a href="#payroll">Payroll</a>
-        <a href="#pipeline">Pipelines</a>
-        <a href="#case-studies">Cases</a>
-        <a href="#about">About</a>
-        <a href="#contact">Contact</a>
-      </div>
-      <div class="footer-copy">
-        &copy; 2026 Orbitops Ltd. All rights reserved. Fictional demo for evaluation purposes.
+
+      <!-- Divider -->
+      <div class="footer-divider"></div>
+
+      <!-- Bottom Row with Copyright and Socials -->
+      <div class="footer-bottom-row">
+        <div class="footer-copy">
+          &copy; 2026 OrbitOps Ltd. All rights reserved.
+        </div>
+        
+        <!-- Social Icons -->
+        <div class="footer-socials">
+          <!-- X (Twitter) -->
+          <a href="https://x.com/orbitops" target="_blank" rel="noopener" class="footer-social-link" aria-label="X (Twitter)">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+          <!-- LinkedIn -->
+          <a href="https://linkedin.com/company/orbitops" target="_blank" rel="noopener" class="footer-social-link" aria-label="LinkedIn">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          </a>
+          <!-- Instagram -->
+          <a href="https://instagram.com/orbitops" target="_blank" rel="noopener" class="footer-social-link" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
+          </a>
+        </div>
       </div>
     </div>
   </footer>
+
+  <!-- OrbitBot AI Chatbot (injected by chatbot.js) -->
 
   <!-- Script logic: 3D logo, hamburger, smooth scroll, form validation, active navigation state -->
   <script>
@@ -1819,11 +2797,11 @@
     // 1. Central Sphere
     const sphereGeometry = new THREE.SphereGeometry(4.5, 64, 64);
     
-    // Material: Sleek metallic gradient with slight emissive accent
+    // Material: Sleek metallic with dynamic theme-matching color
     const material = new THREE.MeshStandardMaterial({
-      map: gradTexture,
+      color: 0x0071E3,
       metalness: 0.9,
-      roughness: 0.1,
+      roughness: 0.12,
       emissive: new THREE.Color('#0033aa'),
       emissiveIntensity: 0.35
     });
@@ -1947,13 +2925,16 @@
     });
 
     // -------------------------------------------------------------
-    // THREE.JS HERO SECTION INTERACTIVE 3D OBJECTS
+    // THREE.JS HERO SECTION - INTERACTIVE SLANTING ROTATING GALAXY
     // -------------------------------------------------------------
     const heroContainer = document.getElementById('hero-canvas-3d');
     if (heroContainer) {
       const hScene = new THREE.Scene();
+      
+      // Perspective camera viewing the galaxy
       const hCamera = new THREE.PerspectiveCamera(45, heroContainer.clientWidth / heroContainer.clientHeight, 0.1, 100);
-      hCamera.position.z = 18;
+      hCamera.position.set(0, 0, 22);
+      hCamera.lookAt(0, 0, 0);
 
       const hRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
       hRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -1961,86 +2942,214 @@
       hRenderer.setClearColor(0x000000, 0);
       heroContainer.appendChild(hRenderer.domElement);
 
-      // Lights
-      const hAmbient = new THREE.AmbientLight(0xffffff, 0.5);
+      // Lights (subtle ambient)
+      const hAmbient = new THREE.AmbientLight(0xffffff, 0.85);
       hScene.add(hAmbient);
 
-      const hDirLight1 = new THREE.DirectionalLight(0xffffff, 0.8);
-      hDirLight1.position.set(10, 10, 10);
-      hScene.add(hDirLight1);
+      // Create a Group to hold the entire slanted galaxy
+      const galaxyGroup = new THREE.Group();
+      // Realistic slant matching a side-on spiral galaxy view
+      galaxyGroup.rotation.x = 1.08;   // tilt toward viewer
+      galaxyGroup.rotation.y = -0.28;  // slight horizontal slant
+      galaxyGroup.rotation.z = -0.62;  // diagonal orientation
+      hScene.add(galaxyGroup);
 
-      const hDirLight2 = new THREE.DirectionalLight(0x00b4d8, 0.5);
-      hDirLight2.position.set(-10, -10, 5);
-      hScene.add(hDirLight2);
+      // ── REALISTIC GALAXY: logarithmic spiral arms ─────────────────────────
+      // Total particles: 10 000 (arm stars) + 2000 (core bulge) + 1500 (haze)
+      const N_ARM   = 9500;
+      const N_BULGE = 2000;
+      const N_HAZE  = 1500;
+      const TOTAL   = N_ARM + N_BULGE + N_HAZE;
 
-      // Create a gradient texture for hero shapes
-      const hGradCanvas1 = document.createElement('canvas');
-      hGradCanvas1.width = 128;
-      hGradCanvas1.height = 128;
-      const hCtx1 = hGradCanvas1.getContext('2d');
-      const hGrad1 = hCtx1.createLinearGradient(0, 0, 128, 128);
-      hGrad1.addColorStop(0, '#AF52DE'); // Purple
-      hGrad1.addColorStop(1, '#0066FF'); // Blue
-      hCtx1.fillStyle = hGrad1;
-      hCtx1.fillRect(0, 0, 128, 128);
-      const hTexture1 = new THREE.CanvasTexture(hGradCanvas1);
+      const positions = new Float32Array(TOTAL * 3);
+      const colors    = new Float32Array(TOTAL * 3);
+      const sizes     = new Float32Array(TOTAL);
+      const geometry  = new THREE.BufferGeometry();
 
-      const hGradCanvas2 = document.createElement('canvas');
-      hGradCanvas2.width = 128;
-      hGradCanvas2.height = 128;
-      const hCtx2 = hGradCanvas2.getContext('2d');
-      const hGrad2 = hCtx2.createLinearGradient(0, 0, 128, 128);
-      hGrad2.addColorStop(0, '#FF2D55'); // Pink/Red
-      hGrad2.addColorStop(1, '#FF9500'); // Orange
-      hCtx2.fillStyle = hGrad2;
-      hCtx2.fillRect(0, 0, 128, 128);
-      const hTexture2 = new THREE.CanvasTexture(hGradCanvas2);
+      // ── helper: temperature → RGB (blackbody approximation) ──────────────
+      function starColor(temp) { // temp: 2000K (red) → 30000K (blue-white)
+        const t = Math.max(1000, Math.min(40000, temp)) / 100;
+        let r, g, b;
+        // Red
+        if (t <= 66) r = 255;
+        else { r = t - 60; r = 329.698727446 * Math.pow(r, -0.1332047592); r = Math.max(0, Math.min(255, r)); }
+        // Green
+        if (t <= 66) { g = t; g = 99.4708025861 * Math.log(g) - 161.1195681661; }
+        else { g = t - 60; g = 288.1221695283 * Math.pow(g, -0.0755148492); }
+        g = Math.max(0, Math.min(255, g));
+        // Blue
+        if (t >= 66) b = 255;
+        else if (t <= 19) b = 0;
+        else { b = t - 10; b = 138.5177312231 * Math.log(b) - 305.0447927307; b = Math.max(0, Math.min(255, b)); }
+        return { r: r/255, g: g/255, b: b/255 };
+      }
 
-      const hGradCanvas3 = document.createElement('canvas');
-      hGradCanvas3.width = 128;
-      hGradCanvas3.height = 128;
-      const hCtx3 = hGradCanvas3.getContext('2d');
-      const hGrad3 = hCtx3.createLinearGradient(0, 0, 128, 128);
-      hGrad3.addColorStop(0, '#00C7BE'); // Teal
-      hGrad3.addColorStop(1, '#34C759'); // Green
-      hCtx3.fillStyle = hGrad3;
-      hCtx3.fillRect(0, 0, 128, 128);
-      const hTexture3 = new THREE.CanvasTexture(hGradCanvas3);
+      // ── ARM STARS ────────────────────────────────────────────────────────
+      const numArms = 4;
+      const armScale = 8.5;
+      const armSpiral = 2.6; // logarithmic tightness
 
-      // 3D Objects
-      const torusGeo = new THREE.TorusGeometry(3.0, 0.8, 32, 100);
-      const torusMat = new THREE.MeshPhysicalMaterial({
-        map: hTexture1,
-        metalness: 0.9,
-        roughness: 0.1,
-        clearcoat: 1.0,
-        clearcoatRoughness: 0.1
+      const numParticles = N_ARM; // keep ref for compat
+      
+      for (let i = 0; i < numParticles; i++) {
+        // Distribute progress from 0 (core) to 1 (outer galaxy edges)
+        const t = Math.pow(Math.random(), 1.45);
+        
+        // Pick one of the 4 spiral arms
+        const armIndex = i % numArms;
+        const phiAngle = (armIndex * 2 * Math.PI) / numArms;
+        
+        // Logarithmic spiral angle calculation
+        const theta = t * armSpiral * Math.PI + phiAngle;
+        
+        // Dispersion/spread increases as we move further out from core
+        const spreadX = (Math.random() - 0.5) * 1.5 * (t + 0.12);
+        const spreadY = (Math.random() - 0.5) * 0.72 * (t + 0.05); // Thicker core height
+        const spreadZ = (Math.random() - 0.5) * 1.5 * (t + 0.12);
+        
+        // Horizontal coordinate plane
+        positions[i * 3] = Math.cos(theta) * t * armScale + spreadX;
+        positions[i * 3 + 1] = spreadY;
+        positions[i * 3 + 2] = Math.sin(theta) * t * armScale + spreadZ;
+        
+        // Premium star/dust colors matching the image
+        const color = new THREE.Color();
+        const tRatio = t;
+        
+        if (tRatio < 0.18) {
+          // core center: white hot glow
+          color.lerpColors(new THREE.Color(0xffffff), new THREE.Color(0xffe5cc), tRatio * 5.5);
+        } else if (tRatio < 0.5) {
+          // middle arm gas: pink / magenta dust clouds
+          color.lerpColors(new THREE.Color(0xff44aa), new THREE.Color(0x9433ff), (tRatio - 0.18) * 3.1);
+        } else {
+          // outer arms: deep space blue and ice blue
+      
+      for (let i = 0; i < N_ARM; i++) {
+        const t         = Math.pow(Math.random(), 1.3);          // bias toward inner
+        const arm       = i % numArms;
+        const armOff    = (arm / numArms) * Math.PI * 2;
+        const angle     = armSpiral * t * Math.PI * 2 + armOff + (Math.random()-0.5)*0.18;
+        const radius    = t * armScale;
+        const armW      = ((1-t)*0.55 + 0.08) * radius * 0.28;  // arm width
+        const scatter   = (Math.random()-0.5)*2 * armW;
+        const scatterY  = (Math.random()-0.5)*2 * armW * 0.5;
+        positions[i*3]   = Math.cos(angle)*radius + scatter;
+        positions[i*3+1] = Math.sin(angle)*radius + scatterY;
+        positions[i*3+2] = (Math.random()-0.5) * 0.5 * (1 - t*0.75);
+
+        // Realistic star colour via blackbody temperature
+        const tempK = t < 0.15 ? 18000 + Math.random()*12000
+                    : t < 0.4  ?  8000 + Math.random()*6000
+                    : t < 0.7  ?  5000 + Math.random()*2000
+                               :  3000 + Math.random()*1500;
+        const sc = starColor(tempK);
+        const brightness = 0.55 + (1-t)*0.45;
+        colors[i*3]   = sc.r * brightness;
+        colors[i*3+1] = sc.g * brightness;
+        colors[i*3+2] = sc.b * brightness;
+        sizes[i] = (Math.random() < 0.03) ? 0.22 : 0.06 + Math.random()*0.06; // rare bright stars
+      }
+
+      // ── CENTRAL BULGE (dense, warm, slightly fuzzy) ─────────────────────
+      for (let i = 0; i < N_BULGE; i++) {
+        const bi = N_ARM + i;
+        const r  = Math.pow(Math.random(), 2.5) * 2.8;   // concentrated
+        const th = Math.random() * Math.PI * 2;
+        const ph = (Math.random()-0.5) * Math.PI * 0.5 * (1 - r/2.8);
+        positions[bi*3]   = Math.cos(th)*r*Math.cos(ph);
+        positions[bi*3+1] = Math.sin(th)*r*Math.cos(ph);
+        positions[bi*3+2] = Math.sin(ph)*r*0.55;
+        const tempK = 4500 + Math.random()*3500;
+        const sc = starColor(tempK);
+        const br = 0.75 + Math.random()*0.25;
+        colors[bi*3]   = sc.r*br; colors[bi*3+1] = sc.g*br; colors[bi*3+2] = sc.b*br;
+        sizes[bi] = 0.05 + Math.random()*0.07;
+      }
+
+      // ── NEBULA HAZE (large, semi-transparent dust) ──────────────────────
+      for (let i = 0; i < N_HAZE; i++) {
+        const hi  = N_ARM + N_BULGE + i;
+        const arm = i % numArms;
+        const t   = 0.2 + Math.random()*0.7;
+        const ang = armSpiral*t*Math.PI*2 + (arm/numArms)*Math.PI*2;
+        const r   = t*armScale;
+        const spread = r*0.55;
+        positions[hi*3]   = Math.cos(ang)*r + (Math.random()-0.5)*spread;
+        positions[hi*3+1] = Math.sin(ang)*r + (Math.random()-0.5)*spread;
+        positions[hi*3+2] = (Math.random()-0.5)*0.9;
+        // Nebula colours: purple, blue, red
+        const palette = [[0.45,0.15,0.7],[0.1,0.3,0.8],[0.75,0.1,0.2],[0.05,0.55,0.4]];
+        const [cr,cg,cb] = palette[Math.floor(Math.random()*palette.length)];
+        const hb = 0.12 + Math.random()*0.1;
+        colors[hi*3]   = cr*hb; colors[hi*3+1] = cg*hb; colors[hi*3+2] = cb*hb;
+        sizes[hi] = 0.25 + Math.random()*0.35;
+      }
+
+      geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      geometry.setAttribute('color',    new THREE.BufferAttribute(colors,    3));
+
+      function createStarTexture() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 16;
+        canvas.height = 16;
+        const ctx = canvas.getContext('2d');
+        const grad = ctx.createRadialGradient(8, 8, 0, 8, 8, 8);
+        grad.addColorStop(0, 'rgba(255, 255, 255, 1)');
+        grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 16, 16);
+        const texture = new THREE.CanvasTexture(canvas);
+        texture.needsUpdate = true;
+        return texture;
+      }
+
+      const galaxyMat = new THREE.PointsMaterial({
+        size: 0.15,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.9,
+        blending: THREE.AdditiveBlending,
+        map: createStarTexture(),
+        depthWrite: false,
+        sizeAttenuation: true
       });
-      const torusMesh = new THREE.Mesh(torusGeo, torusMat);
-      torusMesh.position.set(-2, 1, 0);
-      hScene.add(torusMesh);
+      
+      const galaxyPoints = new THREE.Points(geometry, galaxyMat);
+      galaxyGroup.add(galaxyPoints);
 
-      const sphereGeo = new THREE.SphereGeometry(1.6, 64, 64);
-      const sphereMat = new THREE.MeshPhysicalMaterial({
-        map: hTexture2,
-        metalness: 0.8,
-        roughness: 0.05,
-        clearcoat: 1.0
+      // ── BACKGROUND DEEP-SPACE STAR FIELD ────────────────────────────────
+      const N_STARS = 2200;
+      const starsGeo = new THREE.BufferGeometry();
+      const starsPos = new Float32Array(N_STARS * 3);
+      const starsCol = new Float32Array(N_STARS * 3);
+      for (let i = 0; i < N_STARS; i++) {
+        starsPos[i*3]   = (Math.random()-0.5)*80;
+        starsPos[i*3+1] = (Math.random()-0.5)*80;
+        starsPos[i*3+2] = (Math.random()-0.5)*80;
+        const tw = starColor(3000 + Math.random()*20000);
+        const bri = 0.3 + Math.random()*0.7;
+        starsCol[i*3] = tw.r*bri; starsCol[i*3+1] = tw.g*bri; starsCol[i*3+2] = tw.b*bri;
+      }
+      starsGeo.setAttribute('position', new THREE.BufferAttribute(starsPos, 3));
+      starsGeo.setAttribute('color',    new THREE.BufferAttribute(starsCol, 3));
+      const starsMat = new THREE.PointsMaterial({
+        size: 0.08, vertexColors: true, transparent: true, opacity: 0.7,
+        blending: THREE.AdditiveBlending, map: createStarTexture(), depthWrite: false
       });
-      const sphereMesh = new THREE.Mesh(sphereGeo, sphereMat);
-      sphereMesh.position.set(3, -2, 2);
-      hScene.add(sphereMesh);
+      const starField = new THREE.Points(starsGeo, starsMat);
+      hScene.add(starField);
 
-      const octGeo = new THREE.OctahedronGeometry(1.8, 0);
-      const octMat = new THREE.MeshPhysicalMaterial({
-        map: hTexture3,
-        metalness: 0.9,
-        roughness: 0.15,
-        flatShading: true
-      });
-      const octMesh = new THREE.Mesh(octGeo, octMat);
-      octMesh.position.set(2, 2.5, -3);
-      hScene.add(octMesh);
+      // Store per-star distances from centre for differential rotation
+      const posArr  = geometry.attributes.position.array;
+      const starDist = new Float32Array(TOTAL);
+      for (let i = 0; i < TOTAL; i++) {
+        starDist[i] = Math.sqrt(posArr[i*3]*posArr[i*3] + posArr[i*3+1]*posArr[i*3+1]);
+      }
+
+      // Bind references to global variables so they are accessible to update3DThemeColors
+      window.galaxyMat = galaxyMat;
+      const originalColors = colors.slice();
 
       // Mouse tracking parallax
       let hMouse = { x: 0, y: 0 };
@@ -2051,26 +3160,208 @@
         hMouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
       });
 
-      let hTime = 0;
+      // Meteoroids system
+      const activeMeteoroids = [];
+      let lastMeteoroidSpawn = 0;
+      
+      function spawnMeteoroid() {
+        const size = 0.06 + Math.random() * 0.07;
+        const metGeo = new THREE.DodecahedronGeometry(size, 1);
+        const posAttr = metGeo.attributes.position;
+        for (let i = 0; i < posAttr.count; i++) {
+          posAttr.setXYZ(i,
+            posAttr.getX(i) + (Math.random() - 0.5) * (size * 0.3),
+            posAttr.getY(i) + (Math.random() - 0.5) * (size * 0.3),
+            posAttr.getZ(i) + (Math.random() - 0.5) * (size * 0.3)
+          );
+        }
+        metGeo.computeVertexNormals();
+        
+        const metMat = new THREE.MeshStandardMaterial({
+          color: 0x222533,
+          roughness: 0.95,
+          metalness: 0.1,
+          flatShading: true
+        });
+        const mesh = new THREE.Mesh(metGeo, metMat);
+        
+        mesh.position.set(-15 - Math.random() * 5, 5 + Math.random() * 5, (Math.random() - 0.5) * 4);
+        hScene.add(mesh);
+        
+        const velocity = new THREE.Vector3(
+          0.05 + Math.random() * 0.05,
+          -0.02 - Math.random() * 0.03,
+          (Math.random() - 0.5) * 0.015
+        );
+        
+        const trailMax = 40;
+        const trailGeo = new THREE.BufferGeometry();
+        const trailPositions = new Float32Array(trailMax * 3);
+        const trailColors = new Float32Array(trailMax * 3);
+        
+        for (let i = 0; i < trailMax; i++) {
+          trailPositions[i*3] = mesh.position.x;
+          trailPositions[i*3+1] = mesh.position.y;
+          trailPositions[i*3+2] = mesh.position.z;
+          trailColors[i*3] = 0.0;
+          trailColors[i*3+1] = 0.8;
+          trailColors[i*3+2] = 1.0;
+        }
+        
+        trailGeo.setAttribute('position', new THREE.BufferAttribute(trailPositions, 3));
+        trailGeo.setAttribute('color', new THREE.BufferAttribute(trailColors, 3));
+        
+        const trailMat = new THREE.PointsMaterial({
+          size: 0.12,
+          vertexColors: true,
+          transparent: true,
+          opacity: 0.9,
+          blending: THREE.AdditiveBlending,
+          map: createStarTexture(),
+          depthWrite: false
+        });
+        
+        const points = new THREE.Points(trailGeo, trailMat);
+        hScene.add(points);
+        
+        activeMeteoroids.push({
+          mesh,
+          velocity,
+          trailPoints: points,
+          trailPositions,
+          trailColors,
+          trailData: [],
+          trailGeo,
+          spawnTime: Date.now()
+        });
+      }
+
+      // Differential rotation: inner stars orbit faster
+      let hClock = 0;
       function hAnimate() {
         requestAnimationFrame(hAnimate);
-        hTime += 0.01;
+        hClock += 0.0008;
 
-        torusMesh.position.y = 1.0 + Math.sin(hTime * 1.2) * 0.4;
-        sphereMesh.position.y = -2.0 + Math.cos(hTime * 0.8) * 0.5;
-        octMesh.position.y = 2.5 + Math.sin(hTime * 1.5) * 0.3;
+        // Differential rotation per star around galaxy centre
+        const pArr = geometry.attributes.position.array;
+        const cArr = geometry.attributes.color.array;
+        for (let i = 0; i < TOTAL; i++) {
+          const dPrev = Math.max(0.1, starDist[i]);
+          const omega = 0.0012 / (0.4 + dPrev * 0.12); // inner orbits faster
+          const cosO = Math.cos(omega), sinO = Math.sin(omega);
+          const x = pArr[i*3], y = pArr[i*3+1];
+          pArr[i*3]   = x*cosO - y*sinO;
+          pArr[i*3+1] = x*sinO + y*cosO;
 
-        torusMesh.rotation.x += 0.005;
-        torusMesh.rotation.y += 0.008;
-        
-        sphereMesh.rotation.y += 0.003;
-        
-        octMesh.rotation.x += 0.01;
-        octMesh.rotation.z += 0.006;
+          // Outward drifting dust particles (1/3 of total stars)
+          if (i % 3 === 0) {
+            pArr[i*3] *= 1.0006;
+            pArr[i*3+1] *= 1.0006;
+            pArr[i*3+2] += (Math.random() - 0.5) * 0.001;
+          }
 
-        hTarget.x += (hMouse.x * 2.5 - hTarget.x) * 0.05;
-        hTarget.y += (hMouse.y * 2.5 - hTarget.y) * 0.05;
+          const d = Math.sqrt(pArr[i*3]*pArr[i*3] + pArr[i*3+1]*pArr[i*3+1]);
 
+          // Loop reset when drifted out
+          if (d > armScale) {
+            const resetScale = (0.05 + Math.random() * 0.2) / d;
+            pArr[i*3] *= resetScale;
+            pArr[i*3+1] *= resetScale;
+            pArr[i*3+2] = (Math.random() - 0.5) * 0.1;
+          }
+
+          // Fade colors toward edges to prevent clipping bounds
+          const fade = Math.max(0, 1 - (d / armScale));
+          cArr[i*3]   = originalColors[i*3] * fade;
+          cArr[i*3+1] = originalColors[i*3+1] * fade;
+          cArr[i*3+2] = originalColors[i*3+2] * fade;
+        }
+        geometry.attributes.position.needsUpdate = true;
+        geometry.attributes.color.needsUpdate = true;
+
+        // Spawn meteoroids
+        const now = Date.now();
+        if (now - lastMeteoroidSpawn > 10000 + Math.random() * 8000) {
+          spawnMeteoroid();
+          lastMeteoroidSpawn = now;
+        }
+
+        // Update active meteoroids
+        for (let i = activeMeteoroids.length - 1; i >= 0; i--) {
+          const met = activeMeteoroids[i];
+          met.mesh.position.add(met.velocity);
+          met.mesh.rotation.x += 0.01;
+          met.mesh.rotation.y += 0.015;
+
+          met.trailData.push({
+            x: met.mesh.position.x,
+            y: met.mesh.position.y,
+            z: met.mesh.position.z,
+            age: 0,
+            maxAge: 35 + Math.random() * 20
+          });
+
+          if (met.trailData.length > 40) {
+            met.trailData.shift();
+          }
+
+          const trailPos = met.trailGeo.attributes.position.array;
+          const trailCol = met.trailGeo.attributes.color.array;
+
+          let r = 0.0, g = 0.8, b = 1.0;
+          if (typeof currentTheme !== 'undefined') {
+            if (currentTheme === 'cyber') { r = 1.0; g = 0.0; b = 0.5; }
+            else if (currentTheme === 'aurora') { r = 0.1; g = 0.9; b = 0.5; }
+            else if (currentTheme === 'sunset') { r = 1.0; g = 0.4; b = 0.0; }
+            else if (currentTheme === 'matrix') { r = 0.0; g = 1.0; b = 0.4; }
+          }
+
+          for (let p = 0; p < 40; p++) {
+            const pData = met.trailData[p];
+            if (pData) {
+              pData.age++;
+              pData.x += (Math.random() - 0.5) * 0.015;
+              pData.y += (Math.random() - 0.5) * 0.015;
+              pData.z += (Math.random() - 0.5) * 0.015;
+
+              trailPos[p*3] = pData.x;
+              trailPos[p*3+1] = pData.y;
+              trailPos[p*3+2] = pData.z;
+
+              const lifeRatio = 1 - (pData.age / pData.maxAge);
+              const intensity = Math.max(0, lifeRatio);
+              trailCol[p*3] = r * intensity;
+              trailCol[p*3+1] = g * intensity;
+              trailCol[p*3+2] = b * intensity;
+            } else {
+              trailPos[p*3] = met.mesh.position.x;
+              trailPos[p*3+1] = met.mesh.position.y;
+              trailPos[p*3+2] = met.mesh.position.z;
+              trailCol[p*3] = 0;
+              trailCol[p*3+1] = 0;
+              trailCol[p*3+2] = 0;
+            }
+          }
+          met.trailGeo.attributes.position.needsUpdate = true;
+          met.trailGeo.attributes.color.needsUpdate = true;
+
+          if (met.mesh.position.x > 18 || met.mesh.position.y < -12 || Date.now() - met.spawnTime > 15000) {
+            hScene.remove(met.mesh);
+            hScene.remove(met.trailPoints);
+            activeMeteoroids.splice(i, 1);
+          }
+        }
+
+        // Slow overall rotation of group
+        galaxyGroup.rotation.z += 0.00015;
+
+        // Background star field slow drift
+        starField.rotation.y += 0.00008;
+        starField.rotation.x += 0.00004;
+
+        // Parallax camera
+        hTarget.x += (hMouse.x * 1.2 - hTarget.x) * 0.04;
+        hTarget.y += (hMouse.y * 1.2 - hTarget.y) * 0.04;
         hCamera.position.x = hTarget.x;
         hCamera.position.y = hTarget.y;
         hCamera.lookAt(0, 0, 0);
@@ -2172,8 +3463,15 @@
       const message = document.getElementById('message').value.trim();
       
       if (name && company && email && message) {
-        demoForm.reset();
+        // Construct the mailto redirect to send form details to specified address
+        const subject = `OrbitOps Automation Demo Request - ${company}`;
+        const body = `Form Submission Details:\n\nName: ${name}\nCompany: ${company}\nEmail: ${email}\nMessage: ${message}`;
+        const mailtoUrl = `mailto:cpatil7350638164@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         
+        // Open default email client
+        window.location.href = mailtoUrl;
+
+        demoForm.reset();
         successToast.classList.add('show');
         
         setTimeout(() => {
@@ -2183,97 +3481,243 @@
     });
 
     // -------------------------------------------------------------
-    // THEME TOGGLER (LIGHT & DARK MODES)
+    // MULTI-THEME ORBITOPS SYSTEM (5 PLUGINS)
     // -------------------------------------------------------------
-    const themeToggleBtn = document.getElementById('theme-toggle-btn');
-    const sunIcon = document.getElementById('sun-icon');
-    const moonIcon = document.getElementById('moon-icon');
-
-    // Default theme based on system preference or dark theme
-    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const savedTheme = localStorage.getItem('theme');
-    
-    // Default to dark theme to prevent eye pain
-    // Default to light theme on first load (Apple style), with user-toggleable dark mode
-    let currentTheme = savedTheme ? savedTheme : 'light';
+    const themePills = document.querySelectorAll('.theme-pill');
+    const savedTheme = localStorage.getItem('orbitops-theme') || 'nova';
+    let currentTheme = savedTheme;
 
     function applyTheme(theme) {
       document.documentElement.setAttribute('data-theme', theme);
-      localStorage.setItem('theme', theme);
+      localStorage.setItem('orbitops-theme', theme);
       
-      if (theme === 'dark') {
-        sunIcon.style.display = 'block';
-        moonIcon.style.display = 'none';
-        
-        if (typeof logoMesh !== 'undefined' && logoMesh.material) {
-          logoMesh.material.map = darkGradTexture;
-          logoMesh.material.emissive.setHex(0xff0055);
-          logoMesh.material.emissiveIntensity = 0.8;
-          logoMesh.material.needsUpdate = true;
+      // Update active state in pills
+      themePills.forEach(pill => {
+        if (pill.getAttribute('data-theme') === theme) {
+          pill.classList.add('active');
+        } else {
+          pill.classList.remove('active');
         }
-        if (typeof ring1 !== 'undefined' && ring1.material) {
-          ring1.material.color.setHex(0xFF2D55);
-          ring1.material.emissive.setHex(0xff0055);
-          ring1.material.emissiveIntensity = 0.6;
-          ring1.material.needsUpdate = true;
-        }
-        if (typeof ring2 !== 'undefined' && ring2.material) {
-          ring2.material.color.setHex(0xAF52DE);
-          ring2.material.emissive.setHex(0xaa00ff);
-          ring2.material.emissiveIntensity = 0.6;
-          ring2.material.needsUpdate = true;
-        }
-        document.querySelectorAll('.wordmark').forEach(el => {
-          el.style.background = 'linear-gradient(135deg, #FF2D55 0%, #AF52DE 100%)';
-          el.style.webkitBackgroundClip = 'text';
-        });
-      } else {
-        sunIcon.style.display = 'none';
-        moonIcon.style.display = 'block';
-        
-        if (typeof logoMesh !== 'undefined' && logoMesh.material) {
-          logoMesh.material.map = gradTexture;
-          logoMesh.material.emissive.setHex(0x0033aa);
-          logoMesh.material.emissiveIntensity = 0.35;
-          logoMesh.material.needsUpdate = true;
-        }
-        if (typeof ring1 !== 'undefined' && ring1.material) {
-          ring1.material.color.setHex(0x00B4D8);
-          ring1.material.emissive.setHex(0x005577);
-          ring1.material.emissiveIntensity = 0.2;
-          ring1.material.needsUpdate = true;
-        }
-        if (typeof ring2 !== 'undefined' && ring2.material) {
-          ring2.material.color.setHex(0x7c3aed);
-          ring2.material.emissive.setHex(0x330066);
-          ring2.material.emissiveIntensity = 0.2;
-          ring2.material.needsUpdate = true;
-        }
-        document.querySelectorAll('.wordmark').forEach(el => {
-          el.style.background = 'linear-gradient(135deg, #0071E3 0%, #00B4D8 100%)';
-          el.style.webkitBackgroundClip = 'text';
-        });
+      });
+      
+      // Dynamic adjustments of 3D objects & colors if active
+      update3DThemeColors(theme);
+    }
+
+    function update3DThemeColors(theme) {
+      if (typeof logoMesh === 'undefined') return;
+      
+      let sphereColor, sphereEmissive, ring1Color, ring2Color, emissiveIntensity;
+      let galaxyTint;
+      
+      switch (theme) {
+        case 'cyber':
+          sphereColor = 0xFF007F;
+          sphereEmissive = 0xff0055;
+          ring1Color = 0xFF007F;
+          ring2Color = 0x00F0FF;
+          emissiveIntensity = 0.9;
+          galaxyTint = 0xffaaff;
+          break;
+        case 'aurora':
+          sphereColor = 0x10B981;
+          sphereEmissive = 0x059669;
+          ring1Color = 0x34D399;
+          ring2Color = 0xF59E0B;
+          emissiveIntensity = 0.7;
+          galaxyTint = 0xaaffdd;
+          break;
+        case 'sunset':
+          sphereColor = 0xF97316;
+          sphereEmissive = 0xEF4444;
+          ring1Color = 0xF97316;
+          ring2Color = 0xF59E0B;
+          emissiveIntensity = 0.8;
+          galaxyTint = 0xffcc88;
+          break;
+        case 'matrix':
+          sphereColor = 0x00FF66;
+          sphereEmissive = 0x047857;
+          ring1Color = 0x10B981;
+          ring2Color = 0x34D399;
+          emissiveIntensity = 1.0;
+          galaxyTint = 0x34d399;
+          break;
+        case 'nova':
+        default:
+          sphereColor = 0x0071E3;
+          sphereEmissive = 0x0033aa;
+          ring1Color = 0x00B4D8;
+          ring2Color = 0x7c3aed;
+          emissiveIntensity = 0.35;
+          galaxyTint = 0xffffff;
+          break;
+      }
+      
+      if (logoMesh.material) {
+        logoMesh.material.color.setHex(sphereColor);
+        logoMesh.material.emissive.setHex(sphereEmissive);
+        logoMesh.material.emissiveIntensity = emissiveIntensity;
+        logoMesh.material.needsUpdate = true;
+      }
+      if (typeof ring1 !== 'undefined' && ring1.material) {
+        ring1.material.color.setHex(ring1Color);
+        ring1.material.emissive.setHex(ring1Color);
+        ring1.material.emissiveIntensity = emissiveIntensity * 0.7;
+        ring1.material.needsUpdate = true;
+      }
+      if (typeof ring2 !== 'undefined' && ring2.material) {
+        ring2.material.color.setHex(ring2Color);
+        ring2.material.emissive.setHex(ring2Color);
+        ring2.material.emissiveIntensity = emissiveIntensity * 0.7;
+        ring2.material.needsUpdate = true;
+      }
+
+      // Update Galaxy Material Colors
+      if (typeof window.galaxyMat !== 'undefined') {
+        window.galaxyMat.color.setHex(galaxyTint);
+        window.galaxyMat.needsUpdate = true;
       }
     }
 
-    applyTheme(currentTheme);
+    themePills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        const selectedTheme = pill.getAttribute('data-theme');
+        applyTheme(selectedTheme);
+      });
+    });
 
-    themeToggleBtn.addEventListener('click', () => {
-      currentTheme = (currentTheme === 'dark') ? 'light' : 'dark';
+    // Run initial apply (run after DOM and logo have had some time or instantly)
+    setTimeout(() => {
       applyTheme(currentTheme);
-    });
+    }, 100);
 
-    // Fade out preloader
-    window.addEventListener('load', () => {
+    // Percentage Preloader with Session Storage Caching
+    (function() {
       const preloader = document.getElementById('preloader');
-      if (preloader) {
-        setTimeout(() => {
-          preloader.classList.add('fade-out');
-        }, 1200);
-      }
-    });
+      const loaderProgress = document.querySelector('.loader-circle-progress');
+      const loaderPercentage = document.getElementById('loader-percentage');
+      const isCached = sessionStorage.getItem('orbitops_cached_visit');
 
+      if (isCached) {
+        // Fast-load: bypass preloader in 200ms
+        if (preloader) {
+          preloader.style.transition = 'opacity 0.2s ease, visibility 0.2s ease';
+          if (loaderProgress) loaderProgress.style.strokeDashoffset = 0;
+          if (loaderPercentage) loaderPercentage.textContent = '100%';
+          setTimeout(() => {
+            preloader.classList.add('fade-out');
+          }, 200);
+        }
+      } else {
+        // Normal load: count from 0% to 100% over 1.2s
+        let count = 0;
+        const duration = 1200; // ms
+        const startTime = performance.now();
+        const circumference = 339.292; // 2 * Math.PI * 54
+
+        function updateLoader(timestamp) {
+          const elapsed = timestamp - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          count = Math.floor(progress * 100);
+          
+          if (loaderPercentage) loaderPercentage.textContent = `${count}%`;
+          if (loaderProgress) {
+            loaderProgress.style.strokeDashoffset = circumference - (progress * circumference);
+          }
+
+          if (progress < 1) {
+            requestAnimationFrame(updateLoader);
+          } else {
+            sessionStorage.setItem('orbitops_cached_visit', 'true');
+            setTimeout(() => {
+              if (preloader) preloader.classList.add('fade-out');
+            }, 150);
+          }
+        }
+        requestAnimationFrame(updateLoader);
+      }
+    })();
+
+    // -------------------------------------------------------------
+    // AI CHATBOT MIA CONTROLLER LOGIC (GEMINI & OFFLINE)
+    // -------------------------------------------------------------
+    // -------------------------------------------------------------
+    // LIVE AI OPERATIONS TERMINAL SIMULATOR
+    // -------------------------------------------------------------
+    const terminalLogs = document.getElementById('terminal-logs');
+    const simulatedEvents = [
+      { type: 'agent', message: 'Extracting employee records delta from BambooHR...' },
+      { type: 'success', message: 'Found 3 updates. Transforming JSON schema to ADP format...' },
+      { type: 'agent', message: 'Validating employee record: Jane Doe (tax ID checksum passed).' },
+      { type: 'success', message: 'Loaded 1 updated payload to ADP payroll engine (latency: 18ms).' },
+      { type: 'agent', message: 'Reconciling sales entities from HubSpot to NetSuite ledger...' },
+      { type: 'warning', message: 'Missing email address for contact ID 8329. Quarantining record...' },
+      { type: 'agent', message: 'Isolation vault locked for record ID 8329. Alert sent to operations desk.' },
+      { type: 'agent', message: 'Running daily security posture check on transit pipelines...' },
+      { type: 'success', message: 'SOC2 token exchange completed. Security status: 100% compliant.' },
+      { type: 'agent', message: 'Automated Slack channel sync notification dispatched.' },
+      { type: 'agent', message: 'Optimizing payload buffer partitions for high-throughput sync...' },
+      { type: 'success', message: 'Re-indexing NetSuite transaction cache complete (51.2ms).' },
+      { type: 'warning', message: 'Slow response detected from Shopify webhook listener. Retrying...' },
+      { type: 'success', message: 'Shopify sync resolved with zero data drop.' }
+    ];
+
+    let eventIndex = 0;
+    function addTerminalLog() {
+      if (!terminalLogs) return;
+      
+      const event = simulatedEvents[eventIndex];
+      eventIndex = (eventIndex + 1) % simulatedEvents.length;
+      
+      const timeStr = new Date().toLocaleTimeString();
+      const logLine = document.createElement('div');
+      logLine.className = 'terminal-line';
+      
+      let badgeHTML = '';
+      if (event.type === 'agent') {
+        badgeHTML = `<span class="t-agent">[Mia Agent]:</span>`;
+      } else if (event.type === 'success') {
+        badgeHTML = `<span class="t-success">[SUCCESS]:</span>`;
+      } else if (event.type === 'warning') {
+        badgeHTML = `<span class="t-warning">[WARNING]:</span>`;
+      }
+      
+      logLine.innerHTML = `<span class="t-time">[${timeStr}]</span> ${badgeHTML} ${event.message}`;
+      terminalLogs.appendChild(logLine);
+      
+      while (terminalLogs.children.length > 9) {
+        terminalLogs.removeChild(terminalLogs.firstChild);
+      }
+      
+      terminalLogs.scrollTop = terminalLogs.scrollHeight;
+    }
+
+    // Typewriter Hero Title
+    (function () {
+      const target = document.getElementById('hero-type-target');
+      const cursor = document.getElementById('hero-type-cursor');
+      if (!target) return;
+      const text = "Automate Manual Operations & Repetitive Workflows";
+      let index = 0;
+      target.textContent = "";
+      if (cursor) cursor.textContent = "-";
+      
+      function type() {
+        if (index < text.length) {
+          target.textContent += text.charAt(index);
+          index++;
+          setTimeout(type, 50 + Math.random() * 40);
+        } else {
+          target.textContent += ".";
+          if (cursor) cursor.style.display = "none";
+        }
+      }
+      setTimeout(type, 800);
+    })();
   </script>
+
+  <!-- OrbitBot Chatbot Component v2 -->
+  <script src="chatbot.js"></script>
 </body>
 </html>
-```

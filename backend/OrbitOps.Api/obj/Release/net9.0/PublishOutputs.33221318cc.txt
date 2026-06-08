@@ -1,0 +1,10 @@
+D:\Important\OrbitOps\backend\OrbitOps.Api\obj\Release\net9.0\PubTmp\Out\OrbitOps.Api.exe
+D:\Important\OrbitOps\backend\OrbitOps.Api\obj\Release\net9.0\PubTmp\Out\nuget.config
+D:\Important\OrbitOps\backend\OrbitOps.Api\obj\Release\net9.0\PubTmp\Out\appsettings.Development.json
+D:\Important\OrbitOps\backend\OrbitOps.Api\obj\Release\net9.0\PubTmp\Out\appsettings.json
+D:\Important\OrbitOps\backend\OrbitOps.Api\obj\Release\net9.0\PubTmp\Out\OrbitOps.Api.dll
+D:\Important\OrbitOps\backend\OrbitOps.Api\obj\Release\net9.0\PubTmp\Out\OrbitOps.Api.deps.json
+D:\Important\OrbitOps\backend\OrbitOps.Api\obj\Release\net9.0\PubTmp\Out\OrbitOps.Api.runtimeconfig.json
+D:\Important\OrbitOps\backend\OrbitOps.Api\obj\Release\net9.0\PubTmp\Out\OrbitOps.Api.pdb
+D:\Important\OrbitOps\backend\OrbitOps.Api\obj\Release\net9.0\PubTmp\Out\Microsoft.AspNetCore.OpenApi.dll
+D:\Important\OrbitOps\backend\OrbitOps.Api\obj\Release\net9.0\PubTmp\Out\Microsoft.OpenApi.dll
