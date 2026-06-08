@@ -2989,42 +2989,6 @@
       const armScale = 8.5;
       const armSpiral = 2.6; // logarithmic tightness
 
-      const numParticles = N_ARM; // keep ref for compat
-      
-      for (let i = 0; i < numParticles; i++) {
-        // Distribute progress from 0 (core) to 1 (outer galaxy edges)
-        const t = Math.pow(Math.random(), 1.45);
-        
-        // Pick one of the 4 spiral arms
-        const armIndex = i % numArms;
-        const phiAngle = (armIndex * 2 * Math.PI) / numArms;
-        
-        // Logarithmic spiral angle calculation
-        const theta = t * armSpiral * Math.PI + phiAngle;
-        
-        // Dispersion/spread increases as we move further out from core
-        const spreadX = (Math.random() - 0.5) * 1.5 * (t + 0.12);
-        const spreadY = (Math.random() - 0.5) * 0.72 * (t + 0.05); // Thicker core height
-        const spreadZ = (Math.random() - 0.5) * 1.5 * (t + 0.12);
-        
-        // Horizontal coordinate plane
-        positions[i * 3] = Math.cos(theta) * t * armScale + spreadX;
-        positions[i * 3 + 1] = spreadY;
-        positions[i * 3 + 2] = Math.sin(theta) * t * armScale + spreadZ;
-        
-        // Premium star/dust colors matching the image
-        const color = new THREE.Color();
-        const tRatio = t;
-        
-        if (tRatio < 0.18) {
-          // core center: white hot glow
-          color.lerpColors(new THREE.Color(0xffffff), new THREE.Color(0xffe5cc), tRatio * 5.5);
-        } else if (tRatio < 0.5) {
-          // middle arm gas: pink / magenta dust clouds
-          color.lerpColors(new THREE.Color(0xff44aa), new THREE.Color(0x9433ff), (tRatio - 0.18) * 3.1);
-        } else {
-          // outer arms: deep space blue and ice blue
-      
       for (let i = 0; i < N_ARM; i++) {
         const t         = Math.pow(Math.random(), 1.3);          // bias toward inner
         const arm       = i % numArms;
