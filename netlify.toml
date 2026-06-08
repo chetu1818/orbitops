@@ -1,0 +1,38 @@
+# Netlify Configuration File for OrbitOps
+# Documentation: https://docs.netlify.com/configure-builds/file-based-configuration/
+
+[build]
+  # Directory where Netlify will run the build command
+  base = "frontend"
+
+  # The command Netlify executes to build the Angular application
+  command = "npm run build"
+
+  # The directory Netlify will publish (relative to the base directory)
+  publish = "dist/frontend/browser"
+
+[build.environment]
+  # Specify the Node.js version for the build environment to ensure compatibility with Angular v20
+  NODE_VERSION = "20"
+
+# ==============================================================================
+# REDIRECTS / REWRITES
+# ==============================================================================
+
+# 1. API Reverse Proxy Redirect
+# Proxies all frontend calls starting with /api/* to the production backend.
+# This prevents CORS issues.
+# IMPORTANT: Replace "http://localhost:5015" with your actual deployed backend API domain 
+# (e.g., "https://api.orbitops.ai") when deploying.
+[[redirects]]
+  from = "/api/*"
+  to = "http://localhost:5015/api/:splat"
+  status = 200
+  force = true
+
+# 2. Angular SPA Router Redirect
+# Redirects all other routes to index.html so Angular's client-side router handles them (preventing 404s on page refresh).
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

@@ -6,8 +6,21 @@
 (function () {
   'use strict';
 
-  const BACKEND_URL = 'http://localhost:5015/api/chat';
-  const FEEDBACK_URL = 'http://localhost:5015/api/chat/feedback';
+  const getApiUrl = (path, defaultUrl) => {
+    if (typeof window !== 'undefined') {
+      if (window.ORBITOPS_API_URL) {
+        return window.ORBITOPS_API_URL + path;
+      }
+      const host = window.location.hostname;
+      if (host === 'localhost' || host === '127.0.0.1' || host === '::1') {
+        return defaultUrl;
+      }
+    }
+    return path;
+  };
+
+  const BACKEND_URL = getApiUrl('/api/chat', 'http://localhost:5015/api/chat');
+  const FEEDBACK_URL = getApiUrl('/api/chat/feedback', 'http://localhost:5015/api/chat/feedback');
   const STORAGE_KEY = 'orbitops_chat_static';
   const MAX_STORED = 120;
   const STREAM_SPEED = 10; // ms per char
