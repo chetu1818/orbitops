@@ -2,6 +2,9 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using OrbitOps.Api.Models;
+using OrbitOps.Api.Data;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace OrbitOps.Api.Services;
 
@@ -122,14 +125,15 @@ public class ChatService : IChatService
         "some","such","only","own","per","quite","rather","should","since","though","through",
     };
 
-    public ChatService(HttpClient httpClient, IConfiguration configuration, ILogger<ChatService> logger)
+    private readonly OrbitOpsDbContext _context;
+
+    public ChatService(HttpClient httpClient, IConfiguration configuration, ILogger<ChatService> logger, OrbitOpsDbContext context)
     {
         _httpClient = httpClient;
         _configuration = configuration;
         _logger = logger;
+        _context = context;
     }
-
-    private static readonly object FileLock = new();
 
     public async Task<ChatResponseDto> GetChatResponseAsync(ChatRequestDto request)
     {
@@ -613,100 +617,56 @@ GUARDRAILS & PRIVACY:
                "Or, let us know how we can help by filling out the contact form below! 😊";
     }
 
-    public Task SubmitFeedbackAsync(ChatFeedbackDto feedback)
+    public async Task SubmitFeedbackAsync(ChatFeedbackDto feedback)
     {
         try
         {
-            var folder = Path.Combine(Directory.GetCurrentDirectory(), "chat_data");
-            var filePath = Path.Combine(folder, "interactions.json");
-
             _logger.LogInformation("Submitting feedback rating: {Rating} for ConvId={ConvId}", feedback.Rating, feedback.ConversationId);
 
-            lock (FileLock)
-            {
-                if (File.Exists(filePath))
-                {
-                    var existingText = File.ReadAllText(filePath);
-                    var logs = JsonSerializer.Deserialize<List<InteractionLog>>(existingText);
-                    if (logs != null)
-                    {
-                        // Find the matching log by ConversationId
-                        var log = logs.LastOrDefault(l => l.ConversationId == feedback.ConversationId 
-                            && l.UserMessage.Trim().Equals(feedback.UserMessage.Trim(), StringComparison.OrdinalIgnoreCase));
+            var log = await _context.ChatInteractions
+                .Where(l => l.ConversationId == feedback.ConversationId && l.UserMessage.ToLower() == feedback.UserMessage.ToLower())
+                .OrderByDescending(l => l.Timestamp)
+                .FirstOrDefaultAsync();
 
-                        if (log != null)
-                        {
-                            log.Rating = feedback.Rating;
-                            var json = JsonSerializer.Serialize(logs, new JsonSerializerOptions { WriteIndented = true });
-                            File.WriteAllText(filePath, json);
-                            _logger.LogInformation("Successfully updated feedback rating to {Rating} in file.", feedback.Rating);
-                        }
-                        else
-                        {
-                            _logger.LogWarning("No matching conversation user message found for feedback update.");
-                        }
-                    }
-                }
+            if (log != null)
+            {
+                log.Rating = feedback.Rating;
+                await _context.SaveChangesAsync();
+                _logger.LogInformation("Successfully updated feedback rating to {Rating} in database.", feedback.Rating);
+            }
+            else
+            {
+                _logger.LogWarning("No matching conversation user message found for feedback update in database.");
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error submitting chat feedback.");
+            _logger.LogError(ex, "Error submitting chat feedback to database.");
         }
-        return Task.CompletedTask;
     }
 
     private void LogInteraction(string conversationId, string userMessage, string agentResponse, List<string> researchSteps, string model, int rating = 0)
     {
         try
         {
-            var folder = Path.Combine(Directory.GetCurrentDirectory(), "chat_data");
-            if (!Directory.Exists(folder))
+            var interaction = new ChatInteraction
             {
-                Directory.CreateDirectory(folder);
-            }
-            var filePath = Path.Combine(folder, "interactions.json");
+                ConversationId = conversationId,
+                Timestamp = DateTime.UtcNow,
+                UserMessage = userMessage,
+                AgentResponse = agentResponse,
+                ResearchSteps = researchSteps ?? new List<string>(),
+                Model = model,
+                Rating = rating
+            };
 
-            lock (FileLock)
-            {
-                List<InteractionLog> logs = new();
-                if (File.Exists(filePath))
-                {
-                    try
-                    {
-                        var existingText = File.ReadAllText(filePath);
-                        logs = JsonSerializer.Deserialize<List<InteractionLog>>(existingText) ?? new();
-                    }
-                    catch
-                    {
-                        logs = new();
-                    }
-                }
-
-                logs.Add(new InteractionLog
-                {
-                    ConversationId = conversationId,
-                    Timestamp = DateTime.UtcNow,
-                    UserMessage = userMessage,
-                    AgentResponse = agentResponse,
-                    ResearchSteps = researchSteps,
-                    Model = model,
-                    Rating = rating
-                });
-
-                // Keep log size bounded
-                if (logs.Count > 500)
-                {
-                    logs = logs.Skip(logs.Count - 500).ToList();
-                }
-
-                var json = JsonSerializer.Serialize(logs, new JsonSerializerOptions { WriteIndented = true });
-                File.WriteAllText(filePath, json);
-            }
+            _context.ChatInteractions.Add(interaction);
+            _context.SaveChanges();
+            _logger.LogInformation("Successfully logged chat interaction to database.");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error logging chat interaction.");
+            _logger.LogError(ex, "Error logging chat interaction to database.");
         }
     }
 

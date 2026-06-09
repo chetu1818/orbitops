@@ -13,6 +13,7 @@ namespace OrbitOps.Api.Data
         public DbSet<Order> Orders { get; set; }
         public DbSet<ChatSession> ChatSessions { get; set; }
         public DbSet<ChatMessage> ChatMessages { get; set; }
+        public DbSet<ChatInteraction> ChatInteractions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -55,6 +56,16 @@ namespace OrbitOps.Api.Data
             modelBuilder.Entity<ChatMessage>(entity =>
             {
                 entity.HasKey(m => m.Id);
+            });
+
+            modelBuilder.Entity<ChatInteraction>(entity =>
+            {
+                entity.HasKey(c => c.Id);
+                entity.Property(c => c.ResearchSteps)
+                    .HasConversion(
+                        v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null),
+                        v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions)null) ?? new List<string>()
+                    );
             });
         }
     }

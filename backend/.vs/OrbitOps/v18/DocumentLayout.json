@@ -1,12 +1,71 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "D:\\Important\\OrbitOps\\backend\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A05B5D57-60E6-4389-84A9-DF07BCB30FBA}|OrbitOps.Api\\OrbitOps.Api.csproj|d:\\important\\orbitops\\backend\\orbitops.api\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A05B5D57-60E6-4389-84A9-DF07BCB30FBA}|OrbitOps.Api\\OrbitOps.Api.csproj|solutionrelative:orbitops.api\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A05B5D57-60E6-4389-84A9-DF07BCB30FBA}|OrbitOps.Api\\OrbitOps.Api.csproj|d:\\important\\orbitops\\backend\\orbitops.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A05B5D57-60E6-4389-84A9-DF07BCB30FBA}|OrbitOps.Api\\OrbitOps.Api.csproj|solutionrelative:orbitops.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A05B5D57-60E6-4389-84A9-DF07BCB30FBA}|OrbitOps.Api\\OrbitOps.Api.csproj|d:\\important\\orbitops\\backend\\orbitops.api\\nuget.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{A05B5D57-60E6-4389-84A9-DF07BCB30FBA}|OrbitOps.Api\\OrbitOps.Api.csproj|solutionrelative:orbitops.api\\nuget.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
       "VerticalTabListWidth": 256,
-      "DocumentGroups": []
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "AuthController.cs",
+              "DocumentMoniker": "D:\\Important\\OrbitOps\\backend\\OrbitOps.Api\\Controllers\\AuthController.cs",
+              "RelativeDocumentMoniker": "OrbitOps.Api\\Controllers\\AuthController.cs",
+              "ToolTip": "D:\\Important\\OrbitOps\\backend\\OrbitOps.Api\\Controllers\\AuthController.cs",
+              "RelativeToolTip": "OrbitOps.Api\\Controllers\\AuthController.cs",
+              "ViewState": "AgIAAFYAAAAAAAAAAAAIwGgAAAAUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-09T11:57:08.391Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\Important\\OrbitOps\\backend\\OrbitOps.Api\\Program.cs",
+              "RelativeDocumentMoniker": "OrbitOps.Api\\Program.cs",
+              "ToolTip": "D:\\Important\\OrbitOps\\backend\\OrbitOps.Api\\Program.cs",
+              "RelativeToolTip": "OrbitOps.Api\\Program.cs",
+              "ViewState": "AgIAABYAAAAAAAAAAAAcwB4AAAAzAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-09T11:50:24.784Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "nuget.config",
+              "DocumentMoniker": "D:\\Important\\OrbitOps\\backend\\OrbitOps.Api\\nuget.config",
+              "RelativeDocumentMoniker": "OrbitOps.Api\\nuget.config",
+              "ToolTip": "D:\\Important\\OrbitOps\\backend\\OrbitOps.Api\\nuget.config",
+              "RelativeToolTip": "OrbitOps.Api\\nuget.config",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAxAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
+              "WhenOpened": "2026-06-09T11:48:20.522Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
     }
   ]
 }

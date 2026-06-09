@@ -29,3 +29,15 @@ public class ChatFeedbackDto
     public int Rating { get; set; } // 1 for up, -1 for down
 }
 
+public class ChatInteraction
+{
+    public int Id { get; set; }
+    public string ConversationId { get; set; } = string.Empty;
+    public DateTime Timestamp { get; set; } = DateTime.UtcNow;
+    public string UserMessage { get; set; } = string.Empty;
+    public string AgentResponse { get; set; } = string.Empty;
+    public List<string> ResearchSteps { get; set; } = new();
+    public string Model { get; set; } = string.Empty;
+    public int Rating { get; set; }
+}
+

@@ -1,12 +1,54 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "D:\\Important\\OrbitOps\\backend\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A05B5D57-60E6-4389-84A9-DF07BCB30FBA}|OrbitOps.Api\\OrbitOps.Api.csproj|d:\\important\\orbitops\\backend\\orbitops.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A05B5D57-60E6-4389-84A9-DF07BCB30FBA}|OrbitOps.Api\\OrbitOps.Api.csproj|solutionrelative:orbitops.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A05B5D57-60E6-4389-84A9-DF07BCB30FBA}|OrbitOps.Api\\OrbitOps.Api.csproj|d:\\important\\orbitops\\backend\\orbitops.api\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A05B5D57-60E6-4389-84A9-DF07BCB30FBA}|OrbitOps.Api\\OrbitOps.Api.csproj|solutionrelative:orbitops.api\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
       "VerticalTabListWidth": 256,
-      "DocumentGroups": []
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\Important\\OrbitOps\\backend\\OrbitOps.Api\\Program.cs",
+              "RelativeDocumentMoniker": "OrbitOps.Api\\Program.cs",
+              "ToolTip": "D:\\Important\\OrbitOps\\backend\\OrbitOps.Api\\Program.cs",
+              "RelativeToolTip": "OrbitOps.Api\\Program.cs",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAAACEAAAAiAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-09T12:46:00.521Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "AuthController.cs",
+              "DocumentMoniker": "D:\\Important\\OrbitOps\\backend\\OrbitOps.Api\\Controllers\\AuthController.cs",
+              "RelativeDocumentMoniker": "OrbitOps.Api\\Controllers\\AuthController.cs",
+              "ToolTip": "D:\\Important\\OrbitOps\\backend\\OrbitOps.Api\\Controllers\\AuthController.cs",
+              "RelativeToolTip": "OrbitOps.Api\\Controllers\\AuthController.cs",
+              "ViewState": "AgIAAE0AAAAAAAAAAAAAAGcAAAAlAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-09T12:39:14.2Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
     }
   ]
 }
