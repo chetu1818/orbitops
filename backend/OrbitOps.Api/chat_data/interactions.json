@@ -1,0 +1,578 @@
+[
+  {
+    "ConversationId": "e125d4ee-e8ab-4c46-8926-9c0551827ed3",
+    "Timestamp": "2026-06-08T08:20:12.150161Z",
+    "UserMessage": "__ping__",
+    "AgentResponse": "I specialise in **enterprise operations automation** \u2014 data pipelines, HRIS/payroll integrations, CRM/ERP syncs, and custom API connectors.\n\nCould you rephrase your question or select one of the topics below? I\u0027d be happy to help! \uD83D\uDE0A",
+    "ResearchSteps": [
+      "Phase 1: Understanding query - analyzing intent of: \u0027__ping__\u0027",
+      "Phase 2: Research - query did not match standard intents. Scanning documentation directories...",
+      "Phase 2: Research - compiled general system details and standard pipeline FAQs for reference.",
+      "Phase 3: Composing - Groq API key is not configured. Accessing Local AI classification response...",
+      "Phase 3: Composing - local classification response compiled."
+    ],
+    "Model": "OrbitOps Local AI",
+    "Rating": 0
+  },
+  {
+    "ConversationId": "conv_3qtfsc4ma",
+    "Timestamp": "2026-06-08T08:21:35.7057115Z",
+    "UserMessage": "Hi",
+    "AgentResponse": "Hello! I\u0027m **Mia**, your OrbitOps automation assistant. I can help you with:\n\u2022 Our data pipeline architecture\n\u2022 HR, payroll \u0026 ERP integrations\n\u2022 Security \u0026 compliance details\n\u2022 Custom connector development\n\u2022 Pricing \u0026 demo scheduling\n\nWhat would you like to know?",
+    "ResearchSteps": [
+      "Phase 1: Understanding query - analyzing intent of: \u0027Hi\u0027",
+      "Phase 2: Researching database - found matching knowledge base ID: \u0027greeting\u0027",
+      "Phase 2: Research - Checking user session",
+      "Phase 2: Research - Applying greeting parameters",
+      "Phase 3: Composing - Groq API key is not configured. Accessing Local AI classification response...",
+      "Phase 3: Composing - local classification response compiled."
+    ],
+    "Model": "OrbitOps Local AI",
+    "Rating": 0
+  },
+  {
+    "ConversationId": "conv_3qtfsc4ma",
+    "Timestamp": "2026-06-08T08:21:47.5853332Z",
+    "UserMessage": "how can we connect?",
+    "AgentResponse": "Here\u0027s what I can help with:\n\u2022 **Integrations** \u2014 Which platforms we connect\n\u2022 **Pipeline Architecture** \u2014 Our 5-stage ETL/ELT process\n\u2022 **Security \u0026 Compliance** \u2014 SOC2, GDPR, AES-256\n\u2022 **Error Quarantine** \u2014 How we handle sync failures\n\u2022 **Custom Connectors** \u2014 Scripted API wrappers\n\u2022 **Pricing** \u2014 Custom enterprise plans\n\u2022 **Demo** \u2014 Schedule a live walkthrough\n\nJust ask!",
+    "ResearchSteps": [
+      "Phase 1: Understanding query - analyzing intent of: \u0027how can we connect?\u0027",
+      "Phase 2: Researching database - found matching knowledge base ID: \u0027capabilities\u0027",
+      "Phase 2: Research - Analyzing TF-IDF matches for capabilities",
+      "Phase 2: Research - Loading context definitions",
+      "Phase 3: Composing - Groq API key is not configured. Accessing Local AI classification response...",
+      "Phase 3: Composing - local classification response compiled."
+    ],
+    "Model": "OrbitOps Local AI",
+    "Rating": 0
+  },
+  {
+    "ConversationId": "conv_3qtfsc4ma",
+    "Timestamp": "2026-06-08T08:22:04.0340287Z",
+    "UserMessage": "ok schedule",
+    "AgentResponse": "I\u0027d love to connect you with our operations engineers for a **custom live demo**!\n\n\uD83D\uDCE7 **Email:** cpatil7350638164@gmail.com\n\uD83D\uDCCD **Office:** Studio Complex, Gota, Ahmedabad\n\nOr fill out the **contact form** at the bottom of this page \u2014 we respond within 24 hours.",
+    "ResearchSteps": [
+      "Phase 1: Understanding query - analyzing intent of: \u0027ok schedule\u0027",
+      "Phase 2: Researching database - found matching knowledge base ID: \u0027demo\u0027",
+      "Phase 2: Research - Checking engineer availability slots",
+      "Phase 2: Research - Retrieving discovery form fields",
+      "Phase 3: Composing - Groq API key is not configured. Accessing Local AI classification response...",
+      "Phase 3: Composing - local classification response compiled."
+    ],
+    "Model": "OrbitOps Local AI",
+    "Rating": 0
+  },
+  {
+    "ConversationId": "conv_3qtfsc4ma",
+    "Timestamp": "2026-06-08T08:22:19.1366201Z",
+    "UserMessage": "pricings?",
+    "AgentResponse": "I specialise in **enterprise operations automation** \u2014 data pipelines, HRIS/payroll integrations, CRM/ERP syncs, and custom API connectors.\n\nCould you rephrase your question or select one of the topics below? I\u0027d be happy to help! \uD83D\uDE0A",
+    "ResearchSteps": [
+      "Phase 1: Understanding query - analyzing intent of: \u0027pricings?\u0027",
+      "Phase 2: Research - query did not match standard intents. Scanning documentation directories...",
+      "Phase 2: Research - compiled general system details and standard pipeline FAQs for reference.",
+      "Phase 3: Composing - Groq API key is not configured. Accessing Local AI classification response...",
+      "Phase 3: Composing - local classification response compiled."
+    ],
+    "Model": "OrbitOps Local AI",
+    "Rating": 0
+  },
+  {
+    "ConversationId": "conv_3qtfsc4ma",
+    "Timestamp": "2026-06-08T08:22:26.6080016Z",
+    "UserMessage": "What are your pricing plans?",
+    "AgentResponse": "Our pricing is **fully tailored** to your organisation:\n\n\u2022 **Starter** \u2014 Up to 5 integrations, standard monitoring\n\u2022 **Professional** \u2014 Unlimited integrations \u002B error quarantine dashboard\n\u2022 **Enterprise** \u2014 Dedicated engineer, SLA guarantees, custom compliance reports\n\nMost enterprise clients save **500\u002B manual hours/year** after onboarding. Let\u0027s schedule a call to build your custom quote! Email: **cpatil7350638164@gmail.com**",
+    "ResearchSteps": [
+      "Phase 1: Understanding query - analyzing intent of: \u0027What are your pricing ...\u0027",
+      "Phase 2: Researching database - found matching knowledge base ID: \u0027pricing\u0027",
+      "Phase 2: Research - Querying standard price catalog",
+      "Phase 2: Research - Loading tiers: Starter/Professional/Enterprise",
+      "Phase 3: Composing - Groq API key is not configured. Accessing Local AI classification response...",
+      "Phase 3: Composing - local classification response compiled."
+    ],
+    "Model": "OrbitOps Local AI",
+    "Rating": 0
+  },
+  {
+    "ConversationId": "0893cbf0-3651-46a5-b453-6b5ed4d8f612",
+    "Timestamp": "2026-06-08T08:22:44.4473471Z",
+    "UserMessage": "__ping__",
+    "AgentResponse": "I specialise in **enterprise operations automation** \u2014 data pipelines, HRIS/payroll integrations, CRM/ERP syncs, and custom API connectors.\n\nCould you rephrase your question or select one of the topics below? I\u0027d be happy to help! \uD83D\uDE0A",
+    "ResearchSteps": [
+      "Phase 1: Understanding query - analyzing intent of: \u0027__ping__\u0027",
+      "Phase 2: Research - query did not match standard intents. Scanning documentation directories...",
+      "Phase 2: Research - compiled general system details and standard pipeline FAQs for reference.",
+      "Phase 3: Composing - Groq API key is not configured. Accessing Local AI classification response...",
+      "Phase 3: Composing - local classification response compiled."
+    ],
+    "Model": "OrbitOps Local AI",
+    "Rating": 0
+  },
+  {
+    "ConversationId": "3888580b-a203-4f6d-81d2-79404ce7626f",
+    "Timestamp": "2026-06-08T08:38:33.5136061Z",
+    "UserMessage": "__ping__",
+    "AgentResponse": "I specialise in **enterprise operations automation** \u2014 data pipelines, HRIS/payroll integrations, CRM/ERP syncs, and custom API connectors.\n\nCould you rephrase your question or select one of the topics below? I\u0027d be happy to help! \uD83D\uDE0A",
+    "ResearchSteps": [
+      "Phase 1: Understanding query - analyzing intent of: \u0027__ping__\u0027",
+      "Phase 2: Research - query did not match standard intents. Scanning documentation directories...",
+      "Phase 2: Research - compiled general system details and standard pipeline FAQs for reference.",
+      "Phase 3: Composing - Groq API key is not configured. Accessing Local AI classification response...",
+      "Phase 3: Composing - local classification response compiled."
+    ],
+    "Model": "OrbitOps Local AI",
+    "Rating": 0
+  },
+  {
+    "ConversationId": "1eb87b82-5f43-4cee-97e6-6c1cad0c8a91",
+    "Timestamp": "2026-06-08T09:49:31.8291039Z",
+    "UserMessage": "__ping__",
+    "AgentResponse": "I specialise in **enterprise operations automation** \u2014 data pipelines, HRIS/payroll integrations, CRM/ERP syncs, and custom API connectors.\n\nIt looks like your question was broad or not directly found. Here are some key topics you can ask me about:\n\n\u2022 **Integrations** \u2014 ask about connecting ADP, NetSuite, Salesforce, Workday, etc.\n\u2022 **Security** \u2014 ask about our SOC2 Type II, GDPR, and AES-256 standards\n\u2022 **Pipeline Architecture** \u2014 ask how our 5-stage ETL/ELT process works\n\u2022 **Error Handling** \u2014 ask about our automatic data quarantine system\n\u2022 **Pricing \u0026 Demo** \u2014 ask about pricing tiers or booking a live walkthrough\n\nOr, let us know how we can help by filling out the contact form below! \uD83D\uDE0A",
+    "ResearchSteps": [
+      "Phase 1: Understanding query - analyzing intent of: \u0027__ping__\u0027",
+      "Phase 2: Research - query did not match standard intents. Scanning documentation directories...",
+      "Phase 2: Research - compiled general system details and standard pipeline FAQs for reference.",
+      "Phase 3: Composing - Groq API key is not configured. Accessing local options...",
+      "Phase 3: Composing - checking local Ollama service availability...",
+      "Phase 3: Composing - local Ollama service is OFFLINE or unreachable (A task was canceled.).",
+      "Phase 3: Composing - falling back to Smart Local Synthesis...",
+      "Smart Local Synthesis - no direct keyword matches. Performing concept validation..."
+    ],
+    "Model": "OrbitOps Local AI",
+    "Rating": 0
+  },
+  {
+    "ConversationId": "conv_3qtfsc4ma",
+    "Timestamp": "2026-06-08T09:52:50.2353323Z",
+    "UserMessage": "hi",
+    "AgentResponse": "Hello! I\u0027m **Mia**, your OrbitOps automation assistant. I can help you with:\n\u2022 Our data pipeline architecture\n\u2022 HR, payroll \u0026 ERP integrations\n\u2022 Security \u0026 compliance details\n\u2022 Custom connector development\n\u2022 Pricing \u0026 demo scheduling\n\nWhat would you like to know?",
+    "ResearchSteps": [
+      "Phase 1: Understanding query - analyzing intent of: \u0027hi\u0027",
+      "Phase 2: Researching database - found matching knowledge base ID: \u0027greeting\u0027",
+      "Phase 2: Research - Checking user session",
+      "Phase 2: Research - Applying greeting parameters",
+      "Phase 3: Composing - Groq API key is not configured. Accessing local options...",
+      "Phase 3: Composing - checking local Ollama service availability...",
+      "Phase 3: Composing - local Ollama service is OFFLINE or unreachable (A task was canceled.).",
+      "Phase 3: Composing - falling back to Smart Local Synthesis...",
+      "Smart Local Synthesis - matched 1 intent categories: greeting"
+    ],
+    "Model": "OrbitOps Local AI",
+    "Rating": 0
+  },
+  {
+    "ConversationId": "conv_3qtfsc4ma",
+    "Timestamp": "2026-06-08T09:53:08.2553932Z",
+    "UserMessage": "your businees",
+    "AgentResponse": "I\u0027ve compiled information from our knowledge base on the multiple topics you asked about:\r\n\r\n### \uD83D\uDCC2 Identity\r\nI\u0027m **Mia** \u2014 the AI assistant powering OrbitOps.ai. I\u0027m trained on our full service catalogue including enterprise data pipelines, HRIS/payroll integrations, compliance frameworks, and operational automation workflows.\r\n\r\n### \uD83D\uDCC2 Greeting\r\nHello! I\u0027m **Mia**, your OrbitOps automation assistant. I can help you with:\n\u2022 Our data pipeline architecture\n\u2022 HR, payroll \u0026 ERP integrations\n\u2022 Security \u0026 compliance details\n\u2022 Custom connector development\n\u2022 Pricing \u0026 demo scheduling\n\nWhat would you like to know?\r\n\r\n---\r\nWould you like to discuss any of these in more detail? We can schedule a live demonstration or construct a customized estimate. Reach us at **cpatil7350638164@gmail.com**.\r\n",
+    "ResearchSteps": [
+      "Phase 1: Understanding query - analyzing intent of: \u0027your businees\u0027",
+      "Phase 2: Research - query did not match standard intents. Scanning documentation directories...",
+      "Phase 2: Research - compiled general system details and standard pipeline FAQs for reference.",
+      "Phase 3: Composing - Groq API key is not configured. Accessing local options...",
+      "Phase 3: Composing - checking local Ollama service availability...",
+      "Phase 3: Composing - local Ollama service is OFFLINE or unreachable (A task was canceled.).",
+      "Phase 3: Composing - falling back to Smart Local Synthesis...",
+      "Smart Local Synthesis - matched 2 intent categories: identity, greeting"
+    ],
+    "Model": "OrbitOps Local AI",
+    "Rating": 0
+  },
+  {
+    "ConversationId": "87f64763-bf97-4ca3-8eb1-29a78a84399d",
+    "Timestamp": "2026-06-08T09:53:59.1442361Z",
+    "UserMessage": "__ping__",
+    "AgentResponse": "I specialise in **enterprise operations automation** \u2014 data pipelines, HRIS/payroll integrations, CRM/ERP syncs, and custom API connectors.\n\nIt looks like your question was broad or not directly found. Here are some key topics you can ask me about:\n\n\u2022 **Integrations** \u2014 ask about connecting ADP, NetSuite, Salesforce, Workday, etc.\n\u2022 **Security** \u2014 ask about our SOC2 Type II, GDPR, and AES-256 standards\n\u2022 **Pipeline Architecture** \u2014 ask how our 5-stage ETL/ELT process works\n\u2022 **Error Handling** \u2014 ask about our automatic data quarantine system\n\u2022 **Pricing \u0026 Demo** \u2014 ask about pricing tiers or booking a live walkthrough\n\nOr, let us know how we can help by filling out the contact form below! \uD83D\uDE0A",
+    "ResearchSteps": [
+      "Phase 1: Understanding query - analyzing intent of: \u0027__ping__\u0027",
+      "Phase 2: Research - query did not match standard intents. Scanning documentation directories...",
+      "Phase 2: Research - compiled general system details and standard pipeline FAQs for reference.",
+      "Phase 3: Composing - Groq API key is not configured. Accessing local options...",
+      "Phase 3: Composing - checking local Ollama service availability...",
+      "Phase 3: Composing - local Ollama service is OFFLINE or unreachable (A task was canceled.).",
+      "Phase 3: Composing - falling back to Smart Local Synthesis...",
+      "Smart Local Synthesis - no direct keyword matches. Performing concept validation..."
+    ],
+    "Model": "OrbitOps Local AI",
+    "Rating": 0
+  },
+  {
+    "ConversationId": "8c16a698-48bb-4b82-97c4-2c354df89937",
+    "Timestamp": "2026-06-08T09:54:01.8065135Z",
+    "UserMessage": "__ping__",
+    "AgentResponse": "I specialise in **enterprise operations automation** \u2014 data pipelines, HRIS/payroll integrations, CRM/ERP syncs, and custom API connectors.\n\nIt looks like your question was broad or not directly found. Here are some key topics you can ask me about:\n\n\u2022 **Integrations** \u2014 ask about connecting ADP, NetSuite, Salesforce, Workday, etc.\n\u2022 **Security** \u2014 ask about our SOC2 Type II, GDPR, and AES-256 standards\n\u2022 **Pipeline Architecture** \u2014 ask how our 5-stage ETL/ELT process works\n\u2022 **Error Handling** \u2014 ask about our automatic data quarantine system\n\u2022 **Pricing \u0026 Demo** \u2014 ask about pricing tiers or booking a live walkthrough\n\nOr, let us know how we can help by filling out the contact form below! \uD83D\uDE0A",
+    "ResearchSteps": [
+      "Phase 1: Understanding query - analyzing intent of: \u0027__ping__\u0027",
+      "Phase 2: Research - query did not match standard intents. Scanning documentation directories...",
+      "Phase 2: Research - compiled general system details and standard pipeline FAQs for reference.",
+      "Phase 3: Composing - Groq API key is not configured. Accessing local options...",
+      "Phase 3: Composing - checking local Ollama service availability...",
+      "Phase 3: Composing - local Ollama service is OFFLINE or unreachable (A task was canceled.).",
+      "Phase 3: Composing - falling back to Smart Local Synthesis...",
+      "Smart Local Synthesis - no direct keyword matches. Performing concept validation..."
+    ],
+    "Model": "OrbitOps Local AI",
+    "Rating": 0
+  },
+  {
+    "ConversationId": "0bf9ee1d-d780-48dc-a1e3-b54b98e89216",
+    "Timestamp": "2026-06-08T09:54:07.415715Z",
+    "UserMessage": "__ping__",
+    "AgentResponse": "I specialise in **enterprise operations automation** \u2014 data pipelines, HRIS/payroll integrations, CRM/ERP syncs, and custom API connectors.\n\nIt looks like your question was broad or not directly found. Here are some key topics you can ask me about:\n\n\u2022 **Integrations** \u2014 ask about connecting ADP, NetSuite, Salesforce, Workday, etc.\n\u2022 **Security** \u2014 ask about our SOC2 Type II, GDPR, and AES-256 standards\n\u2022 **Pipeline Architecture** \u2014 ask how our 5-stage ETL/ELT process works\n\u2022 **Error Handling** \u2014 ask about our automatic data quarantine system\n\u2022 **Pricing \u0026 Demo** \u2014 ask about pricing tiers or booking a live walkthrough\n\nOr, let us know how we can help by filling out the contact form below! \uD83D\uDE0A",
+    "ResearchSteps": [
+      "Phase 1: Understanding query - analyzing intent of: \u0027__ping__\u0027",
+      "Phase 2: Research - query did not match standard intents. Scanning documentation directories...",
+      "Phase 2: Research - compiled general system details and standard pipeline FAQs for reference.",
+      "Phase 3: Composing - Groq API key is not configured. Accessing local options...",
+      "Phase 3: Composing - checking local Ollama service availability...",
+      "Phase 3: Composing - local Ollama service is OFFLINE or unreachable (A task was canceled.).",
+      "Phase 3: Composing - falling back to Smart Local Synthesis...",
+      "Smart Local Synthesis - no direct keyword matches. Performing concept validation..."
+    ],
+    "Model": "OrbitOps Local AI",
+    "Rating": 0
+  },
+  {
+    "ConversationId": "4b692637-bda8-4f65-bcd1-37495e4965a7",
+    "Timestamp": "2026-06-08T09:55:01.0845149Z",
+    "UserMessage": "__ping__",
+    "AgentResponse": "I specialise in **enterprise operations automation** \u2014 data pipelines, HRIS/payroll integrations, CRM/ERP syncs, and custom API connectors.\n\nIt looks like your question was broad or not directly found. Here are some key topics you can ask me about:\n\n\u2022 **Integrations** \u2014 ask about connecting ADP, NetSuite, Salesforce, Workday, etc.\n\u2022 **Security** \u2014 ask about our SOC2 Type II, GDPR, and AES-256 standards\n\u2022 **Pipeline Architecture** \u2014 ask how our 5-stage ETL/ELT process works\n\u2022 **Error Handling** \u2014 ask about our automatic data quarantine system\n\u2022 **Pricing \u0026 Demo** \u2014 ask about pricing tiers or booking a live walkthrough\n\nOr, let us know how we can help by filling out the contact form below! \uD83D\uDE0A",
+    "ResearchSteps": [
+      "Phase 1: Understanding query - analyzing intent of: \u0027__ping__\u0027",
+      "Phase 2: Research - query did not match standard intents. Scanning documentation directories...",
+      "Phase 2: Research - compiled general system details and standard pipeline FAQs for reference.",
+      "Phase 3: Composing - Groq API key is not configured. Accessing local options...",
+      "Phase 3: Composing - checking local Ollama service availability...",
+      "Phase 3: Composing - local Ollama service is OFFLINE or unreachable (A task was canceled.).",
+      "Phase 3: Composing - falling back to Smart Local Synthesis...",
+      "Smart Local Synthesis - no direct keyword matches. Performing concept validation..."
+    ],
+    "Model": "OrbitOps Local AI",
+    "Rating": 0
+  },
+  {
+    "ConversationId": "5c8d7d5e-4e4e-41ce-ab17-1af2df636f60",
+    "Timestamp": "2026-06-08T09:55:08.2227572Z",
+    "UserMessage": "__ping__",
+    "AgentResponse": "I specialise in **enterprise operations automation** \u2014 data pipelines, HRIS/payroll integrations, CRM/ERP syncs, and custom API connectors.\n\nIt looks like your question was broad or not directly found. Here are some key topics you can ask me about:\n\n\u2022 **Integrations** \u2014 ask about connecting ADP, NetSuite, Salesforce, Workday, etc.\n\u2022 **Security** \u2014 ask about our SOC2 Type II, GDPR, and AES-256 standards\n\u2022 **Pipeline Architecture** \u2014 ask how our 5-stage ETL/ELT process works\n\u2022 **Error Handling** \u2014 ask about our automatic data quarantine system\n\u2022 **Pricing \u0026 Demo** \u2014 ask about pricing tiers or booking a live walkthrough\n\nOr, let us know how we can help by filling out the contact form below! \uD83D\uDE0A",
+    "ResearchSteps": [
+      "Phase 1: Understanding query - analyzing intent of: \u0027__ping__\u0027",
+      "Phase 2: Research - query did not match standard intents. Scanning documentation directories...",
+      "Phase 2: Research - compiled general system details and standard pipeline FAQs for reference.",
+      "Phase 3: Composing - Groq API key is not configured. Accessing local options...",
+      "Phase 3: Composing - checking local Ollama service availability...",
+      "Phase 3: Composing - local Ollama service is OFFLINE or unreachable (A task was canceled.).",
+      "Phase 3: Composing - falling back to Smart Local Synthesis...",
+      "Smart Local Synthesis - no direct keyword matches. Performing concept validation..."
+    ],
+    "Model": "OrbitOps Local AI",
+    "Rating": 0
+  },
+  {
+    "ConversationId": "7a02d7a7-9914-4053-931c-31d63374584f",
+    "Timestamp": "2026-06-08T09:55:15.1388013Z",
+    "UserMessage": "__ping__",
+    "AgentResponse": "I specialise in **enterprise operations automation** \u2014 data pipelines, HRIS/payroll integrations, CRM/ERP syncs, and custom API connectors.\n\nIt looks like your question was broad or not directly found. Here are some key topics you can ask me about:\n\n\u2022 **Integrations** \u2014 ask about connecting ADP, NetSuite, Salesforce, Workday, etc.\n\u2022 **Security** \u2014 ask about our SOC2 Type II, GDPR, and AES-256 standards\n\u2022 **Pipeline Architecture** \u2014 ask how our 5-stage ETL/ELT process works\n\u2022 **Error Handling** \u2014 ask about our automatic data quarantine system\n\u2022 **Pricing \u0026 Demo** \u2014 ask about pricing tiers or booking a live walkthrough\n\nOr, let us know how we can help by filling out the contact form below! \uD83D\uDE0A",
+    "ResearchSteps": [
+      "Phase 1: Understanding query - analyzing intent of: \u0027__ping__\u0027",
+      "Phase 2: Research - query did not match standard intents. Scanning documentation directories...",
+      "Phase 2: Research - compiled general system details and standard pipeline FAQs for reference.",
+      "Phase 3: Composing - Groq API key is not configured. Accessing local options...",
+      "Phase 3: Composing - checking local Ollama service availability...",
+      "Phase 3: Composing - local Ollama service is OFFLINE or unreachable (A task was canceled.).",
+      "Phase 3: Composing - falling back to Smart Local Synthesis...",
+      "Smart Local Synthesis - no direct keyword matches. Performing concept validation..."
+    ],
+    "Model": "OrbitOps Local AI",
+    "Rating": 0
+  },
+  {
+    "ConversationId": "988f991c-076b-4468-9f43-6430fc12f65a",
+    "Timestamp": "2026-06-08T09:58:04.3190621Z",
+    "UserMessage": "__ping__",
+    "AgentResponse": "I specialise in **enterprise operations automation** \u2014 data pipelines, HRIS/payroll integrations, CRM/ERP syncs, and custom API connectors.\n\nIt looks like your question was broad or not directly found. Here are some key topics you can ask me about:\n\n\u2022 **Integrations** \u2014 ask about connecting ADP, NetSuite, Salesforce, Workday, etc.\n\u2022 **Security** \u2014 ask about our SOC2 Type II, GDPR, and AES-256 standards\n\u2022 **Pipeline Architecture** \u2014 ask how our 5-stage ETL/ELT process works\n\u2022 **Error Handling** \u2014 ask about our automatic data quarantine system\n\u2022 **Pricing \u0026 Demo** \u2014 ask about pricing tiers or booking a live walkthrough\n\nOr, let us know how we can help by filling out the contact form below! \uD83D\uDE0A",
+    "ResearchSteps": [
+      "Phase 1: Understanding query - analyzing intent of: \u0027__ping__\u0027",
+      "Phase 2: Research - query did not match standard intents. Scanning documentation directories...",
+      "Phase 2: Research - compiled general system details and standard pipeline FAQs for reference.",
+      "Phase 3: Composing - Groq API key is not configured. Accessing local options...",
+      "Phase 3: Composing - checking local Ollama service availability...",
+      "Phase 3: Composing - local Ollama service is OFFLINE or unreachable (A task was canceled.).",
+      "Phase 3: Composing - falling back to Smart Local Synthesis...",
+      "Smart Local Synthesis - no direct keyword matches. Performing concept validation..."
+    ],
+    "Model": "OrbitOps Local AI",
+    "Rating": 0
+  },
+  {
+    "ConversationId": "a6fb38bc-3131-4366-98e3-e042d4d9ede4",
+    "Timestamp": "2026-06-08T09:58:15.9424058Z",
+    "UserMessage": "__ping__",
+    "AgentResponse": "I specialise in **enterprise operations automation** \u2014 data pipelines, HRIS/payroll integrations, CRM/ERP syncs, and custom API connectors.\n\nIt looks like your question was broad or not directly found. Here are some key topics you can ask me about:\n\n\u2022 **Integrations** \u2014 ask about connecting ADP, NetSuite, Salesforce, Workday, etc.\n\u2022 **Security** \u2014 ask about our SOC2 Type II, GDPR, and AES-256 standards\n\u2022 **Pipeline Architecture** \u2014 ask how our 5-stage ETL/ELT process works\n\u2022 **Error Handling** \u2014 ask about our automatic data quarantine system\n\u2022 **Pricing \u0026 Demo** \u2014 ask about pricing tiers or booking a live walkthrough\n\nOr, let us know how we can help by filling out the contact form below! \uD83D\uDE0A",
+    "ResearchSteps": [
+      "Phase 1: Understanding query - analyzing intent of: \u0027__ping__\u0027",
+      "Phase 2: Research - query did not match standard intents. Scanning documentation directories...",
+      "Phase 2: Research - compiled general system details and standard pipeline FAQs for reference.",
+      "Phase 3: Composing - Groq API key is not configured. Accessing local options...",
+      "Phase 3: Composing - checking local Ollama service availability...",
+      "Phase 3: Composing - local Ollama service is OFFLINE or unreachable (A task was canceled.).",
+      "Phase 3: Composing - falling back to Smart Local Synthesis...",
+      "Smart Local Synthesis - no direct keyword matches. Performing concept validation..."
+    ],
+    "Model": "OrbitOps Local AI",
+    "Rating": 0
+  },
+  {
+    "ConversationId": "66c9fa77-f16e-4f12-a0a4-7699df236427",
+    "Timestamp": "2026-06-08T09:58:23.4810408Z",
+    "UserMessage": "__ping__",
+    "AgentResponse": "I specialise in **enterprise operations automation** \u2014 data pipelines, HRIS/payroll integrations, CRM/ERP syncs, and custom API connectors.\n\nIt looks like your question was broad or not directly found. Here are some key topics you can ask me about:\n\n\u2022 **Integrations** \u2014 ask about connecting ADP, NetSuite, Salesforce, Workday, etc.\n\u2022 **Security** \u2014 ask about our SOC2 Type II, GDPR, and AES-256 standards\n\u2022 **Pipeline Architecture** \u2014 ask how our 5-stage ETL/ELT process works\n\u2022 **Error Handling** \u2014 ask about our automatic data quarantine system\n\u2022 **Pricing \u0026 Demo** \u2014 ask about pricing tiers or booking a live walkthrough\n\nOr, let us know how we can help by filling out the contact form below! \uD83D\uDE0A",
+    "ResearchSteps": [
+      "Phase 1: Understanding query - analyzing intent of: \u0027__ping__\u0027",
+      "Phase 2: Research - query did not match standard intents. Scanning documentation directories...",
+      "Phase 2: Research - compiled general system details and standard pipeline FAQs for reference.",
+      "Phase 3: Composing - Groq API key is not configured. Accessing local options...",
+      "Phase 3: Composing - checking local Ollama service availability...",
+      "Phase 3: Composing - local Ollama service is OFFLINE or unreachable (A task was canceled.).",
+      "Phase 3: Composing - falling back to Smart Local Synthesis...",
+      "Smart Local Synthesis - no direct keyword matches. Performing concept validation..."
+    ],
+    "Model": "OrbitOps Local AI",
+    "Rating": 0
+  },
+  {
+    "ConversationId": "6ac0535e-138d-4842-8f50-de684df76931",
+    "Timestamp": "2026-06-09T04:42:01.1365086Z",
+    "UserMessage": "__ping__",
+    "AgentResponse": "I specialise in **enterprise operations automation** \u2014 data pipelines, HRIS/payroll integrations, CRM/ERP syncs, and custom API connectors.\n\nIt looks like your question was broad or not directly found. Here are some key topics you can ask me about:\n\n\u2022 **Integrations** \u2014 ask about connecting ADP, NetSuite, Salesforce, Workday, etc.\n\u2022 **Security** \u2014 ask about our SOC2 Type II, GDPR, and AES-256 standards\n\u2022 **Pipeline Architecture** \u2014 ask how our 5-stage ETL/ELT process works\n\u2022 **Error Handling** \u2014 ask about our automatic data quarantine system\n\u2022 **Pricing \u0026 Demo** \u2014 ask about pricing tiers or booking a live walkthrough\n\nOr, let us know how we can help by filling out the contact form below! \uD83D\uDE0A",
+    "ResearchSteps": [
+      "Phase 1: Understanding query - analyzing intent of: \u0027__ping__\u0027",
+      "Phase 2: Research - query did not match standard intents. Scanning documentation directories...",
+      "Phase 2: Research - compiled general system details and standard pipeline FAQs for reference.",
+      "Phase 3: Composing - Groq API key is not configured. Accessing local options...",
+      "Phase 3: Composing - checking local Ollama service availability...",
+      "Phase 3: Composing - local Ollama service is OFFLINE or unreachable (A task was canceled.).",
+      "Phase 3: Composing - falling back to Smart Local Synthesis...",
+      "Smart Local Synthesis - no direct keyword matches. Performing concept validation..."
+    ],
+    "Model": "OrbitOps Local AI",
+    "Rating": 0
+  },
+  {
+    "ConversationId": "96b1d4cb-ae1d-4a39-baf6-2b075bf3cf7f",
+    "Timestamp": "2026-06-09T04:53:21.2476668Z",
+    "UserMessage": "__ping__",
+    "AgentResponse": "I specialise in **enterprise operations automation** \u2014 data pipelines, HRIS/payroll integrations, CRM/ERP syncs, and custom API connectors.\n\nIt looks like your question was broad or not directly found. Here are some key topics you can ask me about:\n\n\u2022 **Integrations** \u2014 ask about connecting ADP, NetSuite, Salesforce, Workday, etc.\n\u2022 **Security** \u2014 ask about our SOC2 Type II, GDPR, and AES-256 standards\n\u2022 **Pipeline Architecture** \u2014 ask how our 5-stage ETL/ELT process works\n\u2022 **Error Handling** \u2014 ask about our automatic data quarantine system\n\u2022 **Pricing \u0026 Demo** \u2014 ask about pricing tiers or booking a live walkthrough\n\nOr, let us know how we can help by filling out the contact form below! \uD83D\uDE0A",
+    "ResearchSteps": [
+      "Phase 1: Understanding query - analyzing intent of: \u0027__ping__\u0027",
+      "Phase 2: Research - query did not match standard intents. Scanning documentation directories...",
+      "Phase 2: Research - compiled general system details and standard pipeline FAQs for reference.",
+      "Phase 3: Composing - Groq API key is not configured. Accessing local options...",
+      "Phase 3: Composing - checking local Ollama service availability...",
+      "Phase 3: Composing - local Ollama service is OFFLINE or unreachable (A task was canceled.).",
+      "Phase 3: Composing - falling back to Smart Local Synthesis...",
+      "Smart Local Synthesis - no direct keyword matches. Performing concept validation..."
+    ],
+    "Model": "OrbitOps Local AI",
+    "Rating": 0
+  },
+  {
+    "ConversationId": "757f2310-de4a-496c-b410-0b828dda7623",
+    "Timestamp": "2026-06-09T04:53:35.6034744Z",
+    "UserMessage": "__ping__",
+    "AgentResponse": "I specialise in **enterprise operations automation** \u2014 data pipelines, HRIS/payroll integrations, CRM/ERP syncs, and custom API connectors.\n\nIt looks like your question was broad or not directly found. Here are some key topics you can ask me about:\n\n\u2022 **Integrations** \u2014 ask about connecting ADP, NetSuite, Salesforce, Workday, etc.\n\u2022 **Security** \u2014 ask about our SOC2 Type II, GDPR, and AES-256 standards\n\u2022 **Pipeline Architecture** \u2014 ask how our 5-stage ETL/ELT process works\n\u2022 **Error Handling** \u2014 ask about our automatic data quarantine system\n\u2022 **Pricing \u0026 Demo** \u2014 ask about pricing tiers or booking a live walkthrough\n\nOr, let us know how we can help by filling out the contact form below! \uD83D\uDE0A",
+    "ResearchSteps": [
+      "Phase 1: Understanding query - analyzing intent of: \u0027__ping__\u0027",
+      "Phase 2: Research - query did not match standard intents. Scanning documentation directories...",
+      "Phase 2: Research - compiled general system details and standard pipeline FAQs for reference.",
+      "Phase 3: Composing - Groq API key is not configured. Accessing local options...",
+      "Phase 3: Composing - checking local Ollama service availability...",
+      "Phase 3: Composing - local Ollama service is OFFLINE or unreachable (A task was canceled.).",
+      "Phase 3: Composing - falling back to Smart Local Synthesis...",
+      "Smart Local Synthesis - no direct keyword matches. Performing concept validation..."
+    ],
+    "Model": "OrbitOps Local AI",
+    "Rating": 0
+  },
+  {
+    "ConversationId": "43c7d9f2-1390-47f0-855a-a712641c6ef0",
+    "Timestamp": "2026-06-09T04:53:49.7036596Z",
+    "UserMessage": "__ping__",
+    "AgentResponse": "I specialise in **enterprise operations automation** \u2014 data pipelines, HRIS/payroll integrations, CRM/ERP syncs, and custom API connectors.\n\nIt looks like your question was broad or not directly found. Here are some key topics you can ask me about:\n\n\u2022 **Integrations** \u2014 ask about connecting ADP, NetSuite, Salesforce, Workday, etc.\n\u2022 **Security** \u2014 ask about our SOC2 Type II, GDPR, and AES-256 standards\n\u2022 **Pipeline Architecture** \u2014 ask how our 5-stage ETL/ELT process works\n\u2022 **Error Handling** \u2014 ask about our automatic data quarantine system\n\u2022 **Pricing \u0026 Demo** \u2014 ask about pricing tiers or booking a live walkthrough\n\nOr, let us know how we can help by filling out the contact form below! \uD83D\uDE0A",
+    "ResearchSteps": [
+      "Phase 1: Understanding query - analyzing intent of: \u0027__ping__\u0027",
+      "Phase 2: Research - query did not match standard intents. Scanning documentation directories...",
+      "Phase 2: Research - compiled general system details and standard pipeline FAQs for reference.",
+      "Phase 3: Composing - Groq API key is not configured. Accessing local options...",
+      "Phase 3: Composing - checking local Ollama service availability...",
+      "Phase 3: Composing - local Ollama service is OFFLINE or unreachable (A task was canceled.).",
+      "Phase 3: Composing - falling back to Smart Local Synthesis...",
+      "Smart Local Synthesis - no direct keyword matches. Performing concept validation..."
+    ],
+    "Model": "OrbitOps Local AI",
+    "Rating": 0
+  },
+  {
+    "ConversationId": "3f317876-a5bb-4f5d-b0e3-3a7245cf6fca",
+    "Timestamp": "2026-06-09T04:58:38.2456692Z",
+    "UserMessage": "__ping__",
+    "AgentResponse": "I specialise in **enterprise operations automation** \u2014 data pipelines, HRIS/payroll integrations, CRM/ERP syncs, and custom API connectors.\n\nIt looks like your question was broad or not directly found. Here are some key topics you can ask me about:\n\n\u2022 **Integrations** \u2014 ask about connecting ADP, NetSuite, Salesforce, Workday, etc.\n\u2022 **Security** \u2014 ask about our SOC2 Type II, GDPR, and AES-256 standards\n\u2022 **Pipeline Architecture** \u2014 ask how our 5-stage ETL/ELT process works\n\u2022 **Error Handling** \u2014 ask about our automatic data quarantine system\n\u2022 **Pricing \u0026 Demo** \u2014 ask about pricing tiers or booking a live walkthrough\n\nOr, let us know how we can help by filling out the contact form below! \uD83D\uDE0A",
+    "ResearchSteps": [
+      "Phase 1: Understanding query - analyzing intent of: \u0027__ping__\u0027",
+      "Phase 2: Research - query did not match standard intents. Scanning documentation directories...",
+      "Phase 2: Research - compiled general system details and standard pipeline FAQs for reference.",
+      "Phase 3: Composing - Groq API key is not configured. Accessing local options...",
+      "Phase 3: Composing - checking local Ollama service availability...",
+      "Phase 3: Composing - local Ollama service is OFFLINE or unreachable (A task was canceled.).",
+      "Phase 3: Composing - falling back to Smart Local Synthesis...",
+      "Smart Local Synthesis - no direct keyword matches. Performing concept validation..."
+    ],
+    "Model": "OrbitOps Local AI",
+    "Rating": 0
+  },
+  {
+    "ConversationId": "4d1a9665-02df-4fd4-abe8-917e8bdc624a",
+    "Timestamp": "2026-06-09T05:08:08.9027488Z",
+    "UserMessage": "__ping__",
+    "AgentResponse": "I specialise in **enterprise operations automation** \u2014 data pipelines, HRIS/payroll integrations, CRM/ERP syncs, and custom API connectors.\n\nIt looks like your question was broad or not directly found. Here are some key topics you can ask me about:\n\n\u2022 **Integrations** \u2014 ask about connecting ADP, NetSuite, Salesforce, Workday, etc.\n\u2022 **Security** \u2014 ask about our SOC2 Type II, GDPR, and AES-256 standards\n\u2022 **Pipeline Architecture** \u2014 ask how our 5-stage ETL/ELT process works\n\u2022 **Error Handling** \u2014 ask about our automatic data quarantine system\n\u2022 **Pricing \u0026 Demo** \u2014 ask about pricing tiers or booking a live walkthrough\n\nOr, let us know how we can help by filling out the contact form below! \uD83D\uDE0A",
+    "ResearchSteps": [
+      "Phase 1: Understanding query - analyzing intent of: \u0027__ping__\u0027",
+      "Phase 2: Research - query did not match standard intents. Scanning documentation directories...",
+      "Phase 2: Research - compiled general system details and standard pipeline FAQs for reference.",
+      "Phase 3: Composing - Groq API key is not configured. Accessing local options...",
+      "Phase 3: Composing - checking local Ollama service availability...",
+      "Phase 3: Composing - local Ollama service is OFFLINE or unreachable (A task was canceled.).",
+      "Phase 3: Composing - falling back to Smart Local Synthesis...",
+      "Smart Local Synthesis - no direct keyword matches. Performing concept validation..."
+    ],
+    "Model": "OrbitOps Local AI",
+    "Rating": 0
+  },
+  {
+    "ConversationId": "406412e1-de13-40fd-a57f-5f9e130983f2",
+    "Timestamp": "2026-06-09T05:08:22.2212481Z",
+    "UserMessage": "__ping__",
+    "AgentResponse": "I specialise in **enterprise operations automation** \u2014 data pipelines, HRIS/payroll integrations, CRM/ERP syncs, and custom API connectors.\n\nIt looks like your question was broad or not directly found. Here are some key topics you can ask me about:\n\n\u2022 **Integrations** \u2014 ask about connecting ADP, NetSuite, Salesforce, Workday, etc.\n\u2022 **Security** \u2014 ask about our SOC2 Type II, GDPR, and AES-256 standards\n\u2022 **Pipeline Architecture** \u2014 ask how our 5-stage ETL/ELT process works\n\u2022 **Error Handling** \u2014 ask about our automatic data quarantine system\n\u2022 **Pricing \u0026 Demo** \u2014 ask about pricing tiers or booking a live walkthrough\n\nOr, let us know how we can help by filling out the contact form below! \uD83D\uDE0A",
+    "ResearchSteps": [
+      "Phase 1: Understanding query - analyzing intent of: \u0027__ping__\u0027",
+      "Phase 2: Research - query did not match standard intents. Scanning documentation directories...",
+      "Phase 2: Research - compiled general system details and standard pipeline FAQs for reference.",
+      "Phase 3: Composing - Groq API key is not configured. Accessing local options...",
+      "Phase 3: Composing - checking local Ollama service availability...",
+      "Phase 3: Composing - local Ollama service is OFFLINE or unreachable (A task was canceled.).",
+      "Phase 3: Composing - falling back to Smart Local Synthesis...",
+      "Smart Local Synthesis - no direct keyword matches. Performing concept validation..."
+    ],
+    "Model": "OrbitOps Local AI",
+    "Rating": 0
+  },
+  {
+    "ConversationId": "e8a6fcc6-385d-4065-8ac6-99e82b566dec",
+    "Timestamp": "2026-06-09T05:08:37.9472138Z",
+    "UserMessage": "__ping__",
+    "AgentResponse": "I specialise in **enterprise operations automation** \u2014 data pipelines, HRIS/payroll integrations, CRM/ERP syncs, and custom API connectors.\n\nIt looks like your question was broad or not directly found. Here are some key topics you can ask me about:\n\n\u2022 **Integrations** \u2014 ask about connecting ADP, NetSuite, Salesforce, Workday, etc.\n\u2022 **Security** \u2014 ask about our SOC2 Type II, GDPR, and AES-256 standards\n\u2022 **Pipeline Architecture** \u2014 ask how our 5-stage ETL/ELT process works\n\u2022 **Error Handling** \u2014 ask about our automatic data quarantine system\n\u2022 **Pricing \u0026 Demo** \u2014 ask about pricing tiers or booking a live walkthrough\n\nOr, let us know how we can help by filling out the contact form below! \uD83D\uDE0A",
+    "ResearchSteps": [
+      "Phase 1: Understanding query - analyzing intent of: \u0027__ping__\u0027",
+      "Phase 2: Research - query did not match standard intents. Scanning documentation directories...",
+      "Phase 2: Research - compiled general system details and standard pipeline FAQs for reference.",
+      "Phase 3: Composing - Groq API key is not configured. Accessing local options...",
+      "Phase 3: Composing - checking local Ollama service availability...",
+      "Phase 3: Composing - local Ollama service is OFFLINE or unreachable (A task was canceled.).",
+      "Phase 3: Composing - falling back to Smart Local Synthesis...",
+      "Smart Local Synthesis - no direct keyword matches. Performing concept validation..."
+    ],
+    "Model": "OrbitOps Local AI",
+    "Rating": 0
+  },
+  {
+    "ConversationId": "conv_3qtfsc4ma",
+    "Timestamp": "2026-06-09T05:10:26.3963774Z",
+    "UserMessage": "Hi",
+    "AgentResponse": "Hello! I\u0027m **Mia**, your OrbitOps automation assistant. I can help you with:\n\u2022 Our data pipeline architecture\n\u2022 HR, payroll \u0026 ERP integrations\n\u2022 Security \u0026 compliance details\n\u2022 Custom connector development\n\u2022 Pricing \u0026 demo scheduling\n\nWhat would you like to know?",
+    "ResearchSteps": [
+      "Phase 1: Understanding query - analyzing intent of: \u0027Hi\u0027",
+      "Phase 2: Researching database - found matching knowledge base ID: \u0027greeting\u0027",
+      "Phase 2: Research - Checking user session",
+      "Phase 2: Research - Applying greeting parameters",
+      "Phase 3: Composing - Groq API key is not configured. Accessing local options...",
+      "Phase 3: Composing - checking local Ollama service availability...",
+      "Phase 3: Composing - local Ollama service is OFFLINE or unreachable (A task was canceled.).",
+      "Phase 3: Composing - falling back to Smart Local Synthesis...",
+      "Smart Local Synthesis - matched 1 intent categories: greeting"
+    ],
+    "Model": "OrbitOps Local AI",
+    "Rating": 0
+  },
+  {
+    "ConversationId": "8fccb9f6-f011-452e-a3ab-bc82bf6f514d",
+    "Timestamp": "2026-06-09T05:10:32.4248679Z",
+    "UserMessage": "__ping__",
+    "AgentResponse": "I specialise in **enterprise operations automation** \u2014 data pipelines, HRIS/payroll integrations, CRM/ERP syncs, and custom API connectors.\n\nIt looks like your question was broad or not directly found. Here are some key topics you can ask me about:\n\n\u2022 **Integrations** \u2014 ask about connecting ADP, NetSuite, Salesforce, Workday, etc.\n\u2022 **Security** \u2014 ask about our SOC2 Type II, GDPR, and AES-256 standards\n\u2022 **Pipeline Architecture** \u2014 ask how our 5-stage ETL/ELT process works\n\u2022 **Error Handling** \u2014 ask about our automatic data quarantine system\n\u2022 **Pricing \u0026 Demo** \u2014 ask about pricing tiers or booking a live walkthrough\n\nOr, let us know how we can help by filling out the contact form below! \uD83D\uDE0A",
+    "ResearchSteps": [
+      "Phase 1: Understanding query - analyzing intent of: \u0027__ping__\u0027",
+      "Phase 2: Research - query did not match standard intents. Scanning documentation directories...",
+      "Phase 2: Research - compiled general system details and standard pipeline FAQs for reference.",
+      "Phase 3: Composing - Groq API key is not configured. Accessing local options...",
+      "Phase 3: Composing - checking local Ollama service availability...",
+      "Phase 3: Composing - local Ollama service is OFFLINE or unreachable (A task was canceled.).",
+      "Phase 3: Composing - falling back to Smart Local Synthesis...",
+      "Smart Local Synthesis - no direct keyword matches. Performing concept validation..."
+    ],
+    "Model": "OrbitOps Local AI",
+    "Rating": 0
+  },
+  {
+    "ConversationId": "33c20b9d-b39f-4f9e-a023-77a04c95a4b3",
+    "Timestamp": "2026-06-09T05:10:59.2482845Z",
+    "UserMessage": "__ping__",
+    "AgentResponse": "I specialise in **enterprise operations automation** \u2014 data pipelines, HRIS/payroll integrations, CRM/ERP syncs, and custom API connectors.\n\nIt looks like your question was broad or not directly found. Here are some key topics you can ask me about:\n\n\u2022 **Integrations** \u2014 ask about connecting ADP, NetSuite, Salesforce, Workday, etc.\n\u2022 **Security** \u2014 ask about our SOC2 Type II, GDPR, and AES-256 standards\n\u2022 **Pipeline Architecture** \u2014 ask how our 5-stage ETL/ELT process works\n\u2022 **Error Handling** \u2014 ask about our automatic data quarantine system\n\u2022 **Pricing \u0026 Demo** \u2014 ask about pricing tiers or booking a live walkthrough\n\nOr, let us know how we can help by filling out the contact form below! \uD83D\uDE0A",
+    "ResearchSteps": [
+      "Phase 1: Understanding query - analyzing intent of: \u0027__ping__\u0027",
+      "Phase 2: Research - query did not match standard intents. Scanning documentation directories...",
+      "Phase 2: Research - compiled general system details and standard pipeline FAQs for reference.",
+      "Phase 3: Composing - Groq API key is not configured. Accessing local options...",
+      "Phase 3: Composing - checking local Ollama service availability...",
+      "Phase 3: Composing - local Ollama service is OFFLINE or unreachable (A task was canceled.).",
+      "Phase 3: Composing - falling back to Smart Local Synthesis...",
+      "Smart Local Synthesis - no direct keyword matches. Performing concept validation..."
+    ],
+    "Model": "OrbitOps Local AI",
+    "Rating": 0
+  },
+  {
+    "ConversationId": "876a4800-e6ed-4684-88e6-73f5c6ae828d",
+    "Timestamp": "2026-06-09T05:26:29.9490252Z",
+    "UserMessage": "__ping__",
+    "AgentResponse": "I specialise in **enterprise operations automation** \u2014 data pipelines, HRIS/payroll integrations, CRM/ERP syncs, and custom API connectors.\n\nIt looks like your question was broad or not directly found. Here are some key topics you can ask me about:\n\n\u2022 **Integrations** \u2014 ask about connecting ADP, NetSuite, Salesforce, Workday, etc.\n\u2022 **Security** \u2014 ask about our SOC2 Type II, GDPR, and AES-256 standards\n\u2022 **Pipeline Architecture** \u2014 ask how our 5-stage ETL/ELT process works\n\u2022 **Error Handling** \u2014 ask about our automatic data quarantine system\n\u2022 **Pricing \u0026 Demo** \u2014 ask about pricing tiers or booking a live walkthrough\n\nOr, let us know how we can help by filling out the contact form below! \uD83D\uDE0A",
+    "ResearchSteps": [
+      "Phase 1: Understanding query - analyzing intent of: \u0027__ping__\u0027",
+      "Phase 2: Research - query did not match standard intents. Scanning documentation directories...",
+      "Phase 2: Research - compiled general system details and standard pipeline FAQs for reference.",
+      "Phase 3: Composing - Groq API key is not configured. Accessing local options...",
+      "Phase 3: Composing - checking local Ollama service availability...",
+      "Phase 3: Composing - local Ollama service is OFFLINE or unreachable (A task was canceled.).",
+      "Phase 3: Composing - falling back to Smart Local Synthesis...",
+      "Smart Local Synthesis - no direct keyword matches. Performing concept validation..."
+    ],
+    "Model": "OrbitOps Local AI",
+    "Rating": 0
+  },
+  {
+    "ConversationId": "56a74eec-5b52-4086-8500-4409b6e67fc0",
+    "Timestamp": "2026-06-09T05:26:30.1054576Z",
+    "UserMessage": "__ping__",
+    "AgentResponse": "I specialise in **enterprise operations automation** \u2014 data pipelines, HRIS/payroll integrations, CRM/ERP syncs, and custom API connectors.\n\nIt looks like your question was broad or not directly found. Here are some key topics you can ask me about:\n\n\u2022 **Integrations** \u2014 ask about connecting ADP, NetSuite, Salesforce, Workday, etc.\n\u2022 **Security** \u2014 ask about our SOC2 Type II, GDPR, and AES-256 standards\n\u2022 **Pipeline Architecture** \u2014 ask how our 5-stage ETL/ELT process works\n\u2022 **Error Handling** \u2014 ask about our automatic data quarantine system\n\u2022 **Pricing \u0026 Demo** \u2014 ask about pricing tiers or booking a live walkthrough\n\nOr, let us know how we can help by filling out the contact form below! \uD83D\uDE0A",
+    "ResearchSteps": [
+      "Phase 1: Understanding query - analyzing intent of: \u0027__ping__\u0027",
+      "Phase 2: Research - query did not match standard intents. Scanning documentation directories...",
+      "Phase 2: Research - compiled general system details and standard pipeline FAQs for reference.",
+      "Phase 3: Composing - Groq API key is not configured. Accessing local options...",
+      "Phase 3: Composing - checking local Ollama service availability...",
+      "Phase 3: Composing - local Ollama service is OFFLINE or unreachable (A task was canceled.).",
+      "Phase 3: Composing - falling back to Smart Local Synthesis...",
+      "Smart Local Synthesis - no direct keyword matches. Performing concept validation..."
+    ],
+    "Model": "OrbitOps Local AI",
+    "Rating": 0
+  }
+]

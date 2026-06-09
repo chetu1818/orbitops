@@ -33,3 +33,4 @@ D:\Important\OrbitOps\backend\OrbitOps.Api\obj\Debug\net9.0\OrbitOps.Api.genrunt
 D:\Important\OrbitOps\backend\OrbitOps.Api\obj\Debug\net9.0\ref\OrbitOps.Api.dll
 D:\Important\OrbitOps\backend\OrbitOps.Api\obj\Debug\net9.0\OrbitOps.Api.sourcelink.json
 D:\Important\OrbitOps\backend\OrbitOps.Api\obj\Debug\net9.0\swae.build.ex.cache
+D:\Important\OrbitOps\backend\OrbitOps.Api\bin\Debug\net9.0\chat_data\interactions.json

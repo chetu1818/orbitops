@@ -497,13 +497,83 @@
       if (!replyData) {
         await new Promise(r => setTimeout(r, 800));
         const cleanText = text.toLowerCase().trim();
-        let ans = "I specialize in <strong>enterprise operations automation</strong> — data pipelines, HRIS/payroll integrations, CRM/ERP syncs, and custom API connectors. Try asking about our integrations or pricing!";
-        if (['hi', 'hello', 'hey'].includes(cleanText)) {
-          ans = "Hello! I'm Mia, your OrbitOps automation assistant. How can I help optimize your automated enterprise workflows today?";
-        } else if (/\bpric(e|ing)?\b|\bcost\b/.test(cleanText)) {
-          ans = "Our pricing is <strong>fully tailored</strong> to your organization:<br>• <strong>Starter</strong> — Up to 5 integrations<br>• <strong>Professional</strong> — Unlimited integrations + error quarantine dashboard<br>• <strong>Enterprise</strong> — Dedicated integration engineer, SLA guarantees<br><br>Contact us at <strong>cpatil7350638164@gmail.com</strong> for a custom quote.";
+        const kb = [
+          {
+            id: "greeting",
+            keywords: ["hello","hi","hey","greetings","yo","sup","morning","afternoon","evening","howdy"],
+            response: "Hello! I'm <strong>Mia</strong>, your OrbitOps automation assistant. I can help you with:\n• Our data pipeline architecture\n• HR, payroll & ERP integrations\n• Security & compliance details\n• Custom connector development\n• Pricing & demo scheduling\n\nWhat would you like to know?"
+          },
+          {
+            id: "identity",
+            keywords: ["name","identity","who","mia","yourself","what","called","introduce"],
+            response: "I'm <strong>Mia</strong> — the AI assistant powering OrbitOps.ai. I'm trained on our full service catalogue including enterprise data pipelines, HRIS/payroll integrations, compliance frameworks, and operational automation workflows."
+          },
+          {
+            id: "capabilities",
+            keywords: ["help","can","do","capabilities","features","instructions","options","menu","assist","support","services"],
+            response: "Here's what I can help with:\n• <strong>Integrations</strong> — Which platforms we connect\n• <strong>Pipeline Architecture</strong> — Our 5-stage ETL/ELT process\n• <strong>Security & Compliance</strong> — SOC2, GDPR, AES-256\n• <strong>Error Quarantine</strong> — How we handle sync failures\n• <strong>Custom Connectors</strong> — Scripted API wrappers\n• <strong>Pricing</strong> — Custom enterprise plans\n• <strong>Demo</strong> — Schedule a live walkthrough"
+          },
+          {
+            id: "integrations",
+            keywords: ["integrate","integration","integrations","connect","connector","systems","platforms","sync","hris","crm","erp","sap","netsuite","adp","workday","hibob","bamboohr","salesforce","hubspot","shopify"],
+            response: "OrbitOps operates a <strong>multi-tenant API orchestration grid</strong> with native sync channels for HRIS (Workday, BambooHR, HiBob), Payroll & ERP (ADP, NetSuite, SAP, Xero), CRM & Commerce (Salesforce, HubSpot, Shopify), and Operations (Jira, Slack, Monday.com)."
+          },
+          {
+            id: "pipeline",
+            keywords: ["pipeline","data","stages","steps","architecture","flow","path","extract","transform","validate","load","monitor","etl","elt"],
+            response: "Our <strong>Enterprise Data Pipeline</strong> runs through 5 high-observability stages:\n1. <strong>Extract</strong> — Listen for updates or webhook events\n2. <strong>Transform</strong> — Normalise payloads and map schemas\n3. <strong>Validate</strong> — Sanitise input data and check fields\n4. <strong>Load</strong> — Post clean payloads to downstream endpoints\n5. <strong>Monitor</strong> — Stream telemetry and trigger Slack alerts"
+          },
+          {
+            id: "security",
+            keywords: ["security","secure","soc2","soc","compliance","compliant","gdpr","encrypt","encryption","vault","quarantine"],
+            response: "Security is built into every layer:\n• SOC2 Type II and GDPR compliant architectures\n• AES-256 encryption at-rest and TLS 1.3 in-transit\n• Zero-Trust role-based access controls\n• Secure credential vaulting and immutable audit logs"
+          },
+          {
+            id: "pricing",
+            keywords: ["pricing","price","cost","plans","rates","packages","subscription","quote","fee","budget"],
+            response: "Our pricing is <strong>fully tailored</strong> to your organization:\n• <strong>Starter</strong> — Up to 5 integrations, standard monitoring\n• <strong>Professional</strong> — Unlimited integrations + error quarantine dashboard\n• <strong>Enterprise</strong> — Dedicated engineer, SLA guarantees, custom compliance reports\n\nContact us at <strong>cpatil7350638164@gmail.com</strong> for a custom quote."
+          },
+          {
+            id: "demo",
+            keywords: ["demo","schedule","book","call","talk","engineer","consult","contact","meeting","sales"],
+            response: "I'd love to connect you with our operations engineers for a <strong>custom live demo</strong>!\n\n📧 <strong>Email:</strong> cpatil7350638164@gmail.com\n📍 <strong>Office:</strong> Studio Complex, Gota, Ahmedabad\n\nOr fill out the <strong>contact form</strong> at the bottom of this page — we respond within 24 hours."
+          }
+        ];
+
+        const tokens = cleanText.split(/[^a-z0-9]/).filter(t => t.length > 1);
+        const matches = [];
+        
+        kb.forEach(doc => {
+          let score = 0;
+          doc.keywords.forEach(kw => {
+            if (cleanText.includes(kw)) score += 2;
+            if (tokens.includes(kw)) score += 1;
+          });
+          if (score > 0) {
+            matches.push({ id: doc.id, response: doc.response, score });
+          }
+        });
+
+        matches.sort((a, b) => b.score - a.score);
+        const bestMatches = matches.slice(0, 3);
+        let finalAns = "";
+
+        if (bestMatches.length > 0) {
+          if (bestMatches.length === 1) {
+            finalAns = bestMatches[0].response.replace(/\n/g, '<br>');
+          } else {
+            finalAns = "I found multiple topics related to your query in my local cache:<br><br>";
+            bestMatches.forEach(m => {
+              const title = m.id.toUpperCase();
+              finalAns += `<strong>🔍 ${title}</strong><br>${m.response.replace(/\n/g, '<br>')}<br><br>`;
+            });
+            finalAns += "---<br>For more specific queries, please check our server status or email us at <strong>cpatil7350638164@gmail.com</strong>.";
+          }
+        } else {
+          finalAns = "I specialize in <strong>enterprise operations automation</strong> — data pipelines, HRIS/payroll integrations, CRM/ERP syncs, and custom API connectors. Try asking about our integrations, pipeline stages, security, or pricing plans!";
         }
-        replyData = { text: ans, model: 'OrbitOps Local AI' };
+        
+        replyData = { text: finalAns, model: 'OrbitOps Local AI (Offline)' };
       }
 
       this._hideThink();

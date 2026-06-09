@@ -2931,7 +2931,6 @@
     if (heroContainer) {
       const hScene = new THREE.Scene();
       
-      // Perspective camera viewing the galaxy
       const hCamera = new THREE.PerspectiveCamera(45, heroContainer.clientWidth / heroContainer.clientHeight, 0.1, 100);
       hCamera.position.set(0, 0, 22);
       hCamera.lookAt(0, 0, 0);
@@ -2942,116 +2941,30 @@
       hRenderer.setClearColor(0x000000, 0);
       heroContainer.appendChild(hRenderer.domElement);
 
-      // Lights (subtle ambient)
-      const hAmbient = new THREE.AmbientLight(0xffffff, 0.85);
+      const hAmbient = new THREE.AmbientLight(0xffffff, 0.9);
       hScene.add(hAmbient);
 
-      // Create a Group to hold the entire slanted galaxy
+      const hDirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+      hDirLight.position.set(5, 15, 5);
+      hScene.add(hDirLight);
+
       const galaxyGroup = new THREE.Group();
-      // Realistic slant matching a side-on spiral galaxy view
-      galaxyGroup.rotation.x = 1.08;   // tilt toward viewer
-      galaxyGroup.rotation.y = -0.28;  // slight horizontal slant
-      galaxyGroup.rotation.z = -0.62;  // diagonal orientation
+      galaxyGroup.rotation.x = 1.15;
+      galaxyGroup.rotation.y = -0.32;
+      galaxyGroup.rotation.z = -0.68;
       hScene.add(galaxyGroup);
 
-      // ── REALISTIC GALAXY: logarithmic spiral arms ─────────────────────────
-      // Total particles: 10 000 (arm stars) + 2000 (core bulge) + 1500 (haze)
-      const N_ARM   = 9500;
-      const N_BULGE = 2000;
-      const N_HAZE  = 1500;
-      const TOTAL   = N_ARM + N_BULGE + N_HAZE;
+      const N_ARM = 6000;
+      const positions = new Float32Array(N_ARM * 3);
+      const colors = new Float32Array(N_ARM * 3);
+      const galaxyGeometry = new THREE.BufferGeometry();
 
-      const positions = new Float32Array(TOTAL * 3);
-      const colors    = new Float32Array(TOTAL * 3);
-      const sizes     = new Float32Array(TOTAL);
-      const geometry  = new THREE.BufferGeometry();
-
-      // ── helper: temperature → RGB (blackbody approximation) ──────────────
-      function starColor(temp) { // temp: 2000K (red) → 30000K (blue-white)
-        const t = Math.max(1000, Math.min(40000, temp)) / 100;
-        let r, g, b;
-        // Red
-        if (t <= 66) r = 255;
-        else { r = t - 60; r = 329.698727446 * Math.pow(r, -0.1332047592); r = Math.max(0, Math.min(255, r)); }
-        // Green
-        if (t <= 66) { g = t; g = 99.4708025861 * Math.log(g) - 161.1195681661; }
-        else { g = t - 60; g = 288.1221695283 * Math.pow(g, -0.0755148492); }
-        g = Math.max(0, Math.min(255, g));
-        // Blue
-        if (t >= 66) b = 255;
-        else if (t <= 19) b = 0;
-        else { b = t - 10; b = 138.5177312231 * Math.log(b) - 305.0447927307; b = Math.max(0, Math.min(255, b)); }
-        return { r: r/255, g: g/255, b: b/255 };
-      }
-
-      // ── ARM STARS ────────────────────────────────────────────────────────
-      const numArms = 4;
+      const particles = [];
       const armScale = 8.5;
-      const armSpiral = 2.6; // logarithmic tightness
+      const numArms = 4;
+      const armSpiral = 2.45;
 
-      for (let i = 0; i < N_ARM; i++) {
-        const t         = Math.pow(Math.random(), 1.3);          // bias toward inner
-        const arm       = i % numArms;
-        const armOff    = (arm / numArms) * Math.PI * 2;
-        const angle     = armSpiral * t * Math.PI * 2 + armOff + (Math.random()-0.5)*0.18;
-        const radius    = t * armScale;
-        const armW      = ((1-t)*0.55 + 0.08) * radius * 0.28;  // arm width
-        const scatter   = (Math.random()-0.5)*2 * armW;
-        const scatterY  = (Math.random()-0.5)*2 * armW * 0.5;
-        positions[i*3]   = Math.cos(angle)*radius + scatter;
-        positions[i*3+1] = Math.sin(angle)*radius + scatterY;
-        positions[i*3+2] = (Math.random()-0.5) * 0.5 * (1 - t*0.75);
-
-        // Realistic star colour via blackbody temperature
-        const tempK = t < 0.15 ? 18000 + Math.random()*12000
-                    : t < 0.4  ?  8000 + Math.random()*6000
-                    : t < 0.7  ?  5000 + Math.random()*2000
-                               :  3000 + Math.random()*1500;
-        const sc = starColor(tempK);
-        const brightness = 0.55 + (1-t)*0.45;
-        colors[i*3]   = sc.r * brightness;
-        colors[i*3+1] = sc.g * brightness;
-        colors[i*3+2] = sc.b * brightness;
-        sizes[i] = (Math.random() < 0.03) ? 0.22 : 0.06 + Math.random()*0.06; // rare bright stars
-      }
-
-      // ── CENTRAL BULGE (dense, warm, slightly fuzzy) ─────────────────────
-      for (let i = 0; i < N_BULGE; i++) {
-        const bi = N_ARM + i;
-        const r  = Math.pow(Math.random(), 2.5) * 2.8;   // concentrated
-        const th = Math.random() * Math.PI * 2;
-        const ph = (Math.random()-0.5) * Math.PI * 0.5 * (1 - r/2.8);
-        positions[bi*3]   = Math.cos(th)*r*Math.cos(ph);
-        positions[bi*3+1] = Math.sin(th)*r*Math.cos(ph);
-        positions[bi*3+2] = Math.sin(ph)*r*0.55;
-        const tempK = 4500 + Math.random()*3500;
-        const sc = starColor(tempK);
-        const br = 0.75 + Math.random()*0.25;
-        colors[bi*3]   = sc.r*br; colors[bi*3+1] = sc.g*br; colors[bi*3+2] = sc.b*br;
-        sizes[bi] = 0.05 + Math.random()*0.07;
-      }
-
-      // ── NEBULA HAZE (large, semi-transparent dust) ──────────────────────
-      for (let i = 0; i < N_HAZE; i++) {
-        const hi  = N_ARM + N_BULGE + i;
-        const arm = i % numArms;
-        const t   = 0.2 + Math.random()*0.7;
-        const ang = armSpiral*t*Math.PI*2 + (arm/numArms)*Math.PI*2;
-        const r   = t*armScale;
-        const spread = r*0.55;
-        positions[hi*3]   = Math.cos(ang)*r + (Math.random()-0.5)*spread;
-        positions[hi*3+1] = Math.sin(ang)*r + (Math.random()-0.5)*spread;
-        positions[hi*3+2] = (Math.random()-0.5)*0.9;
-        // Nebula colours: purple, blue, red
-        const palette = [[0.45,0.15,0.7],[0.1,0.3,0.8],[0.75,0.1,0.2],[0.05,0.55,0.4]];
-        const [cr,cg,cb] = palette[Math.floor(Math.random()*palette.length)];
-        const hb = 0.12 + Math.random()*0.1;
-        colors[hi*3]   = cr*hb; colors[hi*3+1] = cg*hb; colors[hi*3+2] = cb*hb;
-        sizes[hi] = 0.25 + Math.random()*0.35;
-      }
-
-      geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-      geometry.setAttribute('color',    new THREE.BufferAttribute(colors,    3));
+      const getActiveTheme = () => document.documentElement.getAttribute('data-theme') || 'nova';
 
       function createStarTexture() {
         const canvas = document.createElement('canvas');
@@ -3068,19 +2981,92 @@
         return texture;
       }
 
+      function getThemeColorForParticle(t, theme) {
+        const color = new THREE.Color();
+        switch (theme) {
+          case 'cyber':
+            if (t < 0.18) color.lerpColors(new THREE.Color(0xffffff), new THREE.Color(0xff00ff), t * 5.5);
+            else if (t < 0.5) color.lerpColors(new THREE.Color(0xff007f), new THREE.Color(0x8b5cf6), (t - 0.18) * 3.1);
+            else color.lerpColors(new THREE.Color(0x00f0ff), new THREE.Color(0x0a0f2b), (t - 0.5) * 2.0);
+            break;
+          case 'aurora':
+            if (t < 0.18) color.lerpColors(new THREE.Color(0xffffff), new THREE.Color(0xa7f3d0), t * 5.5);
+            else if (t < 0.5) color.lerpColors(new THREE.Color(0x10b981), new THREE.Color(0x059669), (t - 0.18) * 3.1);
+            else color.lerpColors(new THREE.Color(0x0d9488), new THREE.Color(0x022c22), (t - 0.5) * 2.0);
+            break;
+          case 'sunset':
+            if (t < 0.18) color.lerpColors(new THREE.Color(0xffffff), new THREE.Color(0xfde047), t * 5.5);
+            else if (t < 0.5) color.lerpColors(new THREE.Color(0xf97316), new THREE.Color(0xef4444), (t - 0.18) * 3.1);
+            else color.lerpColors(new THREE.Color(0x881337), new THREE.Color(0x18001a), (t - 0.5) * 2.0);
+            break;
+          case 'matrix':
+            if (t < 0.18) color.lerpColors(new THREE.Color(0xffffff), new THREE.Color(0xdcfce7), t * 5.5);
+            else if (t < 0.5) color.lerpColors(new THREE.Color(0x00ff66), new THREE.Color(0x10b981), (t - 0.18) * 3.1);
+            else color.lerpColors(new THREE.Color(0x064e3b), new THREE.Color(0x000000), (t - 0.5) * 2.0);
+            break;
+          case 'nova':
+          default:
+            if (t < 0.18) color.lerpColors(new THREE.Color(0xffffff), new THREE.Color(0xffe5cc), t * 5.5);
+            else if (t < 0.5) color.lerpColors(new THREE.Color(0xff44aa), new THREE.Color(0x9433ff), (t - 0.18) * 3.1);
+            else color.lerpColors(new THREE.Color(0x00d2ff), new THREE.Color(0x050e2b), (t - 0.5) * 2.0);
+            break;
+        }
+        return color;
+      }
+
+      for (let i = 0; i < N_ARM; i++) {
+        const t = Math.pow(Math.random(), 1.45);
+        const armIndex = i % numArms;
+        const phiAngle = (armIndex * 2 * Math.PI) / numArms;
+        const theta = t * armSpiral * Math.PI + phiAngle;
+
+        const spreadX = (Math.random() - 0.5) * 1.4 * (t + 0.12);
+        const spreadY = (Math.random() - 0.5) * 0.58 * (t + 0.06);
+        const spreadZ = (Math.random() - 0.5) * 1.4 * (t + 0.12);
+
+        const r = t * armScale;
+        const omega = 0.0012 / (0.4 + t * 0.12);
+        const driftSpeed = 0.0004 + Math.random() * 0.0008;
+
+        const color = getThemeColorForParticle(t, getActiveTheme());
+
+        positions[i * 3] = Math.cos(theta) * r + spreadX;
+        positions[i * 3 + 1] = spreadY;
+        positions[i * 3 + 2] = Math.sin(theta) * r + spreadZ;
+
+        colors[i * 3] = color.r;
+        colors[i * 3 + 1] = color.g;
+        colors[i * 3 + 2] = color.b;
+
+        particles.push({
+          r,
+          theta,
+          omega,
+          driftSpeed,
+          spreadX,
+          spreadY,
+          spreadZ,
+          armIndex,
+          baseColor: color
+        });
+      }
+
+      galaxyGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      galaxyGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
       const galaxyMat = new THREE.PointsMaterial({
-        size: 0.15,
+        size: 0.14,
         vertexColors: true,
         transparent: true,
-        opacity: 0.9,
         blending: THREE.AdditiveBlending,
         map: createStarTexture(),
-        depthWrite: false,
-        sizeAttenuation: true
+        depthWrite: false
       });
       
-      const galaxyPoints = new THREE.Points(geometry, galaxyMat);
+      const galaxyPoints = new THREE.Points(galaxyGeometry, galaxyMat);
       galaxyGroup.add(galaxyPoints);
+
+      window.galaxyMat = galaxyMat;
 
       // ── BACKGROUND DEEP-SPACE STAR FIELD ────────────────────────────────
       const N_STARS = 2200;
@@ -3088,32 +3074,56 @@
       const starsPos = new Float32Array(N_STARS * 3);
       const starsCol = new Float32Array(N_STARS * 3);
       for (let i = 0; i < N_STARS; i++) {
-        starsPos[i*3]   = (Math.random()-0.5)*80;
-        starsPos[i*3+1] = (Math.random()-0.5)*80;
-        starsPos[i*3+2] = (Math.random()-0.5)*80;
-        const tw = starColor(3000 + Math.random()*20000);
-        const bri = 0.3 + Math.random()*0.7;
-        starsCol[i*3] = tw.r*bri; starsCol[i*3+1] = tw.g*bri; starsCol[i*3+2] = tw.b*bri;
+        starsPos[i * 3] = (Math.random() - 0.5) * 80;
+        starsPos[i * 3 + 1] = (Math.random() - 0.5) * 80;
+        starsPos[i * 3 + 2] = (Math.random() - 0.5) * 80;
+        const color = getThemeColorForParticle(Math.random(), getActiveTheme());
+        const bri = 0.3 + Math.random() * 0.7;
+        starsCol[i * 3] = color.r * bri;
+        starsCol[i * 3 + 1] = color.g * bri;
+        starsCol[i * 3 + 2] = color.b * bri;
       }
       starsGeo.setAttribute('position', new THREE.BufferAttribute(starsPos, 3));
-      starsGeo.setAttribute('color',    new THREE.BufferAttribute(starsCol, 3));
+      starsGeo.setAttribute('color', new THREE.BufferAttribute(starsCol, 3));
       const starsMat = new THREE.PointsMaterial({
-        size: 0.08, vertexColors: true, transparent: true, opacity: 0.7,
-        blending: THREE.AdditiveBlending, map: createStarTexture(), depthWrite: false
+        size: 0.08,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.7,
+        blending: THREE.AdditiveBlending,
+        map: createStarTexture(),
+        depthWrite: false
       });
       const starField = new THREE.Points(starsGeo, starsMat);
       hScene.add(starField);
 
-      // Store per-star distances from centre for differential rotation
-      const posArr  = geometry.attributes.position.array;
-      const starDist = new Float32Array(TOTAL);
-      for (let i = 0; i < TOTAL; i++) {
-        starDist[i] = Math.sqrt(posArr[i*3]*posArr[i*3] + posArr[i*3+1]*posArr[i*3+1]);
-      }
+      // Global theme updater for stardust particles
+      window.updateGalaxyThemeColors = function(theme) {
+        if (!galaxyPoints) return;
+        const cArr = galaxyGeometry.attributes.color.array;
+        const scale = 8.5;
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
+          const t = p.r / scale;
+          p.baseColor = getThemeColorForParticle(t, theme);
+          const fade = Math.max(0, 1 - p.r / scale);
+          cArr[i * 3] = p.baseColor.r * fade;
+          cArr[i * 3 + 1] = p.baseColor.g * fade;
+          cArr[i * 3 + 2] = p.baseColor.b * fade;
+        }
+        galaxyGeometry.attributes.color.needsUpdate = true;
 
-      // Bind references to global variables so they are accessible to update3DThemeColors
-      window.galaxyMat = galaxyMat;
-      const originalColors = colors.slice();
+        // Also update background starfield colors dynamically!
+        const starColors = starsGeo.attributes.color.array;
+        for (let i = 0; i < N_STARS; i++) {
+          const color = getThemeColorForParticle(Math.random(), theme);
+          const bri = 0.3 + Math.random() * 0.7;
+          starColors[i * 3] = color.r * bri;
+          starColors[i * 3 + 1] = color.g * bri;
+          starColors[i * 3 + 2] = color.b * bri;
+        }
+        starsGeo.attributes.color.needsUpdate = true;
+      };
 
       // Mouse tracking parallax
       let hMouse = { x: 0, y: 0 };
@@ -3129,63 +3139,71 @@
       let lastMeteoroidSpawn = 0;
       
       function spawnMeteoroid() {
-        const size = 0.06 + Math.random() * 0.07;
+        const size = 0.08 + Math.random() * 0.09;
         const metGeo = new THREE.DodecahedronGeometry(size, 1);
         const posAttr = metGeo.attributes.position;
-        for (let i = 0; i < posAttr.count; i++) {
-          posAttr.setXYZ(i,
-            posAttr.getX(i) + (Math.random() - 0.5) * (size * 0.3),
-            posAttr.getY(i) + (Math.random() - 0.5) * (size * 0.3),
-            posAttr.getZ(i) + (Math.random() - 0.5) * (size * 0.3)
+        for (let k = 0; k < posAttr.count; k++) {
+          const vx = posAttr.getX(k);
+          const vy = posAttr.getY(k);
+          const vz = posAttr.getZ(k);
+          posAttr.setXYZ(k,
+            vx + (Math.random() - 0.5) * 0.03,
+            vy + (Math.random() - 0.5) * 0.03,
+            vz + (Math.random() - 0.5) * 0.03
           );
         }
         metGeo.computeVertexNormals();
         
         const metMat = new THREE.MeshStandardMaterial({
-          color: 0x222533,
-          roughness: 0.95,
-          metalness: 0.1,
+          color: 0x1e202b,
+          roughness: 0.9,
+          metalness: 0.15,
           flatShading: true
         });
         const mesh = new THREE.Mesh(metGeo, metMat);
         
-        mesh.position.set(-15 - Math.random() * 5, 5 + Math.random() * 5, (Math.random() - 0.5) * 4);
+        mesh.position.set(-16 - Math.random() * 5, 4 + Math.random() * 4, (Math.random() - 0.5) * 4);
         hScene.add(mesh);
         
         const velocity = new THREE.Vector3(
-          0.05 + Math.random() * 0.05,
+          0.06 + Math.random() * 0.05,
           -0.02 - Math.random() * 0.03,
-          (Math.random() - 0.5) * 0.015
+          (Math.random() - 0.5) * 0.012
         );
         
-        const trailMax = 40;
+        const maxTrail = 45;
         const trailGeo = new THREE.BufferGeometry();
-        const trailPositions = new Float32Array(trailMax * 3);
-        const trailColors = new Float32Array(trailMax * 3);
+        const trailPositions = new Float32Array(maxTrail * 3);
+        const trailColors = new Float32Array(maxTrail * 3);
         
-        for (let i = 0; i < trailMax; i++) {
-          trailPositions[i*3] = mesh.position.x;
-          trailPositions[i*3+1] = mesh.position.y;
-          trailPositions[i*3+2] = mesh.position.z;
-          trailColors[i*3] = 0.0;
-          trailColors[i*3+1] = 0.8;
-          trailColors[i*3+2] = 1.0;
+        let trailColor = new THREE.Color('#00f0ff');
+        const activeTheme = getActiveTheme();
+        if (activeTheme === 'cyber') trailColor = new THREE.Color('#ff007f');
+        else if (activeTheme === 'aurora') trailColor = new THREE.Color('#10b981');
+        else if (activeTheme === 'sunset') trailColor = new THREE.Color('#f97316');
+        else if (activeTheme === 'matrix') trailColor = new THREE.Color('#00ff66');
+
+        for (let k = 0; k < maxTrail; k++) {
+          const ratio = k / maxTrail;
+          const c = trailColor.clone().multiplyScalar(ratio);
+          trailColors[k * 3] = c.r;
+          trailColors[k * 3 + 1] = c.g;
+          trailColors[k * 3 + 2] = c.b;
         }
         
         trailGeo.setAttribute('position', new THREE.BufferAttribute(trailPositions, 3));
         trailGeo.setAttribute('color', new THREE.BufferAttribute(trailColors, 3));
         
-        const trailMat = new THREE.PointsMaterial({
+        const trailPointsMat = new THREE.PointsMaterial({
           size: 0.12,
           vertexColors: true,
           transparent: true,
-          opacity: 0.9,
           blending: THREE.AdditiveBlending,
           map: createStarTexture(),
           depthWrite: false
         });
         
-        const points = new THREE.Points(trailGeo, trailMat);
+        const points = new THREE.Points(trailGeo, trailPointsMat);
         hScene.add(points);
         
         activeMeteoroids.push({
@@ -3200,57 +3218,45 @@
         });
       }
 
-      // Differential rotation: inner stars orbit faster
-      let hClock = 0;
       function hAnimate() {
         requestAnimationFrame(hAnimate);
-        hClock += 0.0008;
 
-        // Differential rotation per star around galaxy centre
-        const pArr = geometry.attributes.position.array;
-        const cArr = geometry.attributes.color.array;
-        for (let i = 0; i < TOTAL; i++) {
-          const dPrev = Math.max(0.1, starDist[i]);
-          const omega = 0.0012 / (0.4 + dPrev * 0.12); // inner orbits faster
-          const cosO = Math.cos(omega), sinO = Math.sin(omega);
-          const x = pArr[i*3], y = pArr[i*3+1];
-          pArr[i*3]   = x*cosO - y*sinO;
-          pArr[i*3+1] = x*sinO + y*cosO;
+        const pArr = galaxyGeometry.attributes.position.array;
+        const cArr = galaxyGeometry.attributes.color.array;
 
-          // Outward drifting dust particles (1/3 of total stars)
-          if (i % 3 === 0) {
-            pArr[i*3] *= 1.0006;
-            pArr[i*3+1] *= 1.0006;
-            pArr[i*3+2] += (Math.random() - 0.5) * 0.001;
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
+          p.theta += p.omega;
+          p.r += p.driftSpeed;
+
+          const angle = p.theta + (p.r / armScale) * armSpiral;
+
+          pArr[i * 3] = Math.cos(angle) * p.r + p.spreadX;
+          pArr[i * 3 + 1] = p.spreadY;
+          pArr[i * 3 + 2] = Math.sin(angle) * p.r + p.spreadZ;
+
+          const fade = Math.max(0, 1 - p.r / armScale);
+          cArr[i * 3] = p.baseColor.r * fade;
+          cArr[i * 3 + 1] = p.baseColor.g * fade;
+          cArr[i * 3 + 2] = p.baseColor.b * fade;
+
+          if (p.r >= armScale) {
+            p.r = 0.05 + Math.random() * 0.2;
+            p.theta = Math.random() * Math.PI * 2;
+            p.baseColor = getThemeColorForParticle(p.r / armScale, getActiveTheme());
           }
-
-          const d = Math.sqrt(pArr[i*3]*pArr[i*3] + pArr[i*3+1]*pArr[i*3+1]);
-
-          // Loop reset when drifted out
-          if (d > armScale) {
-            const resetScale = (0.05 + Math.random() * 0.2) / d;
-            pArr[i*3] *= resetScale;
-            pArr[i*3+1] *= resetScale;
-            pArr[i*3+2] = (Math.random() - 0.5) * 0.1;
-          }
-
-          // Fade colors toward edges to prevent clipping bounds
-          const fade = Math.max(0, 1 - (d / armScale));
-          cArr[i*3]   = originalColors[i*3] * fade;
-          cArr[i*3+1] = originalColors[i*3+1] * fade;
-          cArr[i*3+2] = originalColors[i*3+2] * fade;
         }
-        geometry.attributes.position.needsUpdate = true;
-        geometry.attributes.color.needsUpdate = true;
+        galaxyGeometry.attributes.position.needsUpdate = true;
+        galaxyGeometry.attributes.color.needsUpdate = true;
 
-        // Spawn meteoroids
+        galaxyGroup.rotation.z += 0.00018;
+
         const now = Date.now();
-        if (now - lastMeteoroidSpawn > 10000 + Math.random() * 8000) {
+        if (now - lastMeteoroidSpawn > 12000) {
           spawnMeteoroid();
           lastMeteoroidSpawn = now;
         }
 
-        // Update active meteoroids
         for (let i = activeMeteoroids.length - 1; i >= 0; i--) {
           const met = activeMeteoroids[i];
           met.mesh.position.add(met.velocity);
@@ -3261,74 +3267,40 @@
             x: met.mesh.position.x,
             y: met.mesh.position.y,
             z: met.mesh.position.z,
-            age: 0,
-            maxAge: 35 + Math.random() * 20
+            age: 0
           });
 
-          if (met.trailData.length > 40) {
+          if (met.trailData.length > 45) {
             met.trailData.shift();
           }
 
           const trailPos = met.trailGeo.attributes.position.array;
-          const trailCol = met.trailGeo.attributes.color.array;
-
-          let r = 0.0, g = 0.8, b = 1.0;
-          if (typeof currentTheme !== 'undefined') {
-            if (currentTheme === 'cyber') { r = 1.0; g = 0.0; b = 0.5; }
-            else if (currentTheme === 'aurora') { r = 0.1; g = 0.9; b = 0.5; }
-            else if (currentTheme === 'sunset') { r = 1.0; g = 0.4; b = 0.0; }
-            else if (currentTheme === 'matrix') { r = 0.0; g = 1.0; b = 0.4; }
-          }
-
-          for (let p = 0; p < 40; p++) {
-            const pData = met.trailData[p];
-            if (pData) {
-              pData.age++;
-              pData.x += (Math.random() - 0.5) * 0.015;
-              pData.y += (Math.random() - 0.5) * 0.015;
-              pData.z += (Math.random() - 0.5) * 0.015;
-
-              trailPos[p*3] = pData.x;
-              trailPos[p*3+1] = pData.y;
-              trailPos[p*3+2] = pData.z;
-
-              const lifeRatio = 1 - (pData.age / pData.maxAge);
-              const intensity = Math.max(0, lifeRatio);
-              trailCol[p*3] = r * intensity;
-              trailCol[p*3+1] = g * intensity;
-              trailCol[p*3+2] = b * intensity;
-            } else {
-              trailPos[p*3] = met.mesh.position.x;
-              trailPos[p*3+1] = met.mesh.position.y;
-              trailPos[p*3+2] = met.mesh.position.z;
-              trailCol[p*3] = 0;
-              trailCol[p*3+1] = 0;
-              trailCol[p*3+2] = 0;
-            }
-          }
+          
+          met.trailData.forEach((d, pIdx) => {
+            trailPos[pIdx * 3] = d.x + (Math.random() - 0.5) * 0.05;
+            trailPos[pIdx * 3 + 1] = d.y + (Math.random() - 0.5) * 0.05;
+            trailPos[pIdx * 3 + 2] = d.z + (Math.random() - 0.5) * 0.05;
+          });
           met.trailGeo.attributes.position.needsUpdate = true;
-          met.trailGeo.attributes.color.needsUpdate = true;
 
-          if (met.mesh.position.x > 18 || met.mesh.position.y < -12 || Date.now() - met.spawnTime > 15000) {
+          if (met.mesh.position.x > 18 || Date.now() - met.spawnTime > 15000) {
             hScene.remove(met.mesh);
             hScene.remove(met.trailPoints);
+            met.mesh.geometry.dispose();
+            met.mesh.material.dispose();
+            met.trailGeo.dispose();
+            met.trailPoints.material.dispose();
             activeMeteoroids.splice(i, 1);
           }
         }
 
-        // Slow overall rotation of group
-        galaxyGroup.rotation.z += 0.00015;
+        hTarget.x += (hMouse.x * 1.3 - hTarget.x) * 0.035;
+        hTarget.y += (hMouse.y * 1.3 - hTarget.y) * 0.035;
+        hCamera.position.set(hTarget.x, hTarget.y, 22);
+        hCamera.lookAt(0, 0, 0);
 
-        // Background star field slow drift
         starField.rotation.y += 0.00008;
         starField.rotation.x += 0.00004;
-
-        // Parallax camera
-        hTarget.x += (hMouse.x * 1.2 - hTarget.x) * 0.04;
-        hTarget.y += (hMouse.y * 1.2 - hTarget.y) * 0.04;
-        hCamera.position.x = hTarget.x;
-        hCamera.position.y = hTarget.y;
-        hCamera.lookAt(0, 0, 0);
 
         hRenderer.render(hScene, hCamera);
       }
@@ -3538,9 +3510,8 @@
       }
 
       // Update Galaxy Material Colors
-      if (typeof window.galaxyMat !== 'undefined') {
-        window.galaxyMat.color.setHex(galaxyTint);
-        window.galaxyMat.needsUpdate = true;
+      if (typeof window.updateGalaxyThemeColors === 'function') {
+        window.updateGalaxyThemeColors(theme);
       }
     }
 
