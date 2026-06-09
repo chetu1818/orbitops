@@ -1,0 +1,148 @@
+[
+  {
+    "Id": "e2a367a8-26e1-4150-b7e3-f820971663d3",
+    "Title": "Group Discussion",
+    "ParticipantIds": [
+      "90aa27cd-d76b-451b-b945-607ed2f37930",
+      "usr-chetan",
+      "usr-admin"
+    ],
+    "Messages": [
+      {
+        "Id": "46ffe013-468e-4850-a1cb-e88498e7783d",
+        "SenderId": "system",
+        "SenderName": "OrbitOps System",
+        "Content": "Chat channel established.",
+        "SentAt": "2026-06-09T07:40:40.8038612Z"
+      },
+      {
+        "Id": "88330488-bb43-47c3-b8f4-025a48a3390e",
+        "SenderId": "usr-chetan",
+        "SenderName": "Chetan Patil",
+        "Content": "Hi",
+        "SentAt": "2026-06-09T07:40:45.2287933Z"
+      },
+      {
+        "Id": "227fc98c-e1df-4f3f-b5d7-695d0be2476d",
+        "SenderId": "system",
+        "SenderName": "OrbitOps System",
+        "Content": "System Admin was added to the chat.",
+        "SentAt": "2026-06-09T07:40:51.4745986Z"
+      },
+      {
+        "Id": "a95e0f17-5292-412f-bd89-31a897820255",
+        "SenderId": "usr-chetan",
+        "SenderName": "Chetan Patil",
+        "Content": "Hi",
+        "SentAt": "2026-06-09T07:49:12.8041214Z"
+      }
+    ],
+    "LastMessageAt": "2026-06-09T07:49:12.8041215Z"
+  },
+  {
+    "Id": "de6db53e-5600-4f93-a252-5d26f12695f0",
+    "Title": "",
+    "ParticipantIds": [
+      "usr-admin"
+    ],
+    "Messages": [
+      {
+        "Id": "fee33a7f-51cd-4552-b784-292d23f35a1e",
+        "SenderId": "system",
+        "SenderName": "OrbitOps System",
+        "Content": "Chat channel established.",
+        "SentAt": "2026-06-09T07:52:05.1072263Z"
+      }
+    ],
+    "LastMessageAt": "2026-06-09T07:52:05.1072259Z"
+  },
+  {
+    "Id": "d80505cd-9508-42f9-a8d3-766ad48a9cbd",
+    "Title": "",
+    "ParticipantIds": [
+      "usr-admin"
+    ],
+    "Messages": [
+      {
+        "Id": "cb6f08de-42a4-4358-9b3d-b3ba316d0fd9",
+        "SenderId": "system",
+        "SenderName": "OrbitOps System",
+        "Content": "Chat channel established.",
+        "SentAt": "2026-06-09T07:52:25.2867913Z"
+      }
+    ],
+    "LastMessageAt": "2026-06-09T07:52:25.2867909Z"
+  },
+  {
+    "Id": "85eaedf7-7fe1-4e18-bf01-a6de8bf8d8c8",
+    "Title": "",
+    "ParticipantIds": [
+      "usr-sarah",
+      "usr-admin"
+    ],
+    "Messages": [
+      {
+        "Id": "f7f1eb38-dc52-4cab-bf6a-bcf858d183fc",
+        "SenderId": "system",
+        "SenderName": "OrbitOps System",
+        "Content": "Chat channel established.",
+        "SentAt": "2026-06-09T07:52:26.4465136Z"
+      }
+    ],
+    "LastMessageAt": "2026-06-09T07:52:26.4465132Z"
+  },
+  {
+    "Id": "79ac819a-2bc4-45bd-95d9-87d92ef26f52",
+    "Title": "",
+    "ParticipantIds": [
+      "usr-alex",
+      "usr-admin"
+    ],
+    "Messages": [
+      {
+        "Id": "42d55df7-48bf-407d-813f-2dbb2681db35",
+        "SenderId": "system",
+        "SenderName": "OrbitOps System",
+        "Content": "Chat channel established.",
+        "SentAt": "2026-06-09T07:52:27.0942738Z"
+      }
+    ],
+    "LastMessageAt": "2026-06-09T07:52:27.0942734Z"
+  },
+  {
+    "Id": "0466f897-5591-4ed2-a1ab-e469a1865f7d",
+    "Title": "",
+    "ParticipantIds": [
+      "usr-client",
+      "usr-admin"
+    ],
+    "Messages": [
+      {
+        "Id": "64127d33-e39d-4f5f-9c3f-e0c7b03e65a7",
+        "SenderId": "system",
+        "SenderName": "OrbitOps System",
+        "Content": "Chat channel established.",
+        "SentAt": "2026-06-09T07:52:27.5901564Z"
+      }
+    ],
+    "LastMessageAt": "2026-06-09T07:52:27.5901559Z"
+  },
+  {
+    "Id": "aedc5efc-b5cc-4ac4-b85b-6235693234a7",
+    "Title": "",
+    "ParticipantIds": [
+      "90aa27cd-d76b-451b-b945-607ed2f37930",
+      "usr-admin"
+    ],
+    "Messages": [
+      {
+        "Id": "64d7930b-a64e-421d-b1aa-e0ac07a24e3d",
+        "SenderId": "system",
+        "SenderName": "OrbitOps System",
+        "Content": "Chat channel established.",
+        "SentAt": "2026-06-09T07:52:28.1741338Z"
+      }
+    ],
+    "LastMessageAt": "2026-06-09T07:52:28.1741334Z"
+  }
+]

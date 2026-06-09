@@ -1,0 +1,6 @@
+To: Sarah Jenkins
+Subject: New Client Assignment - ORD-1992
+Body: Hello Sarah Jenkins, you have been assigned to construct a new integration workflow for client Chetan Patil (Phase1).
+Workflow Scenario: Payroll Automation
+Details: Workday -> ADP
+Please log in to your Architect Workspace to inspect the credentials and instructions.

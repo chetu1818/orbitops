@@ -1,0 +1,37 @@
+To: chetan@brainpayroll.co.uk
+Name: Chetan Patil
+Code: 695289
+Timestamp: 09-06-2026 07:26:23
+
+Html:
+
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f3f4f6; color: #1f2937; margin: 0; padding: 20px; }
+    .card { max-width: 450px; margin: 0 auto; background: #ffffff; border-radius: 12px; border: 1px solid #e5e7eb; box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow: hidden; }
+    .header { background: #04120a; color: #10b981; padding: 20px; text-align: center; border-bottom: 2px solid #10b981; }
+    .header h2 { margin: 0; font-size: 22px; font-weight: bold; }
+    .body { padding: 25px; text-align: center; }
+    .code-box { display: inline-block; font-size: 32px; font-weight: bold; color: #10b981; letter-spacing: 5px; padding: 15px 30px; background: #f3f4f6; border-radius: 8px; margin: 20px 0; border: 1px dashed #10b981; }
+    .footer { background: #f9fafb; padding: 15px; text-align: center; border-top: 1px solid #e5e7eb; font-size: 11px; color: #9ca3af; }
+  </style>
+</head>
+<body>
+  <div class='card'>
+    <div class='header'>
+      <h2>OrbitOps.ai</h2>
+    </div>
+    <div class='body'>
+      <p>Hello <strong>Chetan Patil</strong>,</p>
+      <p>Please enter the following 6-digit verification code to complete your sign-in request:</p>
+      <div class='code-box'>695289</div>
+      <p style='font-size: 12px; color: #6b7280;'>This code is valid for 10 minutes. If you did not make this request, please secure your account immediately.</p>
+    </div>
+    <div class='footer'>
+      © 2026 OrbitOps.ai. B2B Integration Security Systems.
+    </div>
+  </div>
+</body>
+</html>

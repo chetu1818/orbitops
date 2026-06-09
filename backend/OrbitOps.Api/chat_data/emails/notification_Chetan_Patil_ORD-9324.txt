@@ -1,0 +1,6 @@
+To: Chetan Patil
+Subject: New Client Assignment - ORD-9324
+Body: Hello Chetan Patil, you have been assigned to construct a new integration workflow for client Chetan Patil (Phase1).
+Workflow Scenario: Payroll Automation
+Details: HiBob -> Other
+Please log in to your Architect Workspace to inspect the credentials and instructions.

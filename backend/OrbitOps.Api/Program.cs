@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using OrbitOps.Api.Data;
 using OrbitOps.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,8 +8,17 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
+// Register DbContext with SQL Server Connection String
+builder.Services.AddDbContext<OrbitOpsDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 // Register Lead Ingestion Service
 builder.Services.AddScoped<ILeadService, LeadService>();
+
+// Register Portal Services
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 // Register AI Chat Assistant Service
 builder.Services.AddHttpClient<IChatService, ChatService>();
@@ -31,13 +42,25 @@ builder.Logging.AddDebug();
 
 var app = builder.Build();
 
+// Automatically create database schema and seed default users on startup
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<OrbitOpsDbContext>();
+    context.Database.EnsureCreated();
+    var authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
+    authService.InitializeDatabase();
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
 // Apply CORS Policy
 app.UseCors("AllowAngularDev");

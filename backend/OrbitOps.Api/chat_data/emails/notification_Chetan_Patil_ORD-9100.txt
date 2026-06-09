@@ -1,0 +1,6 @@
+To: Chetan Patil
+Subject: New Client Assignment - ORD-9100
+Body: Hello Chetan Patil, you have been assigned to construct a new integration workflow for client Chetan Patil (OrbitOps Architects).
+Workflow Scenario: HR Employee Sync
+Details: BambooHR -> Workday
+Please log in to your Architect Workspace to inspect the credentials and instructions.
