@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
+import { resolveApiUrl } from '../utils/api';
 
 export interface ChatMessage {
   id: string;
@@ -26,7 +27,7 @@ export interface ChatSession {
 export class ChatService {
   private http = inject(HttpClient);
   private authService = inject(AuthService);
-  private apiUrl = 'http://localhost:5015/api/chats';
+  private apiUrl = resolveApiUrl('/api/chats', 'http://localhost:5015/api/chats');
 
   private getHeaders() {
     const token = this.authService.getToken();

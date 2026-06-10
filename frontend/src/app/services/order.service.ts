@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import { Observable, catchError, of, tap, throwError } from 'rxjs';
+import { resolveApiUrl } from '../utils/api';
 
 export interface Order {
   id: string;
@@ -26,7 +27,7 @@ export interface Order {
 export class OrderService {
   private http = inject(HttpClient);
   private authService = inject(AuthService);
-  private apiUrl = 'http://localhost:5015/api/orders';
+  private apiUrl = resolveApiUrl('/api/orders', 'http://localhost:5015/api/orders');
 
   private getHeaders() {
     const token = this.authService.getToken();

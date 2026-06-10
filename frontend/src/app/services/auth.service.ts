@@ -2,6 +2,7 @@ import { Injectable, signal, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
+import { resolveApiUrl } from '../utils/api';
 
 export interface ClientUser {
   id: string;
@@ -24,7 +25,7 @@ export interface AuthResponse {
 export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
-  private apiUrl = 'http://localhost:5015/api/auth'; // Dev backend port
+  private apiUrl = resolveApiUrl('/api/auth', 'http://localhost:5015/api/auth');
 
   currentUser = signal<ClientUser | null>(null);
 
