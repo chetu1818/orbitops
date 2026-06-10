@@ -11,13 +11,15 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
 # Copy project file and local nuget configuration to resolve restore paths in container
-COPY ["backend/OrbitOps.Api.csproj", "OrbitOps.Api/"]
-COPY ["backend/nuget.config", "OrbitOps.Api/"]
+COPY ["backend/OrbitOps.Api/OrbitOps.Api.csproj", "OrbitOps.Api/"]
+COPY ["backend/OrbitOps.Api/nuget.config", "OrbitOps.Api/"] 
+
+# Restore NuGet packages
 WORKDIR "/src/OrbitOps.Api"
 RUN dotnet restore "OrbitOps.Api.csproj"
 
-# Copy remaining source code and build project
-COPY . .
+# Copy the rest of the backend source code and build project
+COPY ["backend/OrbitOps.Api/", "."]
 RUN dotnet build "OrbitOps.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # Publish compiled files
