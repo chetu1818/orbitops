@@ -2,10 +2,6 @@ D:\Important\OrbitOps\backend\OrbitOps.Api\obj\Release\net9.0\PubTmp\Out\OrbitOp
 D:\Important\OrbitOps\backend\OrbitOps.Api\obj\Release\net9.0\PubTmp\Out\nuget.config
 D:\Important\OrbitOps\backend\OrbitOps.Api\obj\Release\net9.0\PubTmp\Out\appsettings.Development.json
 D:\Important\OrbitOps\backend\OrbitOps.Api\obj\Release\net9.0\PubTmp\Out\appsettings.json
-D:\Important\OrbitOps\backend\OrbitOps.Api\obj\Release\net9.0\PubTmp\Out\chat_data\interactions.json
-D:\Important\OrbitOps\backend\OrbitOps.Api\obj\Release\net9.0\PubTmp\Out\chat_data\portal_chats.json
-D:\Important\OrbitOps\backend\OrbitOps.Api\obj\Release\net9.0\PubTmp\Out\chat_data\portal_orders.json
-D:\Important\OrbitOps\backend\OrbitOps.Api\obj\Release\net9.0\PubTmp\Out\chat_data\portal_users.json
 D:\Important\OrbitOps\backend\OrbitOps.Api\obj\Release\net9.0\PubTmp\Out\OrbitOps.Api.dll
 D:\Important\OrbitOps\backend\OrbitOps.Api\obj\Release\net9.0\PubTmp\Out\OrbitOps.Api.deps.json
 D:\Important\OrbitOps\backend\OrbitOps.Api\obj\Release\net9.0\PubTmp\Out\OrbitOps.Api.runtimeconfig.json
