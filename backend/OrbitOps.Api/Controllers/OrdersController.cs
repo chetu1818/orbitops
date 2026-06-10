@@ -322,6 +322,154 @@ namespace OrbitOps.Api.Controllers
 
             return BadRequest(new { message = "Order not found or not in correct state for payment." });
         }
+
+        [HttpGet("all")]
+        public IActionResult GetAllOrdersForAdmin()
+        {
+            var user = GetAuthenticatedUser();
+            if (user == null || user.Role != "Admin")
+            {
+                return Unauthorized(new { message = "Admin privileges required." });
+            }
+            var allOrders = _orderService.GetAllOrders();
+            return Ok(allOrders);
+        }
+
+        [HttpPost("update-status")]
+        public IActionResult UpdateStatus([FromBody] UpdateOrderStatusDto dto)
+        {
+            var user = GetAuthenticatedUser();
+            if (user == null)
+            {
+                return Unauthorized(new { message = "Session expired or invalid token." });
+            }
+
+            if (user.Role != "Engineer" && user.Role != "Admin")
+            {
+                return Unauthorized(new { message = "Unauthorized to update order status." });
+            }
+
+            var success = _orderService.UpdateOrderStatus(dto.OrderId, dto.Status);
+            if (!success)
+            {
+                return BadRequest(new { message = "Order not found." });
+            }
+
+            return Ok(new { message = "Order status updated successfully." });
+        }
+
+        [HttpPost("assign-engineer")]
+        public IActionResult AssignEngineer([FromBody] AssignEngineerDto dto)
+        {
+            var user = GetAuthenticatedUser();
+            if (user == null || user.Role != "Admin")
+            {
+                return Unauthorized(new { message = "Admin privileges required." });
+            }
+
+            var order = _context.Orders.FirstOrDefault(o => o.Id == dto.OrderId);
+            if (order == null) return BadRequest(new { message = "Order not found." });
+
+            var oldEngineer = order.EngineerName;
+            var newEngineer = dto.EngineerName;
+
+            if (!string.IsNullOrEmpty(oldEngineer) && oldEngineer != newEngineer)
+            {
+                var historyEntry = new HandoverHistoryEntry
+                {
+                    PreviousEngineer = oldEngineer,
+                    NewEngineer = newEngineer,
+                    ProgressSummary = string.IsNullOrWhiteSpace(dto.ProgressSummary) ? "No progress notes provided." : dto.ProgressSummary,
+                    StatusAtHandover = order.Status,
+                    HandoverDate = DateTime.UtcNow,
+                    AdminUserId = user.Name
+                };
+                if (order.HandoverHistory == null)
+                {
+                    order.HandoverHistory = new List<HandoverHistoryEntry>();
+                }
+                order.HandoverHistory.Add(historyEntry);
+            }
+
+            order.EngineerName = newEngineer;
+            
+            if (order.Status == "Awaiting Assignment" || order.Status == "In Progress" || order.Status == "Completed" || order.Status.Contains("Setup") || order.Status.Contains("Schema") || order.Status.Contains("Sync"))
+            {
+                try
+                {
+                    var client = _context.Users.FirstOrDefault(u => u.Id == order.UserId);
+                    var engineer = _context.Users.FirstOrDefault(u => u.Name == dto.EngineerName && u.Role == "Engineer");
+                    if (client != null && engineer != null)
+                    {
+                        var existingSession = _context.ChatSessions.ToList().FirstOrDefault(s =>
+                            s.ParticipantIds.Count == 2 &&
+                            s.ParticipantIds.Contains(client.Id) &&
+                            s.ParticipantIds.Contains(engineer.Id));
+
+                        if (existingSession == null)
+                        {
+                            existingSession = new ChatSession
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Title = $"{client.Name} & {engineer.Name} (Order {order.Id})",
+                                ParticipantIds = new List<string> { client.Id, engineer.Id },
+                                Messages = new List<ChatMessage>(),
+                                LastMessageAt = DateTime.UtcNow
+                            };
+                            _context.ChatSessions.Add(existingSession);
+                        }
+
+                        var sb = new System.Text.StringBuilder();
+                        sb.AppendLine($"🔔 **Architect Assigned: {engineer.Name} is now leading Order {order.Id}**");
+                        sb.AppendLine($"**Workflow Route:** {order.SourceSystem} ➔ {order.DestinationSystem}");
+
+                        var reassignMessage = new ChatMessage
+                        {
+                            Id = Guid.NewGuid().ToString(),
+                            SenderId = "system",
+                            SenderName = "OrbitOps System",
+                            Content = sb.ToString(),
+                            SentAt = DateTime.UtcNow
+                        };
+                        existingSession.Messages.Add(reassignMessage);
+                        existingSession.LastMessageAt = DateTime.UtcNow;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"Failed to automatically reassign chat session for order {order.Id}");
+                }
+            }
+
+            // Dispatch background email notification to newly assigned engineer
+            if (!string.IsNullOrEmpty(newEngineer))
+            {
+                _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        var emailDir = Path.Combine(Directory.GetCurrentDirectory(), "chat_data", "emails");
+                        if (!Directory.Exists(emailDir)) Directory.CreateDirectory(emailDir);
+                        var notifyPath = Path.Combine(emailDir, $"notification_{newEngineer.Replace(" ", "_")}_{order.Id}.txt");
+                        var content = $"To: {newEngineer}\n" +
+                                      $"Subject: New Client Assignment - {order.Id}\n" +
+                                      $"Body: Hello {newEngineer}, you have been assigned to construct a new integration workflow.\n" +
+                                      $"Workflow Scenario: {order.WorkflowType}\n" +
+                                      $"Details: {order.SourceSystem} -> {order.DestinationSystem}\n" +
+                                      $"Please log in to your Architect Workspace to inspect the credentials and instructions.";
+                        await System.IO.File.WriteAllTextAsync(notifyPath, content);
+                        _logger.LogInformation($"[ENGINEER NOTIFICATION] Notification saved to local file: {notifyPath}");
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Failed to write engineer notification file.");
+                    }
+                });
+            }
+
+            _context.SaveChanges();
+            return Ok(new { message = "Engineer assigned successfully." });
+        }
     }
 
     public class ApproveWorkflowDto
@@ -351,5 +499,25 @@ namespace OrbitOps.Api.Controllers
         [Required]
         [Range(0.01, 100000.0)]
         public decimal CounterPrice { get; set; }
+    }
+
+    public class UpdateOrderStatusDto
+    {
+        [Required]
+        public string OrderId { get; set; } = string.Empty;
+
+        [Required]
+        public string Status { get; set; } = string.Empty;
+    }
+
+    public class AssignEngineerDto
+    {
+        [Required]
+        public string OrderId { get; set; } = string.Empty;
+
+        [Required]
+        public string EngineerName { get; set; } = string.Empty;
+
+        public string ProgressSummary { get; set; } = string.Empty;
     }
 }

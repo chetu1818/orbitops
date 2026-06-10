@@ -198,7 +198,7 @@ namespace OrbitOps.Api.Controllers
         [HttpGet("engineers")]
         public IActionResult GetEngineers()
         {
-            var engineers = _authService.GetAvailableEngineers();
+            var engineers = _authService.GetAllUsers().Where(u => u.Role == "Engineer").ToList();
             var result = engineers.Select(e => new
             {
                 name = e.Name,
@@ -209,6 +209,28 @@ namespace OrbitOps.Api.Controllers
                 skills = new[] { "Make.com", "n8n", "APIs" }
             });
             return Ok(result);
+        }
+
+        [HttpGet("all-users")]
+        public IActionResult GetAllUsers()
+        {
+            var admin = GetAuthenticatedUser();
+            if (admin == null || admin.Role != "Admin")
+            {
+                return Unauthorized(new { message = "Admin privileges required." });
+            }
+
+            var users = _authService.GetAllUsers();
+            return Ok(users.Select(u => new
+            {
+                id = u.Id,
+                name = u.Name,
+                email = u.Email,
+                company = u.Company,
+                role = u.Role,
+                isAvailable = u.IsAvailable,
+                currentStatus = u.CurrentStatus
+            }));
         }
 
         [HttpPut("engineer-status")]

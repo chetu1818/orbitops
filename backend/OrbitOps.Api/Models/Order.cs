@@ -3,6 +3,16 @@ using System.Collections.Generic;
 
 namespace OrbitOps.Api.Models
 {
+    public class HandoverHistoryEntry
+    {
+        public string PreviousEngineer { get; set; } = string.Empty;
+        public string NewEngineer { get; set; } = string.Empty;
+        public string ProgressSummary { get; set; } = string.Empty;
+        public string StatusAtHandover { get; set; } = string.Empty;
+        public DateTime HandoverDate { get; set; } = DateTime.UtcNow;
+        public string AdminUserId { get; set; } = string.Empty;
+    }
+
     public class Order
     {
         public string Id { get; set; } = string.Empty;
@@ -19,6 +29,7 @@ namespace OrbitOps.Api.Models
         public string Status { get; set; } = "Awaiting Assignment";
         public string EstimatedCompletionTime { get; set; } = "Awaiting Review";
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public List<HandoverHistoryEntry> HandoverHistory { get; set; } = new();
 
         [System.ComponentModel.DataAnnotations.Schema.NotMapped]
         public string ClientName { get; set; } = string.Empty;

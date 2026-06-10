@@ -24,6 +24,7 @@ namespace OrbitOps.Api.Services
         bool UpdateEngineerStatus(string engineerId, string status, bool isAvailable);
         User? AddSubPerson(string parentClientId, AddSubPersonDto dto, out string error);
         List<User> GetTeamMembers(string parentClientId);
+        List<User> GetAllUsers();
         void InitializeDatabase();
     }
 
@@ -400,6 +401,11 @@ namespace OrbitOps.Api.Services
             return _context.Users
                 .Where(u => u.Role == "SubClient" && u.ParentClientId == parentClientId)
                 .ToList();
+        }
+
+        public List<User> GetAllUsers()
+        {
+            return _context.Users.ToList();
         }
 
         private static string HashPassword(string password)

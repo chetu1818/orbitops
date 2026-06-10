@@ -4,6 +4,15 @@ import { AuthService } from './auth.service';
 import { Observable, catchError, of, tap, throwError } from 'rxjs';
 import { resolveApiUrl } from '../utils/api';
 
+export interface HandoverHistoryEntry {
+  previousEngineer: string;
+  newEngineer: string;
+  progressSummary: string;
+  statusAtHandover: string;
+  handoverDate: string;
+  adminUserId: string;
+}
+
 export interface Order {
   id: string;
   userId?: string;
@@ -22,6 +31,7 @@ export interface Order {
   clientName?: string;
   clientCompany?: string;
   clientEmail?: string;
+  handoverHistory?: HandoverHistoryEntry[];
 }
 
 @Injectable({
@@ -250,6 +260,67 @@ export class OrderService {
       catchError(err => {
         console.error('Backend API payment confirmation failed:', err);
         return throwError(() => err);
+      })
+    );
+  }
+
+  updateOrderStatus(orderId: string, status: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/update-status`, { orderId, status }, { headers: this.getHeaders() }).pipe(
+      tap(() => {
+        const userId = this.authService.currentUser()?.id;
+        if (userId) {
+          const localKey = `orbitops_orders_${userId}`;
+          const existing = localStorage.getItem(localKey);
+          if (existing) {
+            try {
+              const orders: Order[] = JSON.parse(existing);
+              const index = orders.findIndex(o => o.id === orderId);
+              if (index !== -1) {
+                orders[index].status = status;
+                localStorage.setItem(localKey, JSON.stringify(orders));
+              }
+            } catch {}
+          }
+        }
+      })
+    );
+  }
+
+  assignEngineer(orderId: string, engineerName: string, progressSummary?: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/assign-engineer`, { orderId, engineerName, progressSummary }, { headers: this.getHeaders() }).pipe(
+      tap(() => {
+        const userId = this.authService.currentUser()?.id;
+        if (userId) {
+          const localKey = `orbitops_orders_${userId}`;
+          const existing = localStorage.getItem(localKey);
+          if (existing) {
+            try {
+              const orders: Order[] = JSON.parse(existing);
+              const index = orders.findIndex(o => o.id === orderId);
+              if (index !== -1) {
+                orders[index].engineerName = engineerName;
+                localStorage.setItem(localKey, JSON.stringify(orders));
+              }
+            } catch {}
+          }
+        }
+      })
+    );
+  }
+
+  getAllOrdersForAdmin(): Observable<Order[]> {
+    return this.http.get<Order[]>(`${this.apiUrl}/all`, { headers: this.getHeaders() }).pipe(
+      catchError(() => {
+        const userId = this.authService.currentUser()?.id;
+        const local = localStorage.getItem(`orbitops_orders_${userId}`);
+        if (local) {
+          try {
+            return of(JSON.parse(local));
+          } catch {
+            return of([]);
+          }
+        }
+        return of(this.getMockOrders());
       })
     );
   }

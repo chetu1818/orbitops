@@ -30,30 +30,30 @@ import { OrderService, Order } from '../../services/order.service';
         <!-- Metrics -->
         <div class="metrics-grid">
           <div class="metric-card card">
-            <div class="metric-icon primary-glow"><i class="bi bi-diagram-3-fill"></i></div>
+            <div class="metric-icon primary-glow"><i class="bi bi-folder-fill"></i></div>
             <div class="metric-info">
-              <span class="m-val">{{ orders().length }}</span>
-              <span class="m-lbl">Active Integrations</span>
+              <span class="m-val">{{ getRequestedScenariosCount() }}</span>
+              <span class="m-lbl">Requested Scenarios</span>
             </div>
           </div>
           <div class="metric-card card">
-            <div class="metric-icon accent-glow"><i class="bi bi-activity"></i></div>
+            <div class="metric-icon accent-glow"><i class="bi bi-gear-wide-connected"></i></div>
             <div class="metric-info">
-              <span class="m-val">100%</span>
-              <span class="m-lbl">Pipeline Health</span>
+              <span class="m-val">{{ getActiveDeploymentsCount() }}</span>
+              <span class="m-lbl">Active Deployments</span>
             </div>
           </div>
           <div class="metric-card card">
-            <div class="metric-icon violet-glow"><i class="bi bi-shield-fill-check"></i></div>
+            <div class="metric-icon violet-glow"><i class="bi bi-check-circle-fill"></i></div>
             <div class="metric-info">
-              <span class="m-val">SOC2</span>
-              <span class="m-lbl">Audit Level</span>
+              <span class="m-val">{{ getCompletedMappingsCount() }}</span>
+              <span class="m-lbl">Completed Mappings</span>
             </div>
           </div>
           <div class="metric-card card">
             <div class="metric-icon gold-glow"><i class="bi bi-currency-dollar"></i></div>
             <div class="metric-info">
-              <span class="m-val">{{ getTotalInvestment() }}</span>
+              <span class="m-val">{{ getTotalInvestmentValue() }}</span>
               <span class="m-lbl">Total Investment</span>
             </div>
           </div>
@@ -236,6 +236,47 @@ import { OrderService, Order } from '../../services/order.service';
                             </ng-template>
                           </div>
                         </div>
+
+                        <!-- Purchase Slip (Only for Paid/Active/Completed Orders) -->
+                        <div class="purchase-slip-card" *ngIf="order.status !== 'Awaiting Admin Review' && order.status !== 'Cost Proposed by Admin' && order.status !== 'Awaiting Payment' && order.status !== 'Declined'" style="background: rgba(255, 255, 255, 0.015); border: 1px dashed rgba(16, 185, 129, 0.25); border-radius: 8px; padding: 1.25rem; margin-top: 1.75rem;">
+                          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+                            <h5 style="margin: 0; color: var(--accent); font-size: 0.88rem; display: flex; align-items: center; gap: 0.35rem;"><i class="bi bi-receipt"></i> Purchase Slip / Invoice Receipt</h5>
+                            <button class="btn btn-secondary btn-xs" type="button" (click)="downloadPurchaseSlip(order); $event.stopPropagation();" style="display: inline-flex; align-items: center; gap: 0.25rem;">
+                              <i class="bi bi-download"></i> Download Slip (.txt)
+                            </button>
+                          </div>
+                          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; font-size: 0.8rem; font-family: var(--font-mono); color: var(--text-secondary);">
+                            <div><strong>Order ID:</strong> {{ order.id }}</div>
+                            <div><strong>Date Paid:</strong> {{ order.createdAt | date:'medium' }}</div>
+                            <div><strong>Workflow Scenario:</strong> {{ order.workflowType }}</div>
+                            <div><strong>Systems:</strong> {{ order.sourceSystem }} &rarr; {{ order.destinationSystem }}</div>
+                            <div><strong>Assigned Architect:</strong> {{ order.engineerName || 'Unassigned' }}</div>
+                            <div><strong>Client:</strong> {{ order.clientName || user.name }} ({{ order.clientCompany || user.company }})</div>
+                            <div style="grid-column: span 2; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 0.5rem; display: flex; justify-content: space-between; font-size: 0.88rem; color: #fff;">
+                              <strong>Amount Paid:</strong>
+                              <strong style="color: var(--accent); font-size: 1rem;">\${{ order.price }} USD</strong>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- Handover History Timeline -->
+                        <div class="handover-history-box" *ngIf="order.handoverHistory && order.handoverHistory.length > 0" style="background: rgba(255, 255, 255, 0.01); border: 1px solid rgba(139, 92, 246, 0.15); border-radius: 8px; padding: 1.25rem; margin-top: 1.75rem;">
+                          <h5 style="margin: 0 0 1rem 0; color: #a78bfa; font-size: 0.88rem; display: flex; align-items: center; gap: 0.35rem;"><i class="bi bi-clock-history"></i> Architect Handover & Progress History</h5>
+                          <div class="handover-timeline" style="display: flex; flex-direction: column; gap: 1rem;">
+                            <div class="handover-event" *ngFor="let entry of order.handoverHistory" style="border-left: 2px solid rgba(139, 92, 246, 0.3); padding-left: 1rem; position: relative;">
+                              <div style="position: absolute; left: -6px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: #a78bfa; box-shadow: 0 0 8px #a78bfa;"></div>
+                              <div style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono); margin-bottom: 0.25rem;">
+                                {{ entry.handoverDate | date:'medium' }}
+                              </div>
+                              <div style="font-size: 0.82rem; color: #ffffff; margin-bottom: 0.25rem;">
+                                Transferred from <strong>{{ entry.previousEngineer }}</strong> to <strong>{{ entry.newEngineer }}</strong>
+                              </div>
+                              <div style="font-size: 0.8rem; color: var(--text-secondary); background: rgba(0,0,0,0.2); border-radius: 6px; padding: 0.5rem 0.75rem; border: 1px solid rgba(255,255,255,0.02);">
+                                <strong>Completed Progress:</strong> {{ entry.progressSummary }}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
                       </div>
                     </td>
                   </tr>
@@ -309,6 +350,38 @@ import { OrderService, Order } from '../../services/order.service';
           <div>
             <h2>Operations Control Portal</h2>
             <p>Review feasibility requests, approve costing, and monitor platform health. (Admin console)</p>
+          </div>
+        </div>
+
+        <!-- Admin Dashboard Metrics Overview -->
+        <div class="metrics-grid" style="margin-top: 1.5rem; margin-bottom: 2rem;">
+          <div class="metric-card card">
+            <div class="metric-icon primary-glow"><i class="bi bi-people-fill"></i></div>
+            <div class="metric-info">
+              <span class="m-val">{{ getAdminClientsCount() }}</span>
+              <span class="m-lbl">Registered Clients</span>
+            </div>
+          </div>
+          <div class="metric-card card">
+            <div class="metric-icon accent-glow"><i class="bi bi-person-workspace"></i></div>
+            <div class="metric-info">
+              <span class="m-val">{{ getAdminEngineersCount() }}</span>
+              <span class="m-lbl">Automation Architects</span>
+            </div>
+          </div>
+          <div class="metric-card card">
+            <div class="metric-icon violet-glow"><i class="bi bi-arrow-left-right"></i></div>
+            <div class="metric-info">
+              <span class="m-val">{{ getAdminActivePipelinesCount() }}</span>
+              <span class="m-lbl">Active Sync Mappings</span>
+            </div>
+          </div>
+          <div class="metric-card card">
+            <div class="metric-icon gold-glow"><i class="bi bi-wallet2"></i></div>
+            <div class="metric-info">
+              <span class="m-val">{{ getAdminTotalVolume() }}</span>
+              <span class="m-lbl">Transaction Volume</span>
+            </div>
           </div>
         </div>
 
@@ -465,6 +538,25 @@ import { OrderService, Order } from '../../services/order.service';
                             </ng-template>
                           </div>
                         </div>
+                        <!-- Handover History Timeline -->
+                        <div class="handover-history-box" *ngIf="order.handoverHistory && order.handoverHistory.length > 0" style="background: rgba(255, 255, 255, 0.01); border: 1px solid rgba(139, 92, 246, 0.15); border-radius: 8px; padding: 1.25rem; margin-top: 1.75rem;">
+                          <h5 style="margin: 0 0 1rem 0; color: #a78bfa; font-size: 0.88rem; display: flex; align-items: center; gap: 0.35rem;"><i class="bi bi-clock-history"></i> Architect Handover & Progress History</h5>
+                          <div class="handover-timeline" style="display: flex; flex-direction: column; gap: 1rem;">
+                            <div class="handover-event" *ngFor="let entry of order.handoverHistory" style="border-left: 2px solid rgba(139, 92, 246, 0.3); padding-left: 1rem; position: relative;">
+                              <div style="position: absolute; left: -6px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: #a78bfa; box-shadow: 0 0 8px #a78bfa;"></div>
+                              <div style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono); margin-bottom: 0.25rem;">
+                                {{ entry.handoverDate | date:'medium' }}
+                              </div>
+                              <div style="font-size: 0.82rem; color: #ffffff; margin-bottom: 0.25rem;">
+                                Transferred from <strong>{{ entry.previousEngineer }}</strong> to <strong>{{ entry.newEngineer }}</strong>
+                              </div>
+                              <div style="font-size: 0.8rem; color: var(--text-secondary); background: rgba(0,0,0,0.2); border-radius: 6px; padding: 0.5rem 0.75rem; border: 1px solid rgba(255,255,255,0.02);">
+                                <strong>Completed Progress:</strong> {{ entry.progressSummary }}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
                       </div>
                     </td>
                   </tr>
@@ -480,6 +572,225 @@ import { OrderService, Order } from '../../services/order.service';
               <p>No new integration scenarios require costing or feasibility reviews currently.</p>
             </div>
           </ng-template>
+        </div>
+
+        <!-- Superpower All Pipelines Monitor -->
+        <div class="integrations-section card" style="margin-top: 2.5rem;">
+          <div class="section-title">
+            <h3>Operations Monitor (All Pipelines)</h3>
+            <p>Admin superpower console: Reassign architects, override sync status, and view client credentials.</p>
+          </div>
+
+          <div class="table-container" *ngIf="allOrders().length > 0; else emptyAllState">
+            <table class="portal-table">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>ID</th>
+                  <th>Client</th>
+                  <th>Scenario</th>
+                  <th>Route</th>
+                  <th>Cost (USD)</th>
+                  <th>Assignee Architect</th>
+                  <th>Override Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container *ngFor="let order of allOrders()">
+                  <tr (click)="toggleExpandOrder(order.id, $event)" class="expandable-row" style="cursor: pointer;">
+                    <td class="chevron-cell">
+                      <button class="chevron-btn" type="button">
+                        <i class="bi" [ngClass]="expandedOrderId() === order.id ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
+                      </button>
+                    </td>
+                    <td class="order-id"><code>{{ order.id }}</code></td>
+                    <td>
+                      <div><strong>{{ order.clientName || 'N/A' }}</strong></div>
+                      <div style="font-size: 0.72rem; color: var(--text-secondary);">{{ order.clientCompany || 'N/A' }}</div>
+                    </td>
+                    <td><strong>{{ order.workflowType }}</strong></td>
+                    <td>
+                      <div class="pipe-cell">
+                        <span class="sys-badge">{{ order.sourceSystem }}</span>
+                        <i class="bi bi-arrow-right-short"></i>
+                        <span class="sys-badge">{{ order.destinationSystem }}</span>
+                      </div>
+                    </td>
+                    <td class="cost-cell">\${{ order.price }}</td>
+                    <td>
+                      <select class="form-control" [(ngModel)]="adminSelectedEngineers[order.id]" (click)="$event.stopPropagation();" style="font-size: 0.78rem; padding: 0.25rem 0.5rem; background: rgba(2, 8, 5, 0.5); border-color: rgba(16, 185, 129, 0.15); border-radius: 6px; color: white;">
+                        <option value="">-- Assign Architect --</option>
+                        <option *ngFor="let eng of allEngineersList()" [value]="eng.name">{{ eng.name }}</option>
+                      </select>
+                    </td>
+                    <td>
+                      <select class="form-control" [(ngModel)]="adminSelectedStatuses[order.id]" (click)="$event.stopPropagation();" style="font-size: 0.78rem; padding: 0.25rem 0.5rem; background: rgba(2, 8, 5, 0.5); border-color: rgba(16, 185, 129, 0.15); border-radius: 6px; color: white;">
+                        <option value="Awaiting Admin Review">Awaiting Admin Review</option>
+                        <option value="Cost Proposed by Admin">Cost Proposed by Admin</option>
+                        <option value="Awaiting Payment">Awaiting Payment</option>
+                        <option value="Awaiting Assignment">Awaiting Assignment</option>
+                        <option value="Connection Setup">1. Connection Setup</option>
+                        <option value="Mapping Schema">2. Mapping Schema</option>
+                        <option value="Testing Sync">3. Testing Sync</option>
+                        <option value="In Progress">4. In Progress</option>
+                        <option value="Completed">5. Completed</option>
+                        <option value="Declined">Declined</option>
+                        <option value="On Hold">On Hold</option>
+                      </select>
+                    </td>
+                    <td>
+                      <button class="btn btn-primary btn-xs" (click)="submitAdminOverride(order, $event)" style="padding: 0.35rem 0.75rem;">
+                        Submit
+                      </button>
+                    </td>
+                  </tr>
+
+                  <tr *ngIf="expandedOrderId() === order.id">
+                    <td colspan="9" class="expanded-row-td">
+                      <div class="expanded-detail-card">
+                        <div class="detail-grid">
+                          <div class="detail-section">
+                            <h4 class="detail-sec-title"><i class="bi bi-person-badge"></i> Client Contact Information</h4>
+                            <div class="detail-item"><strong>Client Name:</strong> {{ order.clientName || 'N/A' }}</div>
+                            <div class="detail-item"><strong>Company:</strong> {{ order.clientCompany || 'N/A' }}</div>
+                            <div class="detail-item"><strong>Email Address:</strong> {{ order.clientEmail || 'N/A' }}</div>
+                            <div class="detail-item"><strong>Submitted At:</strong> {{ order.createdAt | date:'medium' }}</div>
+                          </div>
+                          
+                          <div class="detail-section">
+                            <h4 class="detail-sec-title"><i class="bi bi-bezier2"></i> Workflow Specifications</h4>
+                            <div class="detail-item"><strong>Scenario:</strong> {{ order.workflowType }}</div>
+                            <div class="detail-item"><strong>Source System:</strong> {{ order.sourceSystem }}</div>
+                            <div class="detail-item"><strong>Destination System:</strong> {{ order.destinationSystem }}</div>
+                            <div class="detail-item"><strong>Special Instructions:</strong> {{ order.instructions || 'None provided.' }}</div>
+                          </div>
+                        </div>
+
+                        <div class="detail-credentials-grid">
+                          <div class="cred-box">
+                            <h5 class="cred-title"><i class="bi bi-key-fill"></i> Source Credentials ({{ order.sourceSystem }})</h5>
+                            <div class="cred-table" *ngIf="getCredentialsList(order.sourceCredentials).length > 0; else noSrcCreds">
+                              <div class="cred-row" *ngFor="let cred of getCredentialsList(order.sourceCredentials)">
+                                <span class="cred-label">{{ cred.key }}</span>
+                                <div class="cred-value-wrap">
+                                  <span class="cred-value" *ngIf="!isCredentialMasked(order.id, 'source', cred.key)">{{ cred.value }}</span>
+                                  <span class="cred-value masked" *ngIf="isCredentialMasked(order.id, 'source', cred.key)">••••••••••••</span>
+                                  <div class="cred-actions">
+                                    <button class="btn-cred-action" type="button" (click)="$event.stopPropagation(); toggleCredentialMask(order.id, 'source', cred.key)" [title]="isCredentialMasked(order.id, 'source', cred.key) ? 'Show credential' : 'Hide credential'">
+                                      <i class="bi" [ngClass]="isCredentialMasked(order.id, 'source', cred.key) ? 'bi-eye' : 'bi-eye-slash'"></i>
+                                    </button>
+                                    <button class="btn-cred-action" type="button" (click)="$event.stopPropagation(); copyToClipboard(cred.value)" title="Copy to clipboard">
+                                      <i class="bi bi-clipboard"></i>
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <ng-template #noSrcCreds>
+                              <p class="no-creds-text">No source credentials supplied.</p>
+                            </ng-template>
+                          </div>
+
+                          <div class="cred-box">
+                            <h5 class="cred-title"><i class="bi bi-key-fill"></i> Destination Credentials ({{ order.destinationSystem }})</h5>
+                            <div class="cred-table" *ngIf="getCredentialsList(order.destinationCredentials).length > 0; else noDestCreds">
+                              <div class="cred-row" *ngFor="let cred of getCredentialsList(order.destinationCredentials)">
+                                <span class="cred-label">{{ cred.key }}</span>
+                                <div class="cred-value-wrap">
+                                  <span class="cred-value" *ngIf="!isCredentialMasked(order.id, 'destination', cred.key)">{{ cred.value }}</span>
+                                  <span class="cred-value masked" *ngIf="isCredentialMasked(order.id, 'destination', cred.key)">••••••••••••</span>
+                                  <div class="cred-actions">
+                                    <button class="btn-cred-action" type="button" (click)="$event.stopPropagation(); toggleCredentialMask(order.id, 'destination', cred.key)" [title]="isCredentialMasked(order.id, 'destination', cred.key) ? 'Show credential' : 'Hide credential'">
+                                      <i class="bi" [ngClass]="isCredentialMasked(order.id, 'destination', cred.key) ? 'bi-eye' : 'bi-eye-slash'"></i>
+                                    </button>
+                                    <button class="btn-cred-action" type="button" (click)="$event.stopPropagation(); copyToClipboard(cred.value)" title="Copy to clipboard">
+                                      <i class="bi bi-clipboard"></i>
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <ng-template #noDestCreds>
+                              <p class="no-creds-text">No destination credentials supplied.</p>
+                            </ng-template>
+                          </div>
+                        </div>
+
+                        <!-- Handover History Timeline -->
+                        <div class="handover-history-box" *ngIf="order.handoverHistory && order.handoverHistory.length > 0" style="background: rgba(255, 255, 255, 0.01); border: 1px solid rgba(139, 92, 246, 0.15); border-radius: 8px; padding: 1.25rem; margin-top: 1.75rem;">
+                          <h5 style="margin: 0 0 1rem 0; color: #a78bfa; font-size: 0.88rem; display: flex; align-items: center; gap: 0.35rem;"><i class="bi bi-clock-history"></i> Architect Handover & Progress History</h5>
+                          <div class="handover-timeline" style="display: flex; flex-direction: column; gap: 1rem;">
+                            <div class="handover-event" *ngFor="let entry of order.handoverHistory" style="border-left: 2px solid rgba(139, 92, 246, 0.3); padding-left: 1rem; position: relative;">
+                              <div style="position: absolute; left: -6px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: #a78bfa; box-shadow: 0 0 8px #a78bfa;"></div>
+                              <div style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono); margin-bottom: 0.25rem;">
+                                {{ entry.handoverDate | date:'medium' }}
+                              </div>
+                              <div style="font-size: 0.82rem; color: #ffffff; margin-bottom: 0.25rem;">
+                                Transferred from <strong>{{ entry.previousEngineer }}</strong> to <strong>{{ entry.newEngineer }}</strong>
+                              </div>
+                              <div style="font-size: 0.8rem; color: var(--text-secondary); background: rgba(0,0,0,0.2); border-radius: 6px; padding: 0.5rem 0.75rem; border: 1px solid rgba(255,255,255,0.02);">
+                                <strong>Completed Progress:</strong> {{ entry.progressSummary }}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                      </div>
+                    </td>
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+          </div>
+          <ng-template #emptyAllState>
+            <div class="empty-state">
+              <i class="bi bi-bezier2"></i>
+              <h4>No pipelines registered in system</h4>
+            </div>
+          </ng-template>
+        </div>
+
+        <!-- Admin Superpower User Registry Overview -->
+        <div class="team-section card" style="margin-top: 2.5rem;">
+          <div class="section-title">
+            <h3>Registered Users & Status Overview</h3>
+            <p>Monitor status, email details, and platform registration logs for both clients and architects.</p>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr; gap: 2rem;">
+            <!-- Engineers overview -->
+            <div class="members-box" style="max-height: 400px; overflow-y: auto;">
+              <h5 style="margin: 0 0 1rem 0; color: #fff; font-size: 0.95rem;"><i class="bi bi-person-workspace"></i> Platform Architects ({{ allEngineersList().length }})</h5>
+              <ng-container *ngFor="let userItem of allUsers()">
+                <div *ngIf="userItem.role === 'Engineer'" class="member-card" style="display: flex;">
+                  <div class="member-avatar"><i class="bi bi-shield-fill-gear"></i></div>
+                  <div class="member-info">
+                    <strong>{{ userItem.name }}</strong>
+                    <span>{{ userItem.email }}</span>
+                  </div>
+                  <span class="status-indicator-badge" [class.online]="userItem.isAvailable" [class.busy]="!userItem.isAvailable" style="padding: 0.2rem 0.5rem; font-size: 0.65rem;">
+                    {{ userItem.isAvailable ? 'Online' : 'Offline' }}
+                  </span>
+                </div>
+              </ng-container>
+            </div>
+
+            <!-- Clients overview -->
+            <div class="members-box" style="max-height: 400px; overflow-y: auto;">
+              <h5 style="margin: 0 0 1rem 0; color: #fff; font-size: 0.95rem;"><i class="bi bi-people-fill"></i> Platform Clients ({{ getAdminClientsCount() }})</h5>
+              <ng-container *ngFor="let userItem of allUsers()">
+                <div *ngIf="userItem.role === 'Client' || userItem.role === 'SubClient'" class="member-card" style="display: flex;">
+                  <div class="member-avatar" style="background: rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.2); color: #60a5fa;"><i class="bi bi-buildings"></i></div>
+                  <div class="member-info">
+                    <strong>{{ userItem.name }} ({{ userItem.company }})</strong>
+                    <span>{{ userItem.email }}</span>
+                  </div>
+                  <span class="badge-role">{{ userItem.role }}</span>
+                </div>
+              </ng-container>
+            </div>
+          </div>
         </div>
 
         <!-- Admin Engineer Management Section -->
@@ -671,6 +982,42 @@ import { OrderService, Order } from '../../services/order.service';
                             </ng-template>
                           </div>
                         </div>
+
+                        <!-- Handover History Timeline -->
+                        <div class="handover-history-box" *ngIf="order.handoverHistory && order.handoverHistory.length > 0" style="background: rgba(255, 255, 255, 0.01); border: 1px solid rgba(139, 92, 246, 0.15); border-radius: 8px; padding: 1.25rem; margin-top: 1.75rem;">
+                          <h5 style="margin: 0 0 1rem 0; color: #a78bfa; font-size: 0.88rem; display: flex; align-items: center; gap: 0.35rem;"><i class="bi bi-clock-history"></i> Architect Handover & Progress History</h5>
+                          <div class="handover-timeline" style="display: flex; flex-direction: column; gap: 1rem;">
+                            <div class="handover-event" *ngFor="let entry of order.handoverHistory" style="border-left: 2px solid rgba(139, 92, 246, 0.3); padding-left: 1rem; position: relative;">
+                              <div style="position: absolute; left: -6px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: #a78bfa; box-shadow: 0 0 8px #a78bfa;"></div>
+                              <div style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono); margin-bottom: 0.25rem;">
+                                {{ entry.handoverDate | date:'medium' }}
+                              </div>
+                              <div style="font-size: 0.82rem; color: #ffffff; margin-bottom: 0.25rem;">
+                                Transferred from <strong>{{ entry.previousEngineer }}</strong> to <strong>{{ entry.newEngineer }}</strong>
+                              </div>
+                              <div style="font-size: 0.8rem; color: var(--text-secondary); background: rgba(0,0,0,0.2); border-radius: 6px; padding: 0.5rem 0.75rem; border: 1px solid rgba(255,255,255,0.02);">
+                                <strong>Completed Progress:</strong> {{ entry.progressSummary }}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Progress Status Updater -->
+                        <div class="status-updater-box" style="background: rgba(255, 255, 255, 0.015); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 1.25rem; margin-top: 1.75rem;">
+                          <h5 style="margin: 0 0 0.75rem 0; color: #fff; font-size: 0.88rem; display: flex; align-items: center; gap: 0.35rem;"><i class="bi bi-arrow-repeat"></i> Update Pipeline Progress Status</h5>
+                          <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                            <select class="form-control" [value]="order.status" (change)="onUpdateStatus(order.id, $event)" style="max-width: 250px; background: #080e1a; border-color: rgba(16, 185, 129, 0.2); color: #fff; padding: 0.4rem 0.6rem; border-radius: 6px;">
+                              <option value="Awaiting Assignment">Awaiting Assignment</option>
+                              <option value="Connection Setup">1. Connection Setup</option>
+                              <option value="Mapping Schema">2. Mapping Schema</option>
+                              <option value="Testing Sync">3. Testing Sync</option>
+                              <option value="In Progress">4. In Progress / Active Sync</option>
+                              <option value="Completed">5. Completed / Fully Deployed</option>
+                              <option value="On Hold">On Hold</option>
+                            </select>
+                            <span style="font-size: 0.75rem; color: var(--text-muted);">Updating this status updates the tracking timeline for the Client and Admin.</span>
+                          </div>
+                        </div>
                       </div>
                     </td>
                   </tr>
@@ -778,6 +1125,33 @@ import { OrderService, Order } from '../../services/order.service';
               </button>
             </div>
 
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. HANDOVER PROGRESS PROMPT MODAL -->
+      <div *ngIf="activeHandoverPrompt() as promptData" class="modal-overlay">
+        <div class="modal-card">
+          <div class="modal-header">
+            <h4><i class="bi bi-arrow-left-right"></i> Architect Handover Log</h4>
+            <button class="close-btn" (click)="closeHandoverPrompt()">&times;</button>
+          </div>
+          <div class="modal-body">
+            <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 1.25rem;">
+              You are reassigning this pipeline from <strong>{{ promptData.oldEng }}</strong> to <strong>{{ promptData.newEng }}</strong>. Please summarize the progress completed by {{ promptData.oldEng }} before handover.
+            </p>
+            <div class="form-group">
+              <label>Progress Summary / Notes</label>
+              <textarea 
+                [(ngModel)]="handoverProgressSummary"
+                rows="4"
+                placeholder="E.g., Successfully established connection and mapped core attributes. Sync testing remains pending."
+                class="form-control"
+              ></textarea>
+            </div>
+            <button (click)="submitHandoverReassignment()" class="btn btn-primary btn-block" style="margin-top: 1.25rem;" [disabled]="!handoverProgressSummary.trim()">
+              Confirm Reassignment & Log Progress
+            </button>
           </div>
         </div>
       </div>
@@ -1479,12 +1853,6 @@ import { OrderService, Order } from '../../services/order.service';
       background: transparent;
       border: none;
       color: var(--text-muted);
-      cursor: pointer;
-      font-size: 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: color 0.2s;
     }
     tr.expandable-row:hover .chevron-btn {
       color: #fff;
@@ -1499,13 +1867,22 @@ export class PortalHomeComponent implements OnInit {
   pendingOrders = signal<Order[]>([]);
   teamMembers = signal<any[]>([]);
 
+  allOrders = signal<Order[]>([]);
+  allUsers = signal<any[]>([]);
+  allEngineersList = signal<any[]>([]);
+
+  adminSelectedEngineers: { [orderId: string]: string } = {};
+  adminSelectedStatuses: { [orderId: string]: string } = {};
+  activeHandoverPrompt = signal<{ order: Order, oldEng: string, newEng: string, newStatus: string } | null>(null);
+  handoverProgressSummary = '';
+
   expandedOrderId = signal<string | null>(null);
   maskedStates = signal<Record<string, boolean>>({});
 
   toggleExpandOrder(orderId: string, event?: Event) {
     if (event) {
       const target = event.target as HTMLElement;
-      if (target.closest('.btn') || target.closest('input') || target.closest('.negotiation-controls') || target.closest('.counter-input-box')) {
+      if (target.closest('.btn') || target.closest('input') || target.closest('select') || target.closest('.negotiation-controls') || target.closest('.counter-input-box')) {
         return;
       }
     }
@@ -1537,6 +1914,177 @@ export class PortalHomeComponent implements OnInit {
 
   copyToClipboard(text: string) {
     navigator.clipboard.writeText(text);
+  }
+
+  getRequestedScenariosCount(): number {
+    return this.orders().length;
+  }
+
+  getActiveDeploymentsCount(): number {
+    const activeStatuses = ['Connection Setup', 'Mapping Schema', 'Testing Sync', 'In Progress'];
+    return this.orders().filter(o => activeStatuses.includes(o.status)).length;
+  }
+
+  getCompletedMappingsCount(): number {
+    return this.orders().filter(o => o.status === 'Completed').length;
+  }
+
+  getTotalInvestmentValue(): string {
+    return this.getTotalInvestment();
+  }
+
+  getAdminClientsCount(): number {
+    return this.allUsers().filter(u => u.role === 'Client' || u.role === 'SubClient').length;
+  }
+
+  getAdminEngineersCount(): number {
+    return this.allUsers().filter(u => u.role === 'Engineer').length;
+  }
+
+  getAdminActivePipelinesCount(): number {
+    const activeStatuses = ['Connection Setup', 'Mapping Schema', 'Testing Sync', 'In Progress'];
+    return this.allOrders().filter(o => activeStatuses.includes(o.status)).length;
+  }
+
+  getAdminTotalVolume(): string {
+    const sum = this.allOrders()
+      .filter(o => o.status !== 'Awaiting Admin Review' && o.status !== 'Cost Proposed by Admin' && o.status !== 'Declined')
+      .reduce((total, order) => total + order.price, 0);
+    return `$${sum.toLocaleString()}`;
+  }
+
+  loadAllOrdersForAdmin() {
+    this.orderService.getAllOrdersForAdmin().subscribe({
+      next: (data) => {
+        this.allOrders.set(data);
+        data.forEach(order => {
+          if (this.adminSelectedEngineers[order.id] === undefined) {
+            this.adminSelectedEngineers[order.id] = order.engineerName || '';
+          }
+          if (this.adminSelectedStatuses[order.id] === undefined) {
+            this.adminSelectedStatuses[order.id] = order.status;
+          }
+        });
+      }
+    });
+  }
+
+  loadAllUsers() {
+    this.authService.getAllUsers().subscribe({
+      next: (data) => this.allUsers.set(data)
+    });
+  }
+
+  loadEngineersForAssign() {
+    this.authService.getEngineers().subscribe({
+      next: (data) => this.allEngineersList.set(data)
+    });
+  }
+
+  onAssignEngineer(orderId: string, event: Event) {
+    const select = event.target as HTMLSelectElement;
+    const engineerName = select.value;
+    this.orderService.assignEngineer(orderId, engineerName).subscribe({
+      next: () => {
+        this.loadAllOrdersForAdmin();
+        this.loadPendingWorkflows();
+      }
+    });
+  }
+
+  onUpdateStatus(orderId: string, event: Event | string) {
+    const status = typeof event === 'string' ? event : (event.target as HTMLSelectElement).value;
+    this.orderService.updateOrderStatus(orderId, status).subscribe({
+      next: () => {
+        const role = this.authService.currentUser()?.role;
+        if (role === 'Admin') {
+          this.loadAllOrdersForAdmin();
+          this.loadPendingWorkflows();
+        } else {
+          this.loadOrders();
+        }
+      }
+    });
+  }
+
+  submitAdminOverride(order: Order, event: Event) {
+    event.stopPropagation();
+    const oldEng = order.engineerName || '';
+    const newEng = this.adminSelectedEngineers[order.id] || '';
+    const newStatus = this.adminSelectedStatuses[order.id] || '';
+
+    // Check if engineer is changed on an ongoing project
+    if (oldEng && newEng && oldEng !== newEng) {
+      this.handoverProgressSummary = '';
+      this.activeHandoverPrompt.set({ order, oldEng, newEng, newStatus });
+    } else {
+      this.executeAdminUpdates(order.id, newEng, newStatus);
+    }
+  }
+
+  closeHandoverPrompt() {
+    this.activeHandoverPrompt.set(null);
+    this.handoverProgressSummary = '';
+  }
+
+  submitHandoverReassignment() {
+    const promptData = this.activeHandoverPrompt();
+    if (!promptData) return;
+
+    this.executeAdminUpdates(
+      promptData.order.id,
+      promptData.newEng,
+      promptData.newStatus,
+      this.handoverProgressSummary
+    );
+    this.closeHandoverPrompt();
+  }
+
+  executeAdminUpdates(orderId: string, newEng: string, newStatus: string, progressSummary?: string) {
+    this.orderService.assignEngineer(orderId, newEng, progressSummary).subscribe({
+      next: () => {
+        this.orderService.updateOrderStatus(orderId, newStatus).subscribe({
+          next: () => {
+            this.loadAllOrdersForAdmin();
+            this.loadPendingWorkflows();
+          }
+        });
+      }
+    });
+  }
+
+  downloadPurchaseSlip(order: Order) {
+    const slipText = `==================================================
+              ORBITOPS PURCHASE SLIP
+==================================================
+Order ID:         ${order.id}
+Date Paid:        ${new Date(order.createdAt).toLocaleString()}
+Client Name:      ${order.clientName || 'N/A'}
+Client Company:   ${order.clientCompany || 'N/A'}
+Client Email:     ${order.clientEmail || 'N/A'}
+
+Integration Details:
+--------------------------------------------------
+Workflow Scenario: ${order.workflowType}
+Source System:     ${order.sourceSystem}
+Dest. System:      ${order.destinationSystem}
+Assigned Architect:${order.engineerName || 'Unassigned'}
+Est. Delivery:    ${order.estimatedCompletionTime || '3 days'}
+
+--------------------------------------------------
+Amount Paid:      $${order.price} USD
+Payment Status:   PAID / SECURED
+==================================================
+Thank you for choosing OrbitOps Automation!
+`;
+    const blob = new Blob([slipText], { type: 'text/plain;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `receipt_${order.id}.txt`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
 
   // Cost approvals inputs mapping (orderId -> price)
@@ -1571,6 +2119,9 @@ export class PortalHomeComponent implements OnInit {
     const role = this.authService.currentUser()?.role;
     if (role === 'Admin') {
       this.loadPendingWorkflows();
+      this.loadAllOrdersForAdmin();
+      this.loadAllUsers();
+      this.loadEngineersForAssign();
     } else {
       this.loadOrders();
       if (role === 'Client') {

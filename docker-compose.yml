@@ -1,0 +1,21 @@
+services:
+  backend:
+    build:
+      context: . 
+      dockerfile: Dockerfile # Looks for the Dockerfile right next to this yaml file
+    container_name: orbitops-backend
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+
+  frontend:
+    build:
+      context: ./frontend # Looks inside the frontend folder
+      dockerfile: Dockerfile # Looks for the Dockerfile inside that frontend folder
+    container_name: orbitops-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend

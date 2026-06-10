@@ -37,6 +37,11 @@ namespace OrbitOps.Api.Data
                         v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null),
                         v => JsonSerializer.Deserialize<Dictionary<string, string>>(v, (JsonSerializerOptions)null) ?? new Dictionary<string, string>()
                     );
+                entity.Property(o => o.HandoverHistory)
+                    .HasConversion(
+                        v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null),
+                        v => JsonSerializer.Deserialize<List<HandoverHistoryEntry>>(v, (JsonSerializerOptions)null) ?? new List<HandoverHistoryEntry>()
+                    );
             });
 
             modelBuilder.Entity<ChatSession>(entity =>

@@ -12,6 +12,8 @@ namespace OrbitOps.Api.Services
         List<Order> GetOrdersForEngineer(string engineerName);
         Order CreateOrder(Order order);
         List<Order> GetPendingOrders();
+        List<Order> GetAllOrders();
+        bool UpdateOrderStatus(string orderId, string status);
         bool ApproveOrderCosting(string orderId, decimal price, string estimatedCompletionTime);
         bool ClientApproveCosting(string orderId);
         bool ClientDeclineCosting(string orderId);
@@ -75,6 +77,25 @@ namespace OrbitOps.Api.Services
                 .ToList();
             PopulateClientDetails(list);
             return list;
+        }
+
+        public List<Order> GetAllOrders()
+        {
+            var list = _context.Orders
+                .OrderByDescending(o => o.CreatedAt)
+                .ToList();
+            PopulateClientDetails(list);
+            return list;
+        }
+
+        public bool UpdateOrderStatus(string orderId, string status)
+        {
+            var order = _context.Orders.FirstOrDefault(o => o.Id == orderId);
+            if (order == null) return false;
+
+            order.Status = status;
+            _context.SaveChanges();
+            return true;
         }
 
         private void PopulateClientDetails(List<Order> orders)

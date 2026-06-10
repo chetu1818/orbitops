@@ -107,6 +107,10 @@ export class AuthService {
     return this.http.put<any>(`${this.apiUrl}/engineer-status`, { status, isAvailable }, { headers: this.getHeaders() });
   }
 
+  getAllUsers(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/all-users`, { headers: this.getHeaders() });
+  }
+
   private setSession(auth: AuthResponse) {
     localStorage.setItem('orbitops_auth_token', auth.token);
     localStorage.setItem('orbitops_auth_user', JSON.stringify(auth.user));

@@ -35,7 +35,7 @@ export interface Engineer {
           <div class="step-line" [class.completed]="currentStep() > 2"></div>
           <div class="step-node" [class.active]="currentStep() >= 3" [class.completed]="currentStep() > 3">
             <span class="node-num"><span *ngIf="currentStep() <= 3">3</span><i *ngIf="currentStep() > 3" class="bi bi-check"></i></span>
-            <span class="node-lbl">Architect Assign</span>
+            <span class="node-lbl">Instructions</span>
           </div>
           <div class="step-line" [class.completed]="currentStep() > 3"></div>
           <div class="step-node" [class.active]="currentStep() >= 4" [class.completed]="currentStep() > 4">
@@ -188,15 +188,15 @@ export interface Engineer {
 
           <div class="step-actions">
             <button type="button" (click)="prevStep()" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Back</button>
-            <button type="button" (click)="nextStep2()" class="btn btn-primary">Choose Architect <i class="bi bi-arrow-right"></i></button>
+            <button type="button" (click)="nextStep2()" class="btn btn-primary">Define Instructions <i class="bi bi-arrow-right"></i></button>
           </div>
         </div>
 
-        <!-- STEP 3: Instructions & Engineer Selection -->
+        <!-- STEP 3: Instructions & Rules -->
         <div *ngIf="currentStep() === 3">
           <div class="step-header">
-            <h3>Assign Architect & Instructions</h3>
-            <p>Provide specific design rules and choose an available architect to build the scenario.</p>
+            <h3>Instructions & Design Rules</h3>
+            <p>Provide specific design rules and workflow requirements to build the scenario.</p>
           </div>
 
           <div class="form-group">
@@ -210,47 +210,11 @@ export interface Engineer {
             ></textarea>
           </div>
 
-          <div class="engineers-section">
-            <label>Available Architects</label>
-            <div class="engineer-cards">
-              <div 
-                *ngFor="let eng of engineers()" 
-                class="eng-card" 
-                [class.selected]="selectedEngineer()?.name === eng.name"
-                (click)="selectEngineer(eng)"
-              >
-                <div class="eng-avatar-wrap">
-                  <div class="avatar" [class]="eng.avatarClass"><i class="bi bi-person-fill-gear"></i></div>
-                  <div class="badge-status">Online</div>
-                </div>
-                <div class="eng-details">
-                  <h4>{{ eng.name }}</h4>
-                  <span class="eng-role">{{ eng.role }}</span>
-                  <div class="eng-stat">
-                    <span class="rating"><i class="bi bi-star-fill"></i> {{ eng.rating.toFixed(1) }}</span>
-                    <span class="sep">·</span>
-                    <span class="projects">{{ eng.projectsCount }} automations</span>
-                  </div>
-                  <div class="eng-skills">
-                    <span *ngFor="let s of eng.skills" class="s-tag">{{ s }}</span>
-                  </div>
-                </div>
-                <div class="selection-indicator">
-                  <i class="bi" [class.bi-circle]="selectedEngineer()?.name !== eng.name" [class.bi-check-circle-fill]="selectedEngineer()?.name === eng.name"></i>
-                </div>
-              </div>
-              <div *ngIf="engineers().length === 0" class="no-engineers-alert">
-                <i class="bi bi-exclamation-octagon"></i>
-                <p>No architects are currently available to receive mappings. Please check back shortly.</p>
-              </div>
-            </div>
-          </div>
-
           <div *ngIf="paymentError()" class="error-alert" style="margin-top: 1.5rem;"><p>{{ paymentError() }}</p></div>
 
           <div class="step-actions">
             <button type="button" (click)="prevStep()" class="btn btn-secondary" [disabled]="paying()"><i class="bi bi-arrow-left"></i> Back</button>
-            <button type="button" (click)="submitForReview()" class="btn btn-primary" [disabled]="!selectedEngineer() || paying()">
+            <button type="button" (click)="submitForReview()" class="btn btn-primary" [disabled]="paying()">
               <span *ngIf="!paying()"><i class="bi bi-send-fill"></i> Submit for Costing Review</span>
               <span *ngIf="paying()" class="spinner-text"><span class="spinner"></span> Dispatching Setup...</span>
             </button>
@@ -930,8 +894,6 @@ export class WizardComponent implements OnInit {
   }
 
   submitForReview() {
-    if (!this.selectedEngineer()) return;
-
     this.paying.set(true);
     this.paymentError.set('');
 
@@ -942,8 +904,8 @@ export class WizardComponent implements OnInit {
       sourceCredentials: this.sourceCredentialsInput,
       destinationCredentials: this.destinationCredentialsInput,
       instructions: this.extraInstructions,
-      engineerName: this.selectedEngineer()?.name || '',
-      engineerRating: this.selectedEngineer()?.rating || 5.0,
+      engineerName: '',
+      engineerRating: 0.0,
       price: this.step1Form.value.customBid || this.pricingDetected(),
     };
 

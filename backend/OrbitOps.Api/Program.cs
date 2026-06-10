@@ -64,6 +64,16 @@ using (var scope = app.Services.CreateScope())
             );
         END");
 
+    // Auto-create HandoverHistory column in Orders table if it doesn't exist
+    context.Database.ExecuteSqlRaw(@"
+        IF EXISTS (SELECT * FROM sys.tables WHERE name = 'Orders')
+        BEGIN
+            IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID('Orders') AND name = 'HandoverHistory')
+            BEGIN
+                ALTER TABLE [Orders] ADD [HandoverHistory] nvarchar(max) NULL;
+            END
+        END");
+
     var authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
     authService.InitializeDatabase();
 }
