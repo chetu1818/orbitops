@@ -1,0 +1,215 @@
+<!-- OrbitBot Floating Action Button (FAB) -->
+<button id="ob-fab" (click)="toggleChat()" [class.ob-hidden]="isOpen" aria-label="Chat with Mia">
+  <span class="ob-fab-ring"></span>
+  <span class="ob-fab-ring2"></span>
+  <svg class="ob-fab-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="fab-icon-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#00F0FF" />
+        <stop offset="100%" stop-color="#8b5cf6" />
+      </linearGradient>
+    </defs>
+    <!-- Robotic chat bubble shape -->
+    <path d="M21 11.5c0 4.14-3.58 7.5-8 7.5-1.12 0-2.18-.22-3.14-.62L5 20l1.43-4.28C5.54 14.53 5 13.08 5 11.5 5 7.36 8.58 4 13 4s8 3.36 8 7.5z" stroke="url(#fab-icon-grad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+    <!-- Visor light connection -->
+    <path d="M9 11h6" stroke="#00F0FF" stroke-width="2" stroke-linecap="round" />
+    <circle cx="12" cy="11" r="0.8" fill="#fff" />
+  </svg>
+  <span class="ob-fab-badge">AI</span>
+  <span class="ob-fab-tooltip">Chat with Mia</span>
+</button>
+
+<!-- OrbitBot Glassmorphic Chat Window -->
+<div id="ob-window" [class.ob-open]="isOpen" role="dialog" aria-modal="true" aria-label="OrbitOps AI Assistant">
+
+  <!-- Header -->
+  <div class="ob-header">
+    <div class="ob-header-left">
+      <div class="ob-avatar">
+        <div class="ob-avatar-glow"></div>
+        <svg viewBox="0 0 100 100" class="mia-header-logo-svg" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="mia-avatar-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#6366f1" />
+              <stop offset="50%" stop-color="#8b5cf6" />
+              <stop offset="100%" stop-color="#06b6d4" />
+            </linearGradient>
+            <linearGradient id="visor-glow" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#00F0FF" />
+              <stop offset="100%" stop-color="#0072FF" />
+            </linearGradient>
+            <filter id="svg-glow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="2" result="blur" />
+              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
+          </defs>
+          <!-- Outer Rotating Orbit Lines -->
+          <circle cx="50" cy="50" r="45" fill="none" stroke="url(#mia-avatar-grad)" stroke-width="2" class="mia-bg-ring" stroke-dasharray="14 10" />
+          <circle cx="50" cy="50" r="39" fill="none" stroke="rgba(6, 182, 212, 0.15)" stroke-width="1" />
+          
+          <!-- Robot Head Shield Backplate -->
+          <path d="M32,35 C32,22 68,22 68,35 C68,54 63,68 50,73 C37,68 32,54 32,35 Z" fill="#0d0e1b" stroke="url(#mia-avatar-grad)" stroke-width="2.5" />
+          
+          <!-- Side Ear Plates / Antennas -->
+          <rect x="27" y="38" width="5" height="13" rx="2" fill="#1e1b4b" stroke="#06b6d4" stroke-width="1" />
+          <rect x="68" y="38" width="5" height="13" rx="2" fill="#1e1b4b" stroke="#06b6d4" stroke-width="1" />
+          <line x1="29" y1="38" x2="25" y2="29" stroke="#06b6d4" stroke-width="1.5" stroke-linecap="round" />
+          <circle cx="25" cy="29" r="1.5" fill="#00F0FF" />
+          <line x1="71" y1="38" x2="75" y2="29" stroke="#06b6d4" stroke-width="1.5" stroke-linecap="round" />
+          <circle cx="75" cy="29" r="1.5" fill="#00F0FF" />
+
+          <!-- Visor Background (Dark glass) -->
+          <path d="M36,42 C36,42 50,38 64,42 C64,46 61,54 50,56 C39,54 36,46 36,42 Z" fill="#04060c" stroke="rgba(99, 102, 241, 0.4)" stroke-width="1" />
+
+          <!-- Glowing Cyber Visor Eye (Vibrant Cyan Lightbar) -->
+          <path d="M39,45 C43,44 57,44 61,45 C62,47 59,51 50,52 C41,51 38,47 39,45 Z" fill="url(#visor-glow)" filter="url(#svg-glow)" />
+          <line x1="42" y1="48" x2="58" y2="48" stroke="#ffffff" stroke-width="0.5" stroke-dasharray="1.5 1" opacity="0.8" />
+
+          <!-- Mouth LED pattern (glowing dots) -->
+          <g transform="translate(0, 4)" opacity="0.95">
+            <circle cx="45" cy="60" r="1" fill="#00F0FF" />
+            <circle cx="48" cy="61" r="1" fill="#00F0FF" />
+            <circle cx="50" cy="61.5" r="1.2" fill="#00F0FF" filter="url(#svg-glow)" />
+            <circle cx="52" cy="61" r="1" fill="#00F0FF" />
+            <circle cx="55" cy="60" r="1" fill="#00F0FF" />
+          </g>
+        </svg>
+        <span class="ob-status-dot" [class.ob-online]="backendOk || messages.length > 0"></span>
+      </div>
+      <div>
+        <div class="ob-name">Mia <span class="ob-ai-tag">AGENT</span></div>
+        <div class="ob-status-text">
+          {{ backendOk ? 'Active • Groq LLM Agent' : 'Active • OrbitOps Local AI' }}
+        </div>
+      </div>
+    </div>
+    <div class="ob-header-actions">
+      <!-- Toggle read-aloud voice output -->
+      <button (click)="toggleVoiceOut()" [class.ob-active]="voiceOut" class="ob-icon-btn" title="Toggle voice output">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07" *ngIf="voiceOut"/>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14" *ngIf="voiceOut"/>
+        </svg>
+      </button>
+      <!-- Export conversation transcript -->
+      <button (click)="exportChat()" class="ob-icon-btn" title="Export conversation">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+      </button>
+      <!-- Clear conversation history -->
+      <button (click)="clearChat()" class="ob-icon-btn" title="Clear chat">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="3 6 5 6 21 6"/>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+        </svg>
+      </button>
+      <!-- Close chatbot window -->
+      <button (click)="toggleChat()" class="ob-icon-btn ob-close" title="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Messages List -->
+  <div #messagesContainer class="ob-messages" role="log" aria-live="polite">
+    <div *ngFor="let msg of messages; let idx = index" class="ob-msg" [class.ob-msg-bot]="msg.role === 'bot'" [class.ob-msg-user]="msg.role === 'user'">
+      <!-- Chat Bubble -->
+      <div class="ob-bubble" [innerHTML]="msg.text"></div>
+      
+      <!-- Metadata Row for Bot Messages -->
+      <div class="ob-meta-row" *ngIf="msg.role === 'bot'">
+        <div class="ob-msg-meta">
+          <span class="ob-msg-model">🤖 {{ msg.model || 'Mia' }}</span>
+          <span class="ob-msg-time">{{ formatTime(msg.ts) }}</span>
+        </div>
+        <div class="ob-msg-actions">
+          <!-- Copy to clipboard -->
+          <button (click)="copyText(msg.text)" class="ob-action-btn" title="Copy response">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg>
+          </button>
+          <!-- Speak aloud -->
+          <button (click)="speak(msg.text)" class="ob-action-btn" title="Read aloud">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+            </svg>
+          </button>
+          <!-- Thumbs Up feedback -->
+          <button (click)="submitFeedback(idx, 1)" class="ob-action-btn ob-thumb-up" [class.active]="msg.feedback === 1" title="Helpful response">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+          </button>
+          <!-- Thumbs Down feedback -->
+          <button (click)="submitFeedback(idx, -1)" class="ob-action-btn ob-thumb-down" [class.active]="msg.feedback === -1" title="Unhelpful response">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm12-3h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Time for User Messages -->
+      <div class="ob-user-time" *ngIf="msg.role === 'user'">
+        {{ formatTime(msg.ts) }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Agent Thinking/Researching Panel -->
+  <div id="ob-thinking" class="ob-thinking" [class.ob-thinking-vis]="isThinking">
+    <div class="ob-think-step" *ngFor="let step of thinkingSteps; let i = index" 
+         [class.ob-think-active]="i === currentStepIndex" 
+         [class.ob-think-done]="i < currentStepIndex">
+      <span class="ob-think-icon">{{ i === 0 ? '🔍' : (i === 1 ? '📚' : '✍️') }}</span>
+      <span class="ob-think-label">{{ step }}</span>
+      <span class="ob-think-dots" *ngIf="i === currentStepIndex"><span></span><span></span><span></span></span>
+    </div>
+  </div>
+
+  <!-- Quick chips / templates -->
+  <div id="ob-chips" class="ob-chips" *ngIf="!isThinking">
+    <button class="ob-chip" (click)="onChipClick('What systems do you integrate?')">🔗 Integrations</button>
+    <button class="ob-chip" (click)="onChipClick('How does your data pipeline work?')">⚡ Pipeline</button>
+    <button class="ob-chip" (click)="onChipClick('Is OrbitOps SOC2 compliant?')">🔒 Security</button>
+    <button class="ob-chip" (click)="onChipClick('What are your pricing plans?')">💰 Pricing</button>
+    <button class="ob-chip" (click)="onChipClick('I want to book a demo')">📅 Book Demo</button>
+  </div>
+
+  <!-- Text Input Area -->
+  <form id="ob-form" (submit)="onSubmit($event)" class="ob-input-area" autocomplete="off">
+    <div class="ob-input-wrap">
+      <input id="ob-input" class="ob-input" type="text" [(ngModel)]="inputText" name="userInput"
+        placeholder="Ask Mia anything..." autocomplete="off" spellcheck="true"
+        aria-label="Chat message" [disabled]="isThinking" />
+      
+      <!-- Speech recording audio wave visualizer -->
+      <div class="ob-voice-wave" *ngIf="isListening">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+
+      <!-- Microphone button -->
+      <button id="ob-mic" class="ob-mic-btn" type="button" (click)="toggleMic()" [class.ob-mic-active]="isListening" title="Voice input" aria-label="Voice input">
+        <svg id="ob-mic-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" *ngIf="!isListening">
+          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+          <line x1="12" y1="19" x2="12" y2="23"/>
+          <line x1="8" y1="23" x2="16" y2="23"/>
+        </svg>
+        <svg id="ob-mic-off" viewBox="0 0 24 24" fill="currentColor" style="color:#ef4444" *ngIf="isListening">
+          <rect x="6" y="6" width="12" height="12" rx="2"/>
+        </svg>
+      </button>
+    </div>
+    <button class="ob-send-btn" type="submit" [disabled]="isThinking" aria-label="Send">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <line x1="22" y1="2" x2="11" y2="13"/>
+        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+      </svg>
+    </button>
+  </form>
+</div>

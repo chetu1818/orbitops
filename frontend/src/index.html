@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OrbitOps.ai | Enterprise Operations & Workflow Automation</title>
+  <base href="/">
+  <meta name="description"
+    content="OrbitOps.ai automates manual, repetitive operational tasks and orchestrates secure enterprise data pipelines.">
+  <link rel="icon" type="image/svg+xml"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%230066FF'/%3E%3Cstop offset='100%25' stop-color='%23AF52DE'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='16' cy='16' r='6.5' fill='url(%23g)'/%3E%3Cellipse cx='16' cy='16' rx='12' ry='3.5' fill='none' stroke='%2300B4D8' stroke-width='1.8' transform='rotate(35 16 16)'/%3E%3Cellipse cx='16' cy='16' rx='12' ry='3.5' fill='none' stroke='%237c3aed' stroke-width='1.8' transform='rotate(-35 16 16)'/%3E%3C/svg%3E">
+  <link rel="alternate icon" type="image/svg+xml" href="/favicon.svg">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=Space+Grotesk:wght@700&display=swap"
+    rel="stylesheet">
+  
+  <!-- Bootstrap Icons (for dotnet inbuilt style icons) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <!-- CDNs for 3D and Animations -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+  <style>
+    /* CSS Variables & Core Themes (Apple Inspired) */
+    :root {
+      /* Softer Light theme (default) - eye-friendly cool gray */
+      --primary: #1D1D1F;
+      --secondary: #515154;
+      --accent: #0071E3;
+      --accent-secondary: #00B4D8;
+      --bg-light: #F4F6F9;
+      --bg-alt: #E9ECF0;
+      --bg-subtle: #DFE3E8;
+      --border: rgba(0, 0, 0, 0.06);
+      --card-bg: #FFFFFF;
+      --header-bg: rgba(244, 246, 249, 0.85);
+      --header-shadow: rgba(0, 0, 0, 0.03);
+      --code-bg: #E9ECF0;
+      --code-text: #1D1D1F;
+      --header-height: 72px;
+      --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+
+      /* Chatbot variables */
+      --chatbot-bg: rgba(255, 255, 255, 0.85);
+      --chatbot-border: rgba(0, 0, 0, 0.08);
+      --chatbot-shadow: rgba(0, 0, 0, 0.1);
+      --chatbot-msg-bot: #F1F5F9;
+      --chatbot-msg-bot-text: #1E293B;
+      --chatbot-msg-user: #0071E3;
+      --chatbot-msg-user-text: #FFFFFF;
+    }
+
+    /* 1. Nova (Default Dark Void) */
+    [data-theme="nova"] {
+      --primary: #F5F5F7;
+      --secondary: #8ba3c7;
+      --accent: #0071E3;
+      --accent-secondary: #00B4D8;
+      --bg-light: #020510;
+      --bg-alt: #080e1a;
+      --bg-subtle: #0c1527;
+      --border: rgba(100, 160, 255, 0.1);
+      --card-bg: rgba(10, 20, 40, 0.55);
+      --header-bg: rgba(2, 5, 16, 0.85);
+      --header-shadow: rgba(0, 0, 0, 0.4);
+      --code-bg: #0c1527;
+      --code-text: #F5F5F7;
+
+      --chatbot-bg: rgba(10, 20, 40, 0.9);
+      --chatbot-border: rgba(100, 160, 255, 0.15);
+      --chatbot-shadow: rgba(0, 0, 0, 0.5);
+      --chatbot-msg-bot: #0c1527;
+      --chatbot-msg-bot-text: #F5F5F7;
+      --chatbot-msg-user: #0071E3;
+      --chatbot-msg-user-text: #FFFFFF;
+    }
+
+    /* 2. Cyberpunk Neon (Ultra-Colorful Cyber Dark) */
+    [data-theme="cyber"] {
+      --primary: #ffffff;
+      --secondary: #00F0FF;
+      --accent: #FF007F;
+      --accent-secondary: #00F0FF;
+      --bg-light: #000000;
+      --bg-alt: #050508;
+      --bg-subtle: #0c0c12;
+      --border: rgba(255, 0, 127, 0.3);
+      --card-bg: rgba(255, 0, 127, 0.06);
+      --header-bg: rgba(5, 5, 8, 0.9);
+      --header-shadow: rgba(255, 0, 127, 0.15);
+      --code-bg: #0c0c12;
+      --code-text: #39FF14;
+
+      --chatbot-bg: rgba(5, 5, 8, 0.95);
+      --chatbot-border: rgba(255, 0, 127, 0.35);
+      --chatbot-shadow: rgba(0, 0, 0, 0.7);
+      --chatbot-msg-bot: #0c0c12;
+      --chatbot-msg-bot-text: #ffffff;
+      --chatbot-msg-user: #FF007F;
+      --chatbot-msg-user-text: #ffffff;
+    }
+
+    /* 3. Nordic Aurora (Aurora Ice Light) */
+    [data-theme="aurora"] {
+      --primary: #0F172A;
+      --secondary: #334155;
+      --accent: #10B981;
+      --accent-secondary: #0D9488;
+      --bg-light: #F3F6F8;
+      --bg-alt: #E6ECEF;
+      --bg-subtle: #DEE4E9;
+      --border: rgba(16, 185, 129, 0.18);
+      --card-bg: #ffffff;
+      --header-bg: rgba(243, 246, 248, 0.88);
+      --header-shadow: rgba(16, 185, 129, 0.06);
+      --code-bg: #DEE4E9;
+      --code-text: #0D9488;
+
+      --chatbot-bg: rgba(255, 255, 255, 0.95);
+      --chatbot-border: rgba(16, 185, 129, 0.18);
+      --chatbot-shadow: rgba(0, 0, 0, 0.1);
+      --chatbot-msg-bot: #E6ECEF;
+      --chatbot-msg-bot-text: #0F172A;
+      --chatbot-msg-user: #10B981;
+      --chatbot-msg-user-text: #ffffff;
+    }
+
+    /* 4. Sunset Horizon (Warm Solar Dark) */
+    [data-theme="sunset"] {
+      --primary: #FAF8F5;
+      --secondary: #E2C39B;
+      --accent: #F97316;
+      --accent-secondary: #EF4444;
+      --bg-light: #180816;
+      --bg-alt: #11040f;
+      --bg-subtle: #250c23;
+      --border: rgba(249, 115, 22, 0.22);
+      --card-bg: rgba(249, 115, 22, 0.07);
+      --header-bg: rgba(24, 8, 22, 0.88);
+      --header-shadow: rgba(0, 0, 0, 0.4);
+      --code-bg: #250c23;
+      --code-text: #FAF8F5;
+
+      --chatbot-bg: rgba(24, 8, 22, 0.95);
+      --chatbot-border: rgba(249, 115, 22, 0.25);
+      --chatbot-shadow: rgba(0, 0, 0, 0.5);
+      --chatbot-msg-bot: #250c23;
+      --chatbot-msg-bot-text: #FAF8F5;
+      --chatbot-msg-user: #F97316;
+      --chatbot-msg-user-text: #ffffff;
+    }
+
+    /* 5. Matrix Code (Phosphor Terminal Black) */
+    [data-theme="matrix"] {
+      --primary: #00FF66;
+      --secondary: #34B36F;
+      --accent: #10B981;
+      --accent-secondary: #34D399;
+      --bg-light: #000000;
+      --bg-alt: #040404;
+      --bg-subtle: #080808;
+      --border: #105e38;
+      --card-bg: #010904;
+      --header-bg: rgba(0, 0, 0, 0.95);
+      --header-shadow: rgba(0, 255, 102, 0.1);
+      --code-bg: #080808;
+      --code-text: #00FF66;
+
+      --chatbot-bg: rgba(0, 0, 0, 0.98);
+      --chatbot-border: #105e38;
+      --chatbot-shadow: rgba(0, 255, 102, 0.2);
+      --chatbot-msg-bot: #040404;
+      --chatbot-msg-bot-text: #00FF66;
+      --chatbot-msg-user: #10B981;
+      --chatbot-msg-user-text: #000000;
+    }
+
+    /* Glassmorphic Preloader styling */
+    #preloader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #020510;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    [data-theme="nova"] #preloader { background: #020510; }
+    [data-theme="cyber"] #preloader { background: #000000; }
+    [data-theme="sunset"] #preloader { background: #0b0202; }
+    [data-theme="matrix"] #preloader { background: #000000; }
+    [data-theme="aurora"] #preloader { background: #F4F6F9; }
+
+    #preloader.fade-out {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .loader-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      padding: 30px;
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      text-align: center;
+    }
+
+    :root:not([data-theme="nova"]):not([data-theme="cyber"]):not([data-theme="sunset"]):not([data-theme="matrix"]):not([data-theme="aurora"]) .loader-wrapper {
+      background: rgba(255, 255, 255, 0.6);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+    }
+
+    /* Circular progress ring */
+    .loader-circle-container {
+      position: relative;
+      width: 120px;
+      height: 120px;
+    }
+
+    .loader-circle-container svg {
+      width: 120px;
+      height: 120px;
+      transform: rotate(-90deg);
+    }
+
+    .loader-circle-bg {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.05);
+      stroke-width: 8;
+    }
+
+    [data-theme="nova"] .loader-circle-bg,
+    [data-theme="cyber"] .loader-circle-bg,
+    [data-theme="sunset"] .loader-circle-bg,
+    [data-theme="matrix"] .loader-circle-bg,
+    [data-theme="aurora"] .loader-circle-bg {
+      stroke: rgba(255, 255, 255, 0.06);
+    }
+
+    :root:not([data-theme="nova"]):not([data-theme="cyber"]):not([data-theme="sunset"]):not([data-theme="matrix"]):not([data-theme="aurora"]) .loader-circle-bg {
+      stroke: rgba(0, 0, 0, 0.06);
+    }
+
+    .loader-circle-progress {
+      fill: none;
+      stroke: url(#loader-gradient);
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-dasharray: 339.292;
+      stroke-dashoffset: 339.292;
+      transition: stroke-dashoffset 0.1s ease;
+    }
+
+    .loader-percentage {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .loader-text {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--primary);
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      opacity: 0.8;
+    }
+
+    /* Typewriter & RGB Title Styles */
+    .rgb-text {
+      background: linear-gradient(to right, #ff3366, #ff00ff, #3333ff, #00ffff, #33ff33, #ffff33, #ff3366);
+      background-size: 400% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: rgbFlow 8s linear infinite;
+      display: inline;
+    }
+
+    @keyframes rgbFlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .hero-type-cursor {
+      color: #00F0FF;
+      animation: blink 0.8s step-end infinite;
+      display: inline;
+      margin-left: 2px;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+  </style>
+</head>
+
+<body>
+  <app-root>
+    <!-- Preloader / Orbit Animated Loader active until Angular mounts -->
+    <div id="preloader">
+      <div class="loader-wrapper">
+        <div class="loader-circle-container">
+          <svg viewBox="0 0 120 120">
+            <defs>
+              <linearGradient id="loader-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="var(--accent)" />
+                <stop offset="100%" stop-color="var(--accent-secondary)" />
+              </linearGradient>
+            </defs>
+            <circle cx="60" cy="60" r="54" class="loader-circle-bg" />
+            <circle cx="60" cy="60" r="54" class="loader-circle-progress" />
+          </svg>
+          <div id="loader-percentage" class="loader-percentage">0%</div>
+        </div>
+        <div class="loader-text">Synchronizing Orbit Matrix...</div>
+      </div>
+    </div>
+  </app-root>
+
+  <script>
+    // Percentage Preloader with Session Storage Caching
+    (function () {
+      const preloader = document.getElementById('preloader');
+      const loaderProgress = document.querySelector('.loader-circle-progress');
+      const loaderPercentage = document.getElementById('loader-percentage');
+      const isCached = sessionStorage.getItem('orbitops_cached_visit');
+
+      if (isCached) {
+        if (preloader) {
+          preloader.style.transition = 'opacity 0.2s ease, visibility 0.2s ease';
+          if (loaderProgress) loaderProgress.style.strokeDashoffset = 0;
+          if (loaderPercentage) loaderPercentage.textContent = '100%';
+          setTimeout(() => {
+            preloader.classList.add('fade-out');
+          }, 200);
+        }
+      } else {
+        let count = 0;
+        const duration = 1200; // ms
+        const startTime = performance.now();
+        const circumference = 339.292; // 2 * Math.PI * 54
+
+        function updateLoader(timestamp) {
+          const elapsed = timestamp - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          count = Math.floor(progress * 100);
+
+          if (loaderPercentage) loaderPercentage.textContent = `${count}%`;
+          if (loaderProgress) {
+            loaderProgress.style.strokeDashoffset = circumference - (progress * circumference);
+          }
+
+          if (progress < 1) {
+            requestAnimationFrame(updateLoader);
+          } else {
+            sessionStorage.setItem('orbitops_cached_visit', 'true');
+            setTimeout(() => {
+              if (preloader) preloader.classList.add('fade-out');
+            }, 150);
+          }
+        }
+        requestAnimationFrame(updateLoader);
+      }
+    })();
+  </script>
+</body>
+
+</html>
