@@ -30,18 +30,22 @@ namespace OrbitOps.Api.Services
 
         public List<Order> GetOrdersForUser(string userId)
         {
-            return _context.Orders
+            var list = _context.Orders
                 .Where(o => o.UserId == userId)
                 .OrderByDescending(o => o.CreatedAt)
                 .ToList();
+            PopulateClientDetails(list);
+            return list;
         }
 
         public List<Order> GetOrdersForEngineer(string engineerName)
         {
-            return _context.Orders
+            var list = _context.Orders
                 .Where(o => o.EngineerName.ToLower() == engineerName.ToLower())
                 .OrderByDescending(o => o.CreatedAt)
                 .ToList();
+            PopulateClientDetails(list);
+            return list;
         }
 
         public Order CreateOrder(Order order)
@@ -52,15 +56,41 @@ namespace OrbitOps.Api.Services
             _context.Orders.Add(order);
             _context.SaveChanges();
 
+            var user = _context.Users.FirstOrDefault(u => u.Id == order.UserId);
+            if (user != null)
+            {
+                order.ClientName = user.Name;
+                order.ClientCompany = user.Company;
+                order.ClientEmail = user.Email;
+            }
+
             return order;
         }
 
         public List<Order> GetPendingOrders()
         {
-            return _context.Orders
+            var list = _context.Orders
                 .Where(o => o.Status == "Awaiting Admin Review")
                 .OrderByDescending(o => o.CreatedAt)
                 .ToList();
+            PopulateClientDetails(list);
+            return list;
+        }
+
+        private void PopulateClientDetails(List<Order> orders)
+        {
+            if (orders == null || !orders.Any()) return;
+            var userIds = orders.Select(o => o.UserId).Distinct().ToList();
+            var users = _context.Users.Where(u => userIds.Contains(u.Id)).ToDictionary(u => u.Id);
+            foreach (var o in orders)
+            {
+                if (users.TryGetValue(o.UserId, out var user))
+                {
+                    o.ClientName = user.Name;
+                    o.ClientCompany = user.Company;
+                    o.ClientEmail = user.Email;
+                }
+            }
         }
 
         public bool ApproveOrderCosting(string orderId, decimal price, string estimatedCompletionTime)

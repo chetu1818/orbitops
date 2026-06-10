@@ -66,22 +66,21 @@ export interface Engineer {
               </select>
             </div>
 
-            <div class="grid grid-cols-2">
+            <div class="grid grid-cols-2" style="gap: 1.5rem;">
               <div class="form-group">
                 <label for="sourceSystem">Source Node System</label>
-                <select id="sourceSystem" formControlName="sourceSystem" class="form-select">
-                  <option value="">-- Choose Source --</option>
-                  <option *ngFor="let sys of systemOptions" [value]="sys">{{ sys }}</option>
-                </select>
+                <input type="text" id="sourceSystem" formControlName="sourceSystem" class="form-control" placeholder="e.g. BambooHR, Stripe, Custom API" />
               </div>
 
               <div class="form-group">
                 <label for="destinationSystem">Destination Node System</label>
-                <select id="destinationSystem" formControlName="destinationSystem" class="form-select">
-                  <option value="">-- Choose Destination --</option>
-                  <option *ngFor="let sys of systemOptions" [value]="sys">{{ sys }}</option>
-                </select>
+                <input type="text" id="destinationSystem" formControlName="destinationSystem" class="form-control" placeholder="e.g. Workday, HubSpot, Database" />
               </div>
+            </div>
+
+            <div class="form-group" style="margin-top: 1rem;">
+              <label for="customBid">Your Bid Price (USD)</label>
+              <input type="number" id="customBid" formControlName="customBid" class="form-control" placeholder="Enter bid price or leave empty for base price" />
             </div>
 
             <div *ngIf="pricingDetected() > 0" class="pricing-banner">
@@ -100,7 +99,7 @@ export interface Engineer {
         <div *ngIf="currentStep() === 2">
           <div class="step-header">
             <h3>Establish Connection Parameters</h3>
-            <p>Our architecture has automatically detected the parameters required to establish secure handshakes.</p>
+            <p>List credentials and details separately. Add as many parameters as needed aligned as key-value rows.</p>
           </div>
 
           <div class="cred-grids">
@@ -110,16 +109,38 @@ export interface Engineer {
                 <i class="bi bi-box-arrow-in-right"></i> Source: {{ step1Form.value.sourceSystem }}
               </div>
               <div class="fields-box">
-                <div class="form-group" *ngFor="let field of sourceFields()">
-                  <label [for]="'src_' + field">{{ field }}</label>
-                  <input 
-                    [type]="field.toLowerCase().includes('key') || field.toLowerCase().includes('secret') || field.toLowerCase().includes('password') ? 'password' : 'text'" 
-                    [id]="'src_' + field" 
-                    [(ngModel)]="sourceCredentialsInput[field]"
-                    [placeholder]="'Enter ' + field"
-                    class="form-control"
-                  />
+                <!-- Suggestion Pills -->
+                <div class="suggestion-pills-container" style="margin-bottom: 1.25rem;">
+                  <span style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 0.45rem; font-weight: 700; font-family: var(--font-mono);">POSSIBLE SOURCE REQUIREMENTS:</span>
+                  <div style="display: flex; flex-wrap: wrap; gap: 0.4rem;">
+                    <span 
+                      *ngFor="let req of commonSourceRequirements" 
+                      (click)="addSourceRow(req)"
+                      class="badge-suggestion"
+                    >
+                      + {{ req }}
+                    </span>
+                  </div>
                 </div>
+
+                <div class="dynamic-rows-list">
+                  <div *ngFor="let row of sourceCredRows; let idx = index" class="dynamic-row-item" style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.75rem;">
+                    <input type="text" [(ngModel)]="row.key" placeholder="Key (e.g. API Key)" class="form-control" style="flex: 1;" />
+                    <input 
+                      [type]="row.key.toLowerCase().includes('key') || row.key.toLowerCase().includes('secret') || row.key.toLowerCase().includes('password') || row.key.toLowerCase().includes('token') ? 'password' : 'text'" 
+                      [(ngModel)]="row.value" 
+                      placeholder="Value" 
+                      class="form-control" 
+                      style="flex: 1.2;" 
+                    />
+                    <button type="button" (click)="removeSourceRow(idx)" class="btn-trash-row" style="background: none; border: none; color: #f87171; font-size: 1.1rem; cursor: pointer; padding: 0.25rem; display: flex; align-items: center; justify-content: center;"><i class="bi bi-trash"></i></button>
+                  </div>
+                  <div *ngIf="sourceCredRows.length === 0" style="font-size: 0.82rem; color: var(--text-muted); text-align: center; padding: 1rem 0;">No fields added yet. Click requirements above or use the button below.</div>
+                </div>
+
+                <button type="button" (click)="addSourceRow()" class="btn btn-secondary btn-sm" style="margin-top: 0.75rem; display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.78rem; padding: 0.4rem 0.85rem;">
+                  <i class="bi bi-plus-circle"></i> Add Custom Parameter
+                </button>
               </div>
             </div>
 
@@ -129,16 +150,38 @@ export interface Engineer {
                 <i class="bi bi-box-arrow-out-right"></i> Destination: {{ step1Form.value.destinationSystem }}
               </div>
               <div class="fields-box">
-                <div class="form-group" *ngFor="let field of destFields()">
-                  <label [for]="'dest_' + field">{{ field }}</label>
-                  <input 
-                    [type]="field.toLowerCase().includes('key') || field.toLowerCase().includes('secret') || field.toLowerCase().includes('password') ? 'password' : 'text'" 
-                    [id]="'dest_' + field" 
-                    [(ngModel)]="destinationCredentialsInput[field]"
-                    [placeholder]="'Enter ' + field"
-                    class="form-control"
-                  />
+                <!-- Suggestion Pills -->
+                <div class="suggestion-pills-container" style="margin-bottom: 1.25rem;">
+                  <span style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 0.45rem; font-weight: 700; font-family: var(--font-mono);">POSSIBLE DESTINATION REQUIREMENTS:</span>
+                  <div style="display: flex; flex-wrap: wrap; gap: 0.4rem;">
+                    <span 
+                      *ngFor="let req of commonDestRequirements" 
+                      (click)="addDestRow(req)"
+                      class="badge-suggestion"
+                    >
+                      + {{ req }}
+                    </span>
+                  </div>
                 </div>
+
+                <div class="dynamic-rows-list">
+                  <div *ngFor="let row of destCredRows; let idx = index" class="dynamic-row-item" style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.75rem;">
+                    <input type="text" [(ngModel)]="row.key" placeholder="Key (e.g. API URL)" class="form-control" style="flex: 1;" />
+                    <input 
+                      [type]="row.key.toLowerCase().includes('key') || row.key.toLowerCase().includes('secret') || row.key.toLowerCase().includes('password') || row.key.toLowerCase().includes('token') ? 'password' : 'text'" 
+                      [(ngModel)]="row.value" 
+                      placeholder="Value" 
+                      class="form-control" 
+                      style="flex: 1.2;" 
+                    />
+                    <button type="button" (click)="removeDestRow(idx)" class="btn-trash-row" style="background: none; border: none; color: #f87171; font-size: 1.1rem; cursor: pointer; padding: 0.25rem; display: flex; align-items: center; justify-content: center;"><i class="bi bi-trash"></i></button>
+                  </div>
+                  <div *ngIf="destCredRows.length === 0" style="font-size: 0.82rem; color: var(--text-muted); text-align: center; padding: 1rem 0;">No fields added yet. Click requirements above or use the button below.</div>
+                </div>
+
+                <button type="button" (click)="addDestRow()" class="btn btn-secondary btn-sm" style="margin-top: 0.75rem; display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.78rem; padding: 0.4rem 0.85rem;">
+                  <i class="bi bi-plus-circle"></i> Add Custom Parameter
+                </button>
               </div>
             </div>
           </div>
@@ -688,10 +731,32 @@ export interface Engineer {
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-  `]
+     @keyframes spin {
+       to { transform: rotate(360deg); }
+     }
+     .badge-suggestion {
+       font-size: 0.72rem;
+       background: rgba(255, 255, 255, 0.03);
+       border: 1px solid rgba(255, 255, 255, 0.08);
+       color: var(--text-secondary);
+       padding: 0.25rem 0.55rem;
+       border-radius: 6px;
+       cursor: pointer;
+       font-family: var(--font-mono);
+       transition: all 0.25s;
+       user-select: none;
+     }
+     .badge-suggestion:hover {
+       background: rgba(16, 185, 129, 0.12);
+       border-color: var(--accent);
+       color: #ffffff;
+       box-shadow: 0 0 8px rgba(16, 185, 129, 0.15);
+     }
+     .btn-trash-row:hover {
+       color: #ef4444 !important;
+       transform: scale(1.1);
+     }
+   `]
 })
 export class WizardComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -725,27 +790,49 @@ export class WizardComponent implements OnInit {
   step1Form: FormGroup = this.fb.group({
     workflowType: ['', [Validators.required]],
     sourceSystem: ['', [Validators.required]],
-    destinationSystem: ['', [Validators.required]]
+    destinationSystem: ['', [Validators.required]],
+    customBid: [null]
   });
 
   // Dynamic Credentials Store
   sourceCredentialsInput: Record<string, string> = {};
   destinationCredentialsInput: Record<string, string> = {};
 
+  // Dynamic credentials rows
+  sourceCredRows: { key: string; value: string }[] = [];
+  destCredRows: { key: string; value: string }[] = [];
+
+  // Suggestion lists
+  commonSourceRequirements = [
+    'API Key', 'API Base URL', 'Client ID', 'Client Secret', 'Username', 'Password', 'Access Token', 'Tenant ID', 'Webhook Secret'
+  ];
+
+  commonDestRequirements = [
+    'API Key', 'API URL Endpoint', 'Client ID', 'Client Secret', 'Username', 'Password', 'Access Token', 'Database Conn String', 'Security Token'
+  ];
+
+  addSourceRow(key: string = '', value: string = '') {
+    if (key && this.sourceCredRows.some(r => r.key.toLowerCase() === key.toLowerCase())) return;
+    this.sourceCredRows.push({ key, value });
+  }
+
+  removeSourceRow(index: number) {
+    this.sourceCredRows.splice(index, 1);
+  }
+
+  addDestRow(key: string = '', value: string = '') {
+    if (key && this.destCredRows.some(r => r.key.toLowerCase() === key.toLowerCase())) return;
+    this.destCredRows.push({ key, value });
+  }
+
+  removeDestRow(index: number) {
+    this.destCredRows.splice(index, 1);
+  }
+
   pricingDetected = computed(() => {
     const wfType = this.step1Form.get('workflowType')?.value;
     const match = this.workflowOptions.find(o => o.type === wfType);
     return match ? match.price : 0;
-  });
-
-  sourceFields = computed(() => {
-    const sys = this.step1Form.get('sourceSystem')?.value;
-    return this.detectCredentialsForSystem(sys);
-  });
-
-  destFields = computed(() => {
-    const sys = this.step1Form.get('destinationSystem')?.value;
-    return this.detectCredentialsForSystem(sys);
   });
 
   ngOnInit() {
@@ -758,38 +845,79 @@ export class WizardComponent implements OnInit {
     });
   }
 
-  private detectCredentialsForSystem(sys: string): string[] {
-    if (!sys) return [];
-    switch (sys) {
-      case 'BambooHR': return ['Subdomain', 'API Key'];
-      case 'HiBob': return ['API Token'];
-      case 'Workday': return ['API URL Endpoint', 'Username', 'Password', 'Tenant ID'];
-      case 'Stripe': return ['Secret API Key'];
-      case 'Salesforce': return ['Client ID', 'Client Secret', 'Username', 'Password', 'Instance Login URL'];
-      case 'ADP': return ['Client Certificate File Path', 'ADP Organization ID'];
-      case 'NetSuite': return ['Account ID', 'Consumer Key', 'Consumer Secret', 'Token ID', 'Token Secret'];
-      case 'QuickBooks': return ['Company ID', 'OAuth Access Token'];
-      case 'HubSpot': return ['Access Token'];
-      case 'Slack':
-      case 'SendGrid':
-        return ['API Access Key / Bot Token'];
-      default:
-        return ['API Base URL Endpoint', 'Authorization Header (Bearer Token)'];
-    }
-  }
-
   nextStep1() {
     if (this.step1Form.invalid) return;
-    
-    this.sourceCredentialsInput = {};
-    this.sourceFields().forEach(f => this.sourceCredentialsInput[f] = '');
-    this.destinationCredentialsInput = {};
-    this.destFields().forEach(f => this.destinationCredentialsInput[f] = '');
+
+    this.sourceCredRows = [];
+    this.destCredRows = [];
+
+    // Pre-populate defaults based on typed system name
+    const srcSys = (this.step1Form.value.sourceSystem || '').toLowerCase();
+    if (srcSys.includes('bamboo')) {
+      this.addSourceRow('Subdomain');
+      this.addSourceRow('API Key');
+    } else if (srcSys.includes('bob')) {
+      this.addSourceRow('API Token');
+    } else if (srcSys.includes('workday')) {
+      this.addSourceRow('API URL Endpoint');
+      this.addSourceRow('Username');
+      this.addSourceRow('Password');
+      this.addSourceRow('Tenant ID');
+    } else if (srcSys.includes('stripe')) {
+      this.addSourceRow('Secret API Key');
+    } else if (srcSys.includes('salesforce')) {
+      this.addSourceRow('Client ID');
+      this.addSourceRow('Client Secret');
+      this.addSourceRow('Username');
+      this.addSourceRow('Password');
+      this.addSourceRow('Instance Login URL');
+    } else {
+      this.addSourceRow('API Base URL');
+      this.addSourceRow('API Key');
+    }
+
+    const destSys = (this.step1Form.value.destinationSystem || '').toLowerCase();
+    if (destSys.includes('bamboo')) {
+      this.addDestRow('Subdomain');
+      this.addDestRow('API Key');
+    } else if (destSys.includes('bob')) {
+      this.addDestRow('API Token');
+    } else if (destSys.includes('workday')) {
+      this.addDestRow('API URL Endpoint');
+      this.addDestRow('Username');
+      this.addDestRow('Password');
+      this.addDestRow('Tenant ID');
+    } else if (destSys.includes('stripe')) {
+      this.addDestRow('Secret API Key');
+    } else if (destSys.includes('salesforce')) {
+      this.addDestRow('Client ID');
+      this.addDestRow('Client Secret');
+      this.addDestRow('Username');
+      this.addDestRow('Password');
+      this.addDestRow('Instance Login URL');
+    } else {
+      this.addDestRow('API URL Endpoint');
+      this.addDestRow('API Key');
+    }
 
     this.currentStep.set(2);
   }
 
   nextStep2() {
+    this.sourceCredentialsInput = {};
+    this.sourceCredRows.forEach(r => {
+      if (r.key.trim()) {
+        this.sourceCredentialsInput[r.key.trim()] = r.value;
+      }
+    });
+
+    this.destinationCredentialsInput = {};
+    this.destCredRows.forEach(r => {
+      if (r.key.trim()) {
+        this.destinationCredentialsInput[r.key.trim()] = r.value;
+      }
+    });
+
     this.currentStep.set(3);
   }
 
@@ -816,6 +944,7 @@ export class WizardComponent implements OnInit {
       instructions: this.extraInstructions,
       engineerName: this.selectedEngineer()?.name || '',
       engineerRating: this.selectedEngineer()?.rating || 5.0,
+      price: this.step1Form.value.customBid || this.pricingDetected(),
     };
 
     this.orderService.createOrder(orderPayload).subscribe({

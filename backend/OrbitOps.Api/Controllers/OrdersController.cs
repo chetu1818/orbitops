@@ -12,17 +12,20 @@ namespace OrbitOps.Api.Controllers
         private readonly IOrderService _orderService;
         private readonly IAuthService _authService;
         private readonly IEmailService _emailService;
+        private readonly OrbitOps.Api.Data.OrbitOpsDbContext _context;
         private readonly ILogger<OrdersController> _logger;
 
         public OrdersController(
             IOrderService orderService, 
             IAuthService authService, 
             IEmailService emailService,
+            OrbitOps.Api.Data.OrbitOpsDbContext context,
             ILogger<OrdersController> logger)
         {
             _orderService = orderService;
             _authService = authService;
             _emailService = emailService;
+            _context = context;
             _logger = logger;
         }
 
@@ -82,10 +85,10 @@ namespace OrbitOps.Api.Controllers
                 return BadRequest(ModelState);
             }
 
-            // Defaults to "Awaiting Admin Review" with price 0 and Awaiting Review estimated time
+            // Defaults to "Awaiting Admin Review" with price preserved or 0, and Awaiting Review estimated time
             order.UserId = user.Role == "SubClient" ? user.ParentClientId! : user.Id;
             order.Status = "Awaiting Admin Review";
-            order.Price = 0; // Cost is determined by Admin
+            order.Price = order.Price > 0 ? order.Price : 0; // Preserves client bid price if provided
             order.EstimatedCompletionTime = "Awaiting Review";
 
             var createdOrder = _orderService.CreateOrder(order);
@@ -223,6 +226,84 @@ namespace OrbitOps.Api.Controllers
             var order = _orderService.CompleteOrderPayment(dto.OrderId);
             if (order != null)
             {
+                // Programmatically establish a secure chat session and post all details/credentials
+                try
+                {
+                    var client = _context.Users.FirstOrDefault(u => u.Id == order.UserId);
+                    var engineer = _context.Users.FirstOrDefault(u => u.Name == order.EngineerName && u.Role == "Engineer");
+                    if (client != null && engineer != null)
+                    {
+                        var existingSession = _context.ChatSessions.ToList().FirstOrDefault(s =>
+                            s.ParticipantIds.Count == 2 &&
+                            s.ParticipantIds.Contains(client.Id) &&
+                            s.ParticipantIds.Contains(engineer.Id));
+
+                        if (existingSession == null)
+                        {
+                            existingSession = new ChatSession
+                            {
+                                Id = Guid.NewGuid().ToString(),
+                                Title = $"{client.Name} & {engineer.Name} (Order {order.Id})",
+                                ParticipantIds = new List<string> { client.Id, engineer.Id },
+                                Messages = new List<ChatMessage>(),
+                                LastMessageAt = DateTime.UtcNow
+                            };
+                            _context.ChatSessions.Add(existingSession);
+                        }
+
+                        var sb = new System.Text.StringBuilder();
+                        sb.AppendLine($"🔔 **Order Established & Paid: {order.Id}**");
+                        sb.AppendLine($"**Client Name:** {client.Name} ({client.Company})");
+                        sb.AppendLine($"**Client Email:** {client.Email}");
+                        sb.AppendLine($"**Workflow Type:** {order.WorkflowType}");
+                        sb.AppendLine($"**Route:** {order.SourceSystem} ➔ {order.DestinationSystem}");
+                        sb.AppendLine($"**Instructions:** {order.Instructions}");
+                        sb.AppendLine();
+                        sb.AppendLine("🔑 **Source Credentials:**");
+                        if (order.SourceCredentials != null && order.SourceCredentials.Any())
+                        {
+                            foreach (var kvp in order.SourceCredentials)
+                            {
+                                sb.AppendLine($"- **{kvp.Key}:** {kvp.Value}");
+                            }
+                        }
+                        else
+                        {
+                            sb.AppendLine("None provided.");
+                        }
+                        sb.AppendLine();
+                        sb.AppendLine("🔑 **Destination Credentials:**");
+                        if (order.DestinationCredentials != null && order.DestinationCredentials.Any())
+                        {
+                            foreach (var kvp in order.DestinationCredentials)
+                            {
+                                sb.AppendLine($"- **{kvp.Key}:** {kvp.Value}");
+                            }
+                        }
+                        else
+                        {
+                            sb.AppendLine("None provided.");
+                        }
+
+                        var detailsMessage = new ChatMessage
+                        {
+                            Id = Guid.NewGuid().ToString(),
+                            SenderId = "system",
+                            SenderName = "OrbitOps System",
+                            Content = sb.ToString(),
+                            SentAt = DateTime.UtcNow
+                        };
+                        existingSession.Messages.Add(detailsMessage);
+                        existingSession.LastMessageAt = DateTime.UtcNow;
+
+                        _context.SaveChanges();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"Failed to automatically establish chat session for order {order.Id}");
+                }
+
                 // Dispatch receipt email in background so it doesn't block the API response
                 _ = Task.Run(async () =>
                 {

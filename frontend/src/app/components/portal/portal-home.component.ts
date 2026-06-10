@@ -86,6 +86,7 @@ import { OrderService, Order } from '../../services/order.service';
             <table class="portal-table">
               <thead>
                 <tr>
+                  <th></th>
                   <th>ID</th>
                   <th>Scenario / Workflow</th>
                   <th>Data Pipeline</th>
@@ -97,67 +98,148 @@ import { OrderService, Order } from '../../services/order.service';
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let order of orders()">
-                  <td class="order-id"><code>{{ order.id }}</code></td>
-                  <td><strong>{{ order.workflowType }}</strong></td>
-                  <td>
-                    <div class="pipe-cell">
-                      <span class="sys-badge">{{ order.sourceSystem }}</span>
-                      <i class="bi bi-arrow-right-short"></i>
-                      <span class="sys-badge">{{ order.destinationSystem }}</span>
-                    </div>
-                  </td>
-                  <td class="cost-cell">
-                    <span *ngIf="order.status === 'Awaiting Admin Review' && order.price === 0" style="color: var(--text-muted); font-size: 0.8rem; font-style: italic;">Pending Review</span>
-                    <span *ngIf="order.status === 'Awaiting Admin Review' && order.price > 0" style="color: var(--accent); font-weight: bold;">\${{ order.price }} <span style="font-size:0.75rem; font-weight:normal; color:var(--text-muted); display:block;">(Your Bid)</span></span>
-                    <span *ngIf="order.status !== 'Awaiting Admin Review'">\${{ order.price }}</span>
-                  </td>
-                  <td class="cost-cell" style="font-size: 0.82rem; color: var(--text-secondary);">
-                    {{ order.estimatedCompletionTime || 'Pending' }}
-                  </td>
-                  <td>
-                    <div class="engineer-cell">
-                      <i class="bi bi-person-fill-gear"></i>
-                      <span>{{ order.engineerName }}</span>
-                    </div>
-                  </td>
-                  <td>
-                    <span class="status-badge" [ngClass]="order.status.toLowerCase().replace(' ', '-')">
-                      {{ order.status }}
-                    </span>
-                  </td>
-                  <td>
-                    <button *ngIf="order.status === 'Awaiting Payment'" (click)="openCheckout(order)" class="btn btn-primary btn-sm">
-                      Pay Costing
-                    </button>
+                <ng-container *ngFor="let order of orders()">
+                  <tr (click)="toggleExpandOrder(order.id, $event)" class="expandable-row" style="cursor: pointer;">
+                    <td class="chevron-cell">
+                      <button class="chevron-btn" type="button">
+                        <i class="bi" [ngClass]="expandedOrderId() === order.id ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
+                      </button>
+                    </td>
+                    <td class="order-id"><code>{{ order.id }}</code></td>
+                    <td><strong>{{ order.workflowType }}</strong></td>
+                    <td>
+                      <div class="pipe-cell">
+                        <span class="sys-badge">{{ order.sourceSystem }}</span>
+                        <i class="bi bi-arrow-right-short"></i>
+                        <span class="sys-badge">{{ order.destinationSystem }}</span>
+                      </div>
+                    </td>
+                    <td class="cost-cell">
+                      <span *ngIf="order.status === 'Awaiting Admin Review' && order.price === 0" style="color: var(--text-muted); font-size: 0.8rem; font-style: italic;">Pending Review</span>
+                      <span *ngIf="order.status === 'Awaiting Admin Review' && order.price > 0" style="color: var(--accent); font-weight: bold;">\${{ order.price }} <span style="font-size:0.75rem; font-weight:normal; color:var(--text-muted); display:block;">(Your Bid)</span></span>
+                      <span *ngIf="order.status !== 'Awaiting Admin Review'">\${{ order.price }}</span>
+                    </td>
+                    <td class="cost-cell" style="font-size: 0.82rem; color: var(--text-secondary);">
+                      {{ order.estimatedCompletionTime || 'Pending' }}
+                    </td>
+                    <td>
+                      <div class="engineer-cell">
+                        <i class="bi bi-person-fill-gear"></i>
+                        <span>{{ order.engineerName || 'Unassigned' }}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="status-badge" [ngClass]="order.status.toLowerCase().replace(' ', '-')">
+                        {{ order.status }}
+                      </span>
+                    </td>
+                    <td>
+                      <button *ngIf="order.status === 'Awaiting Payment'" (click)="openCheckout(order); $event.stopPropagation();" class="btn btn-primary btn-sm">
+                        Pay Costing
+                      </button>
 
-                    <div *ngIf="order.status === 'Cost Proposed by Admin'" class="negotiation-controls" style="display: flex; flex-direction: column; gap: 0.4rem;">
-                      <div style="font-size: 0.72rem; color: #fbbf24; font-family: var(--font-mono); margin-bottom: 0.2rem;">
-                        <i class="bi bi-info-circle"></i> Cost Proposed: <strong>\${{ order.price }}</strong>
+                      <div *ngIf="order.status === 'Cost Proposed by Admin'" class="negotiation-controls" style="display: flex; flex-direction: column; gap: 0.4rem;">
+                        <div style="font-size: 0.72rem; color: #fbbf24; font-family: var(--font-mono); margin-bottom: 0.2rem;">
+                          <i class="bi bi-info-circle"></i> Cost Proposed: <strong>\${{ order.price }}</strong>
+                        </div>
+                        <div style="display: flex; gap: 0.35rem; flex-wrap: wrap;">
+                          <button (click)="onClientApprove(order.id); $event.stopPropagation();" class="btn btn-success btn-xs">
+                            Approve
+                          </button>
+                          <button (click)="onClientDecline(order.id); $event.stopPropagation();" class="btn btn-danger btn-xs">
+                            Decline
+                          </button>
+                          <button (click)="toggleCounterInput(order.id); $event.stopPropagation();" class="btn btn-secondary btn-xs">
+                            New Bid
+                          </button>
+                        </div>
+                        <div *ngIf="activeCounterOrderId === order.id" class="counter-input-box" style="display: flex; align-items: center; gap: 0.25rem; margin-top: 0.25rem;" (click)="$event.stopPropagation();">
+                          <span style="font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono); font-weight: bold;">$</span>
+                          <input type="number" [(ngModel)]="counterBidPrice" placeholder="Counter Price" class="form-control" style="width: 80px; padding: 0.25rem 0.5rem; font-size: 0.78rem; height: auto;" />
+                          <button (click)="onClientSubmitCounter(order.id)" class="btn btn-primary btn-xs" style="padding: 0.25rem 0.5rem;" [disabled]="counterBidPrice <= 0">
+                            Submit
+                          </button>
+                        </div>
                       </div>
-                      <div style="display: flex; gap: 0.35rem; flex-wrap: wrap;">
-                        <button (click)="onClientApprove(order.id)" class="btn btn-success btn-xs">
-                          Approve
-                        </button>
-                        <button (click)="onClientDecline(order.id)" class="btn btn-danger btn-xs">
-                          Decline
-                        </button>
-                        <button (click)="toggleCounterInput(order.id)" class="btn btn-secondary btn-xs">
-                          New Bid
-                        </button>
-                      </div>
-                      <div *ngIf="activeCounterOrderId === order.id" class="counter-input-box" style="display: flex; align-items: center; gap: 0.25rem; margin-top: 0.25rem;">
-                        <span style="font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono); font-weight: bold;">$</span>
-                        <input type="number" [(ngModel)]="counterBidPrice" placeholder="Counter Price" class="form-control" style="width: 80px; padding: 0.25rem 0.5rem; font-size: 0.78rem; height: auto;" />
-                        <button (click)="onClientSubmitCounter(order.id)" class="btn btn-primary btn-xs" style="padding: 0.25rem 0.5rem;" [disabled]="counterBidPrice <= 0">
-                          Submit
-                        </button>
-                      </div>
-                    </div>
 
-                    <span *ngIf="order.status !== 'Awaiting Payment' && order.status !== 'Cost Proposed by Admin'" style="color: var(--text-muted); font-size: 0.8rem;">No Action</span>
-                  </td>
-                </tr>
+                      <span *ngIf="order.status !== 'Awaiting Payment' && order.status !== 'Cost Proposed by Admin'" style="color: var(--text-muted); font-size: 0.8rem;">No Action</span>
+                    </td>
+                  </tr>
+                  
+                  <tr *ngIf="expandedOrderId() === order.id">
+                    <td colspan="9" class="expanded-row-td">
+                      <div class="expanded-detail-card">
+                        <div class="detail-grid">
+                          <div class="detail-section">
+                            <h4 class="detail-sec-title"><i class="bi bi-person-badge"></i> Client Workspace Details</h4>
+                            <div class="detail-item"><strong>Client Name:</strong> {{ order.clientName || user.name }}</div>
+                            <div class="detail-item"><strong>Company:</strong> {{ order.clientCompany || user.company }}</div>
+                            <div class="detail-item"><strong>Email Address:</strong> {{ order.clientEmail || user.email }}</div>
+                            <div class="detail-item"><strong>Requested At:</strong> {{ order.createdAt | date:'medium' }}</div>
+                          </div>
+                          
+                          <div class="detail-section">
+                            <h4 class="detail-sec-title"><i class="bi bi-bezier2"></i> Integration Specification</h4>
+                            <div class="detail-item"><strong>Scenario / Type:</strong> {{ order.workflowType }}</div>
+                            <div class="detail-item"><strong>Source System:</strong> {{ order.sourceSystem }}</div>
+                            <div class="detail-item"><strong>Destination System:</strong> {{ order.destinationSystem }}</div>
+                            <div class="detail-item"><strong>Special Instructions:</strong> {{ order.instructions || 'None provided.' }}</div>
+                          </div>
+                        </div>
+
+                        <div class="detail-credentials-grid">
+                          <div class="cred-box">
+                            <h5 class="cred-title"><i class="bi bi-key-fill"></i> Source Credentials ({{ order.sourceSystem }})</h5>
+                            <div class="cred-table" *ngIf="getCredentialsList(order.sourceCredentials).length > 0; else noSrcCreds">
+                              <div class="cred-row" *ngFor="let cred of getCredentialsList(order.sourceCredentials)">
+                                <span class="cred-label">{{ cred.key }}</span>
+                                <div class="cred-value-wrap">
+                                  <span class="cred-value" *ngIf="!isCredentialMasked(order.id, 'source', cred.key)">{{ cred.value }}</span>
+                                  <span class="cred-value masked" *ngIf="isCredentialMasked(order.id, 'source', cred.key)">••••••••••••</span>
+                                  <div class="cred-actions">
+                                    <button class="btn-cred-action" type="button" (click)="$event.stopPropagation(); toggleCredentialMask(order.id, 'source', cred.key)" [title]="isCredentialMasked(order.id, 'source', cred.key) ? 'Show credential' : 'Hide credential'">
+                                      <i class="bi" [ngClass]="isCredentialMasked(order.id, 'source', cred.key) ? 'bi-eye' : 'bi-eye-slash'"></i>
+                                    </button>
+                                    <button class="btn-cred-action" type="button" (click)="$event.stopPropagation(); copyToClipboard(cred.value)" title="Copy to clipboard">
+                                      <i class="bi bi-clipboard"></i>
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <ng-template #noSrcCreds>
+                              <p class="no-creds-text">No source credentials supplied.</p>
+                            </ng-template>
+                          </div>
+
+                          <div class="cred-box">
+                            <h5 class="cred-title"><i class="bi bi-key-fill"></i> Destination Credentials ({{ order.destinationSystem }})</h5>
+                            <div class="cred-table" *ngIf="getCredentialsList(order.destinationCredentials).length > 0; else noDestCreds">
+                              <div class="cred-row" *ngFor="let cred of getCredentialsList(order.destinationCredentials)">
+                                <span class="cred-label">{{ cred.key }}</span>
+                                <div class="cred-value-wrap">
+                                  <span class="cred-value" *ngIf="!isCredentialMasked(order.id, 'destination', cred.key)">{{ cred.value }}</span>
+                                  <span class="cred-value masked" *ngIf="isCredentialMasked(order.id, 'destination', cred.key)">••••••••••••</span>
+                                  <div class="cred-actions">
+                                    <button class="btn-cred-action" type="button" (click)="$event.stopPropagation(); toggleCredentialMask(order.id, 'destination', cred.key)" [title]="isCredentialMasked(order.id, 'destination', cred.key) ? 'Show credential' : 'Hide credential'">
+                                      <i class="bi" [ngClass]="isCredentialMasked(order.id, 'destination', cred.key) ? 'bi-eye' : 'bi-eye-slash'"></i>
+                                    </button>
+                                    <button class="btn-cred-action" type="button" (click)="$event.stopPropagation(); copyToClipboard(cred.value)" title="Copy to clipboard">
+                                      <i class="bi bi-clipboard"></i>
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <ng-template #noDestCreds>
+                              <p class="no-creds-text">No destination credentials supplied.</p>
+                            </ng-template>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </ng-container>
               </tbody>
             </table>
           </div>
@@ -240,71 +322,153 @@ import { OrderService, Order } from '../../services/order.service';
             <table class="portal-table">
               <thead>
                 <tr>
+                  <th></th>
                   <th>ID</th>
                   <th>Client Detail</th>
                   <th>Scenario</th>
                   <th>Handshake Route</th>
-                  <th>Extra Instructions</th>
+                  <th>Client Bid</th>
                   <th>Architect Assigned</th>
                   <th>Cost & Time Est.</th>
                   <th>Action</th>
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let order of pendingOrders()">
-                  <td class="order-id"><code>{{ order.id }}</code></td>
-                  <td>
-                    <div><strong>{{ order.userId }}</strong></div>
-                    <div style="font-size: 0.75rem; color: var(--text-muted);">Client Workspace</div>
-                    <div *ngIf="order.price > 0" style="font-size: 0.8rem; color: #fbbf24; margin-top: 0.25rem;">
-                      <i class="bi bi-tag-fill"></i> Client's Bid: <strong>\${{ order.price }}</strong>
-                    </div>
-                  </td>
-                  <td><strong>{{ order.workflowType }}</strong></td>
-                  <td>
-                    <div class="pipe-cell">
-                      <span class="sys-badge">{{ order.sourceSystem }}</span>
-                      <i class="bi bi-arrow-right-short"></i>
-                      <span class="sys-badge">{{ order.destinationSystem }}</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div style="max-width: 200px; font-size: 0.78rem; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;" [title]="order.instructions">
-                      {{ order.instructions || 'No special rules.' }}
-                    </div>
-                  </td>
-                  <td><code>{{ order.engineerName }}</code></td>
-                  <td>
-                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                      <div class="admin-cost-input-wrap">
-                        <span class="currency-tag">$</span>
+                <ng-container *ngFor="let order of pendingOrders()">
+                  <tr (click)="toggleExpandOrder(order.id, $event)" class="expandable-row" style="cursor: pointer;">
+                    <td class="chevron-cell">
+                      <button class="chevron-btn" type="button">
+                        <i class="bi" [ngClass]="expandedOrderId() === order.id ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
+                      </button>
+                    </td>
+                    <td class="order-id"><code>{{ order.id }}</code></td>
+                    <td>
+                      <div><strong>{{ order.clientName || 'N/A' }}</strong></div>
+                      <div style="font-size: 0.72rem; color: var(--text-secondary);">{{ order.clientCompany || 'N/A' }}</div>
+                    </td>
+                    <td><strong>{{ order.workflowType }}</strong></td>
+                    <td>
+                      <div class="pipe-cell">
+                        <span class="sys-badge">{{ order.sourceSystem }}</span>
+                        <i class="bi bi-arrow-right-short"></i>
+                        <span class="sys-badge">{{ order.destinationSystem }}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div *ngIf="order.price > 0" style="color: #fbbf24; font-weight: bold; font-family: var(--font-mono);">
+                        \${{ order.price }}
+                      </div>
+                      <div *ngIf="!order.price || order.price <= 0" style="color: var(--text-muted); font-style: italic; font-size: 0.8rem;">
+                        No Bid
+                      </div>
+                    </td>
+                    <td><code>{{ order.engineerName || 'Unassigned' }}</code></td>
+                    <td>
+                      <div style="display: flex; flex-direction: column; gap: 0.5rem;" (click)="$event.stopPropagation();">
+                        <div class="admin-cost-input-wrap">
+                          <span class="currency-tag">$</span>
+                          <input 
+                            type="number" 
+                            [(ngModel)]="costApprovals[order.id]" 
+                            placeholder="799"
+                            class="form-control admin-cost-input"
+                            style="width: 80px;"
+                          />
+                        </div>
                         <input 
-                          type="number" 
-                          [(ngModel)]="costApprovals[order.id]" 
-                          placeholder="799"
-                          class="form-control admin-cost-input"
-                          style="width: 80px;"
+                          type="text" 
+                          [(ngModel)]="timeApprovals[order.id]" 
+                          placeholder="3 days"
+                          class="form-control"
+                          style="padding: 0.35rem 0.5rem; font-size: 0.78rem; background: rgba(2, 8, 5, 0.5); border-color: rgba(16, 185, 129, 0.15); border-radius: 6px; width: 100px; color: white;"
                         />
                       </div>
-                      <input 
-                        type="text" 
-                        [(ngModel)]="timeApprovals[order.id]" 
-                        placeholder="3 days"
-                        class="form-control"
-                        style="padding: 0.35rem 0.5rem; font-size: 0.78rem; background: rgba(2, 8, 5, 0.5); border-color: rgba(16, 185, 129, 0.15); border-radius: 6px; width: 100px; color: white;"
-                      />
-                    </div>
-                  </td>
-                  <td>
-                    <button 
-                      (click)="onApproveCosting(order.id)" 
-                      class="btn btn-primary btn-sm" 
-                      [disabled]="!costApprovals[order.id] || costApprovals[order.id] <= 0 || !timeApprovals[order.id]"
-                    >
-                      Approve costing
-                    </button>
-                  </td>
-                </tr>
+                    </td>
+                    <td>
+                      <button 
+                        (click)="onApproveCosting(order.id); $event.stopPropagation();" 
+                        class="btn btn-primary btn-sm" 
+                        [disabled]="!costApprovals[order.id] || costApprovals[order.id] <= 0 || !timeApprovals[order.id]"
+                      >
+                        Approve costing
+                      </button>
+                    </td>
+                  </tr>
+                  
+                  <tr *ngIf="expandedOrderId() === order.id">
+                    <td colspan="9" class="expanded-row-td">
+                      <div class="expanded-detail-card">
+                        <div class="detail-grid">
+                          <div class="detail-section">
+                            <h4 class="detail-sec-title"><i class="bi bi-person-badge"></i> Client Contact Information</h4>
+                            <div class="detail-item"><strong>Client Name:</strong> {{ order.clientName || 'N/A' }}</div>
+                            <div class="detail-item"><strong>Company:</strong> {{ order.clientCompany || 'N/A' }}</div>
+                            <div class="detail-item"><strong>Email Address:</strong> {{ order.clientEmail || 'N/A' }}</div>
+                            <div class="detail-item"><strong>Submitted At:</strong> {{ order.createdAt | date:'medium' }}</div>
+                          </div>
+                          
+                          <div class="detail-section">
+                            <h4 class="detail-sec-title"><i class="bi bi-bezier2"></i> Workflow Specifications</h4>
+                            <div class="detail-item"><strong>Scenario:</strong> {{ order.workflowType }}</div>
+                            <div class="detail-item"><strong>Source System:</strong> {{ order.sourceSystem }}</div>
+                            <div class="detail-item"><strong>Destination System:</strong> {{ order.destinationSystem }}</div>
+                            <div class="detail-item"><strong>Special Instructions:</strong> {{ order.instructions || 'None provided.' }}</div>
+                          </div>
+                        </div>
+
+                        <div class="detail-credentials-grid">
+                          <div class="cred-box">
+                            <h5 class="cred-title"><i class="bi bi-key-fill"></i> Source Credentials ({{ order.sourceSystem }})</h5>
+                            <div class="cred-table" *ngIf="getCredentialsList(order.sourceCredentials).length > 0; else noSrcCreds">
+                              <div class="cred-row" *ngFor="let cred of getCredentialsList(order.sourceCredentials)">
+                                <span class="cred-label">{{ cred.key }}</span>
+                                <div class="cred-value-wrap">
+                                  <span class="cred-value" *ngIf="!isCredentialMasked(order.id, 'source', cred.key)">{{ cred.value }}</span>
+                                  <span class="cred-value masked" *ngIf="isCredentialMasked(order.id, 'source', cred.key)">••••••••••••</span>
+                                  <div class="cred-actions">
+                                    <button class="btn-cred-action" type="button" (click)="$event.stopPropagation(); toggleCredentialMask(order.id, 'source', cred.key)" [title]="isCredentialMasked(order.id, 'source', cred.key) ? 'Show credential' : 'Hide credential'">
+                                      <i class="bi" [ngClass]="isCredentialMasked(order.id, 'source', cred.key) ? 'bi-eye' : 'bi-eye-slash'"></i>
+                                    </button>
+                                    <button class="btn-cred-action" type="button" (click)="$event.stopPropagation(); copyToClipboard(cred.value)" title="Copy to clipboard">
+                                      <i class="bi bi-clipboard"></i>
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <ng-template #noSrcCreds>
+                              <p class="no-creds-text">No source credentials supplied.</p>
+                            </ng-template>
+                          </div>
+
+                          <div class="cred-box">
+                            <h5 class="cred-title"><i class="bi bi-key-fill"></i> Destination Credentials ({{ order.destinationSystem }})</h5>
+                            <div class="cred-table" *ngIf="getCredentialsList(order.destinationCredentials).length > 0; else noDestCreds">
+                              <div class="cred-row" *ngFor="let cred of getCredentialsList(order.destinationCredentials)">
+                                <span class="cred-label">{{ cred.key }}</span>
+                                <div class="cred-value-wrap">
+                                  <span class="cred-value" *ngIf="!isCredentialMasked(order.id, 'destination', cred.key)">{{ cred.value }}</span>
+                                  <span class="cred-value masked" *ngIf="isCredentialMasked(order.id, 'destination', cred.key)">••••••••••••</span>
+                                  <div class="cred-actions">
+                                    <button class="btn-cred-action" type="button" (click)="$event.stopPropagation(); toggleCredentialMask(order.id, 'destination', cred.key)" [title]="isCredentialMasked(order.id, 'destination', cred.key) ? 'Show credential' : 'Hide credential'">
+                                      <i class="bi" [ngClass]="isCredentialMasked(order.id, 'destination', cred.key) ? 'bi-eye' : 'bi-eye-slash'"></i>
+                                    </button>
+                                    <button class="btn-cred-action" type="button" (click)="$event.stopPropagation(); copyToClipboard(cred.value)" title="Copy to clipboard">
+                                      <i class="bi bi-clipboard"></i>
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <ng-template #noDestCreds>
+                              <p class="no-creds-text">No destination credentials supplied.</p>
+                            </ng-template>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </ng-container>
               </tbody>
             </table>
           </div>
@@ -394,42 +558,123 @@ import { OrderService, Order } from '../../services/order.service';
             <table class="portal-table">
               <thead>
                 <tr>
+                  <th></th>
                   <th>ID</th>
+                  <th>Client Detail</th>
                   <th>Scenario</th>
-                  <th>Route</th>
-                  <th>Credentials Provided</th>
-                  <th>Instructions</th>
+                  <th>Handshake Route</th>
+                  <th>Keys Count</th>
                   <th>Pipeline Status</th>
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let order of orders()">
-                  <td class="order-id"><code>{{ order.id }}</code></td>
-                  <td><strong>{{ order.workflowType }}</strong></td>
-                  <td>
-                    <div class="pipe-cell">
-                      <span class="sys-badge">{{ order.sourceSystem }}</span>
-                      <i class="bi bi-arrow-right-short"></i>
-                      <span class="sys-badge">{{ order.destinationSystem }}</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div style="font-size: 0.75rem; color: var(--text-muted);">
-                      Source keys: {{ getKeysCount(order.sourceCredentials) }} | 
-                      Dest keys: {{ getKeysCount(order.destinationCredentials) }}
-                    </div>
-                  </td>
-                  <td>
-                    <div style="font-size: 0.8rem; line-height: 1.4; color: var(--text-secondary);">
-                      {{ order.instructions || 'No custom rules.' }}
-                    </div>
-                  </td>
-                  <td>
-                    <span class="status-badge" [ngClass]="order.status.toLowerCase().replace(' ', '-')">
-                      {{ order.status }}
-                    </span>
-                  </td>
-                </tr>
+                <ng-container *ngFor="let order of orders()">
+                  <tr (click)="toggleExpandOrder(order.id, $event)" class="expandable-row" style="cursor: pointer;">
+                    <td class="chevron-cell">
+                      <button class="chevron-btn" type="button">
+                        <i class="bi" [ngClass]="expandedOrderId() === order.id ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
+                      </button>
+                    </td>
+                    <td class="order-id"><code>{{ order.id }}</code></td>
+                    <td>
+                      <div><strong>{{ order.clientName || 'N/A' }}</strong></div>
+                      <div style="font-size: 0.72rem; color: var(--text-secondary);">{{ order.clientCompany || 'N/A' }}</div>
+                    </td>
+                    <td><strong>{{ order.workflowType }}</strong></td>
+                    <td>
+                      <div class="pipe-cell">
+                        <span class="sys-badge">{{ order.sourceSystem }}</span>
+                        <i class="bi bi-arrow-right-short"></i>
+                        <span class="sys-badge">{{ order.destinationSystem }}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div style="font-size: 0.75rem; color: var(--text-secondary);">
+                        Src: {{ getKeysCount(order.sourceCredentials) }} | 
+                        Dest: {{ getKeysCount(order.destinationCredentials) }}
+                      </div>
+                    </td>
+                    <td>
+                      <span class="status-badge" [ngClass]="order.status.toLowerCase().replace(' ', '-')">
+                        {{ order.status }}
+                      </span>
+                    </td>
+                  </tr>
+                  
+                  <tr *ngIf="expandedOrderId() === order.id">
+                    <td colspan="7" class="expanded-row-td">
+                      <div class="expanded-detail-card">
+                        <div class="detail-grid">
+                          <div class="detail-section">
+                            <h4 class="detail-sec-title"><i class="bi bi-person-badge"></i> Client Details</h4>
+                            <div class="detail-item"><strong>Client Name:</strong> {{ order.clientName || 'N/A' }}</div>
+                            <div class="detail-item"><strong>Company:</strong> {{ order.clientCompany || 'N/A' }}</div>
+                            <div class="detail-item"><strong>Email Address:</strong> {{ order.clientEmail || 'N/A' }}</div>
+                            <div class="detail-item"><strong>Assigned At:</strong> {{ order.createdAt | date:'medium' }}</div>
+                          </div>
+                          
+                          <div class="detail-section">
+                            <h4 class="detail-sec-title"><i class="bi bi-bezier2"></i> Workflow Specifications</h4>
+                            <div class="detail-item"><strong>Scenario:</strong> {{ order.workflowType }}</div>
+                            <div class="detail-item"><strong>Source System:</strong> {{ order.sourceSystem }}</div>
+                            <div class="detail-item"><strong>Destination System:</strong> {{ order.destinationSystem }}</div>
+                            <div class="detail-item"><strong>Instructions:</strong> {{ order.instructions || 'None provided.' }}</div>
+                          </div>
+                        </div>
+
+                        <div class="detail-credentials-grid">
+                          <div class="cred-box">
+                            <h5 class="cred-title"><i class="bi bi-key-fill"></i> Source Credentials ({{ order.sourceSystem }})</h5>
+                            <div class="cred-table" *ngIf="getCredentialsList(order.sourceCredentials).length > 0; else noSrcCreds">
+                              <div class="cred-row" *ngFor="let cred of getCredentialsList(order.sourceCredentials)">
+                                <span class="cred-label">{{ cred.key }}</span>
+                                <div class="cred-value-wrap">
+                                  <span class="cred-value" *ngIf="!isCredentialMasked(order.id, 'source', cred.key)">{{ cred.value }}</span>
+                                  <span class="cred-value masked" *ngIf="isCredentialMasked(order.id, 'source', cred.key)">••••••••••••</span>
+                                  <div class="cred-actions">
+                                    <button class="btn-cred-action" type="button" (click)="$event.stopPropagation(); toggleCredentialMask(order.id, 'source', cred.key)" [title]="isCredentialMasked(order.id, 'source', cred.key) ? 'Show credential' : 'Hide credential'">
+                                      <i class="bi" [ngClass]="isCredentialMasked(order.id, 'source', cred.key) ? 'bi-eye' : 'bi-eye-slash'"></i>
+                                    </button>
+                                    <button class="btn-cred-action" type="button" (click)="$event.stopPropagation(); copyToClipboard(cred.value)" title="Copy to clipboard">
+                                      <i class="bi bi-clipboard"></i>
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <ng-template #noSrcCreds>
+                              <p class="no-creds-text">No source credentials supplied.</p>
+                            </ng-template>
+                          </div>
+
+                          <div class="cred-box">
+                            <h5 class="cred-title"><i class="bi bi-key-fill"></i> Destination Credentials ({{ order.destinationSystem }})</h5>
+                            <div class="cred-table" *ngIf="getCredentialsList(order.destinationCredentials).length > 0; else noDestCreds">
+                              <div class="cred-row" *ngFor="let cred of getCredentialsList(order.destinationCredentials)">
+                                <span class="cred-label">{{ cred.key }}</span>
+                                <div class="cred-value-wrap">
+                                  <span class="cred-value" *ngIf="!isCredentialMasked(order.id, 'destination', cred.key)">{{ cred.value }}</span>
+                                  <span class="cred-value masked" *ngIf="isCredentialMasked(order.id, 'destination', cred.key)">••••••••••••</span>
+                                  <div class="cred-actions">
+                                    <button class="btn-cred-action" type="button" (click)="$event.stopPropagation(); toggleCredentialMask(order.id, 'destination', cred.key)" [title]="isCredentialMasked(order.id, 'destination', cred.key) ? 'Show credential' : 'Hide credential'">
+                                      <i class="bi" [ngClass]="isCredentialMasked(order.id, 'destination', cred.key) ? 'bi-eye' : 'bi-eye-slash'"></i>
+                                    </button>
+                                    <button class="btn-cred-action" type="button" (click)="$event.stopPropagation(); copyToClipboard(cred.value)" title="Copy to clipboard">
+                                      <i class="bi bi-clipboard"></i>
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <ng-template #noDestCreds>
+                              <p class="no-creds-text">No destination credentials supplied.</p>
+                            </ng-template>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </ng-container>
               </tbody>
             </table>
           </div>
@@ -1073,6 +1318,177 @@ import { OrderService, Order } from '../../services/order.service';
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
+
+    /* Expandable details styling */
+    .expanded-row-td {
+      padding: 0 !important;
+      background: rgba(255, 255, 255, 0.01) !important;
+    }
+    .expanded-detail-card {
+      background: linear-gradient(135deg, rgba(8, 14, 26, 0.95) 0%, rgba(3, 7, 18, 0.98) 100%);
+      border: 1px solid rgba(100, 160, 255, 0.12);
+      border-top: none;
+      border-radius: 0 0 12px 12px;
+      padding: 1.75rem;
+      margin-bottom: 1rem;
+      box-shadow: inset 0 4px 24px rgba(0, 0, 0, 0.6), 0 8px 32px rgba(0, 0, 0, 0.3);
+      animation: slideDown 0.25s var(--ease-spring);
+    }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      margin-bottom: 1.75rem;
+    }
+    @media (min-width: 768px) {
+      .detail-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    .detail-section {
+      background: rgba(255, 255, 255, 0.015);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      padding: 1.25rem;
+      border-radius: 10px;
+    }
+    .detail-sec-title {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #fff;
+      margin-top: 0;
+      margin-bottom: 1rem;
+      font-family: var(--font-display);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      padding-bottom: 0.5rem;
+    }
+    .detail-item {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.6rem;
+      line-height: 1.4;
+    }
+    .detail-item strong {
+      color: #fff;
+      display: inline-block;
+      min-width: 130px;
+    }
+    .detail-credentials-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    @media (min-width: 768px) {
+      .detail-credentials-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    .cred-box {
+      background: rgba(255, 255, 255, 0.015);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      padding: 1.25rem;
+      border-radius: 10px;
+    }
+    .cred-title {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-top: 0;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      padding-bottom: 0.5rem;
+    }
+    .cred-table {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .cred-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.5rem 0.75rem;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      border-radius: 6px;
+    }
+    .cred-label {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      font-weight: bold;
+    }
+    .cred-value-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .cred-value {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: #fff;
+    }
+    .cred-value.masked {
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+    }
+    .cred-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .btn-cred-action {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 0.85rem;
+      padding: 0.25rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+    .btn-cred-action:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .no-creds-text {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-style: italic;
+      margin: 0;
+    }
+    .chevron-cell {
+      width: 40px;
+      text-align: center;
+    }
+    .chevron-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s;
+    }
+    tr.expandable-row:hover .chevron-btn {
+      color: #fff;
+    }
   `]
 })
 export class PortalHomeComponent implements OnInit {
@@ -1082,6 +1498,46 @@ export class PortalHomeComponent implements OnInit {
   orders = signal<Order[]>([]);
   pendingOrders = signal<Order[]>([]);
   teamMembers = signal<any[]>([]);
+
+  expandedOrderId = signal<string | null>(null);
+  maskedStates = signal<Record<string, boolean>>({});
+
+  toggleExpandOrder(orderId: string, event?: Event) {
+    if (event) {
+      const target = event.target as HTMLElement;
+      if (target.closest('.btn') || target.closest('input') || target.closest('.negotiation-controls') || target.closest('.counter-input-box')) {
+        return;
+      }
+    }
+    if (this.expandedOrderId() === orderId) {
+      this.expandedOrderId.set(null);
+    } else {
+      this.expandedOrderId.set(orderId);
+    }
+  }
+
+  getCredentialsList(credentials: any): { key: string, value: string }[] {
+    if (!credentials) return [];
+    return Object.entries(credentials).map(([key, value]) => ({ key, value: String(value) }));
+  }
+
+  isCredentialMasked(orderId: string, type: 'source' | 'destination', key: string): boolean {
+    const stateKey = `${orderId}_${type}_${key}`;
+    const states = this.maskedStates();
+    return states[stateKey] !== false; // Default to true (masked)
+  }
+
+  toggleCredentialMask(orderId: string, type: 'source' | 'destination', key: string) {
+    const stateKey = `${orderId}_${type}_${key}`;
+    this.maskedStates.update(s => ({
+      ...s,
+      [stateKey]: !this.isCredentialMasked(orderId, type, key)
+    }));
+  }
+
+  copyToClipboard(text: string) {
+    navigator.clipboard.writeText(text);
+  }
 
   // Cost approvals inputs mapping (orderId -> price)
   costApprovals: { [key: string]: number } = {};

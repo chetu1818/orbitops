@@ -19,6 +19,9 @@ export interface Order {
   status: string;
   estimatedCompletionTime?: string;
   createdAt: string;
+  clientName?: string;
+  clientCompany?: string;
+  clientEmail?: string;
 }
 
 @Injectable({

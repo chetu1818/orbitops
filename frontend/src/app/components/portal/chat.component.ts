@@ -213,10 +213,6 @@ import { AuthService } from '../../services/auth.service';
             </div>
             
             <div class="header-right">
-              <!-- Video Call Button -->
-              <i class="bi bi-camera-video" (click)="triggerCallSimulation({ name: session.title }, 'video')" title="Video call"></i>
-              <!-- Audio Call Button -->
-              <i class="bi bi-telephone" (click)="triggerCallSimulation({ name: session.title }, 'audio')" title="Audio call"></i>
               <i class="bi bi-box-arrow-up" title="Screen share"></i>
               <i class="bi bi-person-plus" (click)="toggleAddParticipantModal(true)" title="Add members"></i>
               
@@ -297,33 +293,128 @@ import { AuthService } from '../../services/auth.service';
           </div>
 
           <!-- Message Input Area -->
-          <div class="viewport-input-area">
-            <form (ngSubmit)="sendChatMessage()" class="teams-input-box">
-              <div class="input-text-container">
-                <input 
-                  type="text" 
-                  [(ngModel)]="newMessageContent" 
-                  name="msgContent"
-                  placeholder="Type a message" 
-                  class="teams-message-field"
-                  autocomplete="off"
-                />
-              </div>
-              <div class="input-toolbar">
-                <div class="toolbar-left">
-                  <i class="bi bi-type" title="Format Text"></i>
-                  <i class="bi bi-emoji-smile" title="Emojis"></i>
-                  <i class="bi bi-filetype-gif" title="GIFs"></i>
-                  <i class="bi bi-sticky" title="Stickers"></i>
-                  <i class="bi bi-paperclip" title="Attach file"></i>
+          <div class="viewport-input-area" style="position: relative;">
+            
+            <!-- Teams-style Formatting Toolbar (only shown if showFormatToolbar() is true) -->
+            <div class="teams-format-toolbar" *ngIf="showFormatToolbar()" style="display: flex; align-items: center; gap: 0.25rem; background: #202020; border: 1px solid #2d2d2d; border-bottom: none; border-radius: 4px 4px 0 0; padding: 0.4rem 0.5rem; flex-wrap: wrap; user-select: none;">
+              <button type="button" class="tb-btn" (click)="execCmd('bold')" title="Bold"><i class="bi bi-type-bold"></i></button>
+              <button type="button" class="tb-btn" (click)="execCmd('italic')" title="Italic"><i class="bi bi-type-italic"></i></button>
+              <button type="button" class="tb-btn" (click)="execCmd('underline')" title="Underline"><i class="bi bi-type-underline"></i></button>
+              <button type="button" class="tb-btn" (click)="execCmd('strikeThrough')" title="Strikethrough"><i class="bi bi-type-strikethrough"></i></button>
+              <span class="tb-sep" style="width: 1px; height: 16px; background: #3d3d3d; margin: 0 0.25rem;"></span>
+              <button type="button" class="tb-btn" (click)="execCmd('insertUnorderedList')" title="Bulleted list"><i class="bi bi-list-task"></i></button>
+              <button type="button" class="tb-btn" (click)="execCmd('insertOrderedList')" title="Numbered list"><i class="bi bi-list-ol"></i></button>
+              <span class="tb-sep" style="width: 1px; height: 16px; background: #3d3d3d; margin: 0 0.25rem;"></span>
+              
+              <!-- Text Highlight Color picker dropdown -->
+              <div class="tb-dropdown-container" style="position: relative;">
+                <button type="button" class="tb-btn" (click)="toggleHighlightPicker()" title="Text highlight color"><i class="bi bi-pen-fill"></i></button>
+                <div class="tb-color-menu" *ngIf="highlightPickerOpen()" style="position: absolute; bottom: 30px; left: 0; background: #252528; border: 1px solid #3d3d3d; border-radius: 4px; padding: 0.35rem; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; z-index: 1000; width: 100px;">
+                  <span *ngFor="let c of highlightColors" (click)="execCmd('backColor', c)" [style.background]="c" style="width: 16px; height: 16px; border-radius: 2px; cursor: pointer; border: 1px solid #555; display: inline-block;"></span>
                 </div>
+              </div>
+
+              <!-- Font Color picker dropdown -->
+              <div class="tb-dropdown-container" style="position: relative;">
+                <button type="button" class="tb-btn" (click)="toggleColorPicker()" title="Font color"><i class="bi bi-fonts"></i></button>
+                <div class="tb-color-menu" *ngIf="colorPickerOpen()" style="position: absolute; bottom: 30px; left: 0; background: #252528; border: 1px solid #3d3d3d; border-radius: 4px; padding: 0.35rem; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; z-index: 1000; width: 100px;">
+                  <span *ngFor="let c of fontColors" (click)="execCmd('foreColor', c)" [style.background]="c" style="width: 16px; height: 16px; border-radius: 2px; cursor: pointer; border: 1px solid #555; display: inline-block;"></span>
+                </div>
+              </div>
+
+              <!-- Font Size selection -->
+              <select (change)="onFontSizeChange($event)" class="tb-select" title="Font size" style="background: #2d2d2d; border: 1px solid #3d3d3d; color: #fff; font-size: 0.75rem; padding: 0.1rem 0.25rem; border-radius: 3px; outline: none; cursor: pointer;">
+                <option value="3">Normal</option>
+                <option value="1">Small</option>
+                <option value="5">Large</option>
+                <option value="7">Extra Large</option>
+              </select>
+
+              <button type="button" class="tb-btn" (click)="execCmd('formatBlock', 'blockquote')" title="Quotes"><i class="bi bi-quote"></i></button>
+              <button type="button" class="tb-btn" (click)="insertLink()" title="Insert link"><i class="bi bi-link-45deg"></i></button>
+              <button type="button" class="tb-btn" (click)="execCmd('formatBlock', 'pre')" title="Code block"><i class="bi bi-code-square"></i></button>
+              <span class="tb-sep" style="width: 1px; height: 16px; background: #3d3d3d; margin: 0 0.25rem;"></span>
+
+              <!-- More formatting options dropdown (...) -->
+              <div class="tb-dropdown-container" style="position: relative;">
+                <button type="button" class="tb-btn" (click)="toggleMoreFormatting()" title="More options"><i class="bi bi-three-dots"></i></button>
+                <div class="tb-more-menu" *ngIf="moreFormattingOpen()" style="position: absolute; bottom: 30px; left: -50px; background: #252528; border: 1px solid #3d3d3d; border-radius: 4px; padding: 0.35rem 0; z-index: 1000; width: 180px; display: flex; flex-direction: column; gap: 2px; box-shadow: 0 8px 16px rgba(0,0,0,0.5);">
+                  <button type="button" (click)="execCmd('formatBlock', 'p')" class="menu-item"><i class="bi bi-paragraph"></i> Paragraph</button>
+                  <button type="button" (click)="execCmd('fontName', 'Courier New')" class="menu-item"><i class="bi bi-code"></i> Code font</button>
+                  <button type="button" (click)="execCmd('removeFormat')" class="menu-item"><i class="bi bi-trash-fill"></i> Clear all formatting</button>
+                  <button type="button" (click)="execCmd('outdent')" class="menu-item"><i class="bi bi-arrow-left-indent"></i> Decrease indent</button>
+                  <button type="button" (click)="execCmd('indent')" class="menu-item"><i class="bi bi-arrow-right-indent"></i> Increase indent</button>
+                  <button type="button" (click)="execCmd('insertHorizontalRule')" class="menu-item"><i class="bi bi-hr"></i> Insert horizontal rule</button>
+                  <span style="height: 1px; background: #3d3d3d; margin: 0.25rem 0; display: block;"></span>
+                  <button type="button" (click)="insertTable()" class="menu-item"><i class="bi bi-grid-3x3-gap"></i> Insert table</button>
+                  <button type="button" (click)="insertTableRow()" class="menu-item"><i class="bi bi-row"></i> Insert row</button>
+                  <button type="button" (click)="insertTableCol()" class="menu-item"><i class="bi bi-columns"></i> Insert column</button>
+                  <button type="button" (click)="deleteTable()" class="menu-item"><i class="bi bi-grid-3x3"></i> Delete table</button>
+                  <span style="height: 1px; background: #3d3d3d; margin: 0.25rem 0; display: block;"></span>
+                  <button type="button" (click)="execCmd('undo')" class="menu-item"><i class="bi bi-arrow-counterclockwise"></i> Undo</button>
+                  <button type="button" (click)="execCmd('redo')" class="menu-item"><i class="bi bi-arrow-clockwise"></i> Redo</button>
+                </div>
+              </div>
+
+              <!-- Delete (Clear all editor contents) button on the right -->
+              <button type="button" class="tb-btn btn-trash-editor" (click)="clearEditor()" title="Delete draft" style="margin-left: auto; color: #ef4444;"><i class="bi bi-trash"></i></button>
+            </div>
+
+            <!-- Contenteditable input editor container -->
+            <div class="teams-input-box" style="border-radius: 0 0 4px 4px; border-top: none;">
+              <div class="input-text-container" style="padding: 0.5rem 0.75rem;">
+                <div 
+                  #editor
+                  contenteditable="true" 
+                  (keydown)="onEditorKeydown($event, editor)"
+                  placeholder="Type a message" 
+                  class="teams-message-field rich-editor"
+                  style="min-height: 48px; max-height: 120px; overflow-y: auto; color: #fff; background: transparent; border: none; font-size: 0.88rem; outline: none; width: 100%; white-space: pre-wrap; word-break: break-word;"
+                ></div>
+              </div>
+              <div class="input-toolbar" style="border-top: 1px solid #2d2d2d; padding: 0.4rem 0.75rem; background: #1c1c1c;">
+                <div class="toolbar-left" style="display: flex; gap: 0.85rem; align-items: center; font-size: 1.05rem; color: #888;">
+                  
+                  <!-- Format Options Toggle (A) -->
+                  <i class="bi bi-type" [class.active]="showFormatToolbar()" (click)="toggleFormatToolbar()" title="Show formatting options" style="cursor: pointer; transition: color 0.2s;"></i>
+                  
+                  <!-- Emoji trigger and popup -->
+                  <div class="emoji-picker-container" style="position: relative; display: flex; align-items: center;">
+                    <i class="bi bi-emoji-smile" (click)="toggleEmojiPicker()" title="Emojis" style="cursor: pointer;"></i>
+                    <div class="emoji-picker-menu" *ngIf="emojiPickerOpen()" style="position: absolute; bottom: 35px; left: 0; background: #252528; border: 1px solid #3d3d3d; border-radius: 8px; padding: 0.5rem; display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; z-index: 2000; width: 180px; box-shadow: 0 8px 24px rgba(0,0,0,0.6);">
+                      <span *ngFor="let emoji of emojis" (click)="insertEmoji(emoji)" style="font-size: 1.25rem; cursor: pointer; text-align: center; display: inline-block; transition: transform 0.1s;" onmouseover="this.style.transform='scale(1.25)'" onmouseout="this.style.transform='scale(1)'">{{ emoji }}</span>
+                    </div>
+                  </div>
+
+                  <!-- GIF trigger and popup -->
+                  <div class="gif-picker-container" style="position: relative; display: flex; align-items: center;">
+                    <i class="bi bi-filetype-gif" (click)="toggleGifPicker()" title="GIFs" style="cursor: pointer;"></i>
+                    <div class="gif-picker-menu" *ngIf="gifPickerOpen()" style="position: absolute; bottom: 35px; left: 0; background: #252528; border: 1px solid #3d3d3d; border-radius: 8px; padding: 0.5rem; z-index: 2000; width: 220px; box-shadow: 0 8px 24px rgba(0,0,0,0.6); display: flex; flex-direction: column; gap: 6px;">
+                      <div style="font-size: 0.72rem; color: #888; font-weight: 700; margin-bottom: 2px;">SUGGESTED GIFS</div>
+                      <div class="gif-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">
+                        <img *ngFor="let gif of gifs" [src]="gif" (click)="insertGif(gif)" style="width: 100%; border-radius: 4px; cursor: pointer; border: 1px solid transparent; transition: border-color 0.2s;" onmouseover="this.style.borderColor='#7b69ee'" onmouseout="this.style.borderColor='transparent'" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Paperclip file input trigger -->
+                  <i class="bi bi-paperclip" (click)="triggerFileInput()" title="Attach file" style="cursor: pointer;"></i>
+                  <input type="file" #fileInput (change)="onFileAttached($event)" style="display: none;" />
+
+                  <!-- Attached File Name display -->
+                  <span *ngIf="attachedFileName()" class="attached-file-badge" style="font-size: 0.75rem; color: #a78bfa; background: rgba(123, 105, 238, 0.1); padding: 0.15rem 0.5rem; border-radius: 12px; display: inline-flex; align-items: center; gap: 0.35rem; border: 1px solid rgba(123, 105, 238, 0.2);">
+                    <i class="bi bi-file-earmark-check"></i> {{ attachedFileName() }}
+                    <span (click)="clearAttachment()" style="cursor: pointer; font-weight: bold; color: #f87171; padding: 0 2px;">&times;</span>
+                  </span>
+                </div>
+                
                 <div class="toolbar-right">
-                  <button type="submit" class="send-message-btn" [disabled]="newMessageContent().trim() === ''">
-                    <i class="bi bi-send-fill"></i>
+                  <button type="button" class="send-message-btn" (click)="sendRichChatMessage(editor)" [disabled]="isEditorEmpty(editor.innerHTML)" style="background: none; border: none; color: #7b69ee; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0.25rem;">
+                    <i class="bi bi-send-fill" [style.opacity]="isEditorEmpty(editor.innerHTML) ? '0.4' : '1'"></i>
                   </button>
                 </div>
               </div>
-            </form>
+            </div>
           </div>
 
         </ng-container>
@@ -371,18 +462,18 @@ import { AuthService } from '../../services/auth.service';
       </div>
 
       <!-- C. CALLS VIEWPORT -->
-      <div class="teams-calls-viewport" *ngIf="activeSidebarTab() === 'Calls'">
-        <div class="calls-main-content">
-          <div class="calls-header">
+      <div class="teams-calls-viewport" *ngIf="activeSidebarTab() === 'Calls'" style="display: flex; flex: 1; width: 100%;">
+        <div class="calls-main-content" style="flex: 1; padding: 1.5rem; display: flex; flex-direction: column;">
+          <div class="calls-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
             <h2>Call History</h2>
-            <button (click)="clearCallLogs()" class="btn btn-secondary" style="font-size: 0.8rem; padding: 0.35rem 0.75rem; border: 1px solid #3d3d3d; color: #adadad; background: #252528;">
+            <button (click)="clearCallLogs()" class="btn btn-secondary" style="font-size: 0.8rem; padding: 0.35rem 0.75rem; border: 1px solid #3d3d3d; color: #adadad; background: #252528; cursor: pointer; border-radius: 4px;">
               <i class="bi bi-trash"></i> Clear Logs
             </button>
           </div>
           
-          <div class="calls-log-list">
-            <div *ngFor="let log of callLogs()" class="calls-log-row">
-              <div class="call-user-info">
+          <div class="calls-log-list" style="display: flex; flex-direction: column; gap: 0.75rem; overflow-y: auto;">
+            <div *ngFor="let log of callLogs()" class="calls-log-row" style="display: flex; justify-content: space-between; align-items: center; background: #202020; border: 1px solid #2d2d2d; padding: 0.85rem 1.25rem; border-radius: 6px;">
+              <div class="call-user-info" style="display: flex; align-items: center; gap: 0.85rem;">
                 <span class="call-direction-icon" 
                       [class.incoming]="log.direction === 'incoming'"
                       [class.outgoing]="log.direction === 'outgoing'"
@@ -406,34 +497,10 @@ import { AuthService } from '../../services/auth.service';
                 <span style="font-size: 0.78rem; color: #adadad;">
                   {{ log.duration ? formatCallDuration(log.duration) : 'No answer' }}
                 </span>
-                <button (click)="triggerCallSimulation({ name: log.userName }, log.type)" class="speed-dial-btn" title="Call back" style="background: #252528; border-color: #3d3d3d; width: 30px; height: 30px;">
-                  <i class="bi bi-telephone-fill" style="color: #4caf50;"></i>
-                </button>
               </div>
             </div>
             <div *ngIf="callLogs().length === 0" class="no-chats-placeholder" style="padding: 3rem; text-align: center; background: #202020; border-radius: 6px; border: 1px solid #2d2d2d;">
               No call history logs found.
-            </div>
-          </div>
-        </div>
-        
-        <!-- Calls Sidebar (Speed Dial) -->
-        <div class="calls-sidebar">
-          <h3>Speed dial</h3>
-          <div class="speed-dial-list">
-            <div *ngFor="let user of membersList()" class="speed-dial-row">
-              <div class="speed-dial-user">
-                <span style="font-size: 0.82rem; font-weight: 600; color: #ffffff;">{{ user.name }}</span>
-                <span style="font-size: 0.68rem; color: #adadad;">{{ user.role }}</span>
-              </div>
-              <div class="speed-dial-actions">
-                <button (click)="triggerCallSimulation(user, 'audio')" class="speed-dial-btn" title="Voice call">
-                  <i class="bi bi-telephone-fill"></i>
-                </button>
-                <button (click)="triggerCallSimulation(user, 'video')" class="speed-dial-btn" title="Video call">
-                  <i class="bi bi-camera-video-fill"></i>
-                </button>
-              </div>
             </div>
           </div>
         </div>
@@ -513,15 +580,7 @@ import { AuthService } from '../../services/auth.service';
           </div>
         </div>
 
-        <!-- Call and Video Action Shortcuts in Profile Panel -->
-        <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: auto;">
-          <button (click)="triggerCallSimulation(selectedProfileUser, 'audio')" class="btn btn-secondary" style="width: 100%; justify-content: center; font-size: 0.85rem; padding: 0.5rem 1rem; border: 1px solid #3d3d3d; background: #252528; color: #adadad;">
-            <i class="bi bi-telephone-fill"></i> Voice Call
-          </button>
-          <button (click)="triggerCallSimulation(selectedProfileUser, 'video')" class="btn btn-primary" style="width: 100%; justify-content: center; font-size: 0.85rem; padding: 0.5rem 1rem; background: #7b69ee; border-color: #7b69ee; color: #ffffff;">
-            <i class="bi bi-camera-video-fill"></i> Video Call
-          </button>
-        </div>
+        <!-- Shortcuts removed -->
       </div>
 
       <!-- ADD PARTICIPANT DRAWER MODAL OVERLAY -->
@@ -560,55 +619,7 @@ import { AuthService } from '../../services/auth.service';
         </div>
       </div>
 
-      <!-- 5. TEAMS-STYLE CALL SIMULATION OVERLAY -->
-      <div *ngIf="activeCall() as call" class="modal-overlay" style="z-index: 2000; background: rgba(15, 15, 15, 0.95); backdrop-filter: blur(10px); position: absolute; top:0; left:0; width:100%; height:100%;">
-        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 2rem; width: 100%; color: #ffffff;">
-          
-          <!-- Caller Avatar and Ringing/Video display -->
-          <div style="position: relative; display: flex; align-items: center; justify-content: center; width: 200px; height: 200px; border-radius: 50%; background: #2d2d30;">
-            <div *ngIf="call.status === 'ringing'" class="ringing-ring" style="position: absolute; border: 2px solid #7b69ee; border-radius: 50%; animation: ring-pulse 1.5s infinite; width: 220px; height: 220px;"></div>
-            <div *ngIf="call.status === 'ringing'" class="ringing-ring" style="position: absolute; border: 2px solid #7b69ee; border-radius: 50%; animation: ring-pulse 1.5s infinite; animation-delay: 0.5s; width: 240px; height: 240px;"></div>
-            
-            <!-- Video Simulation placeholder -->
-            <div *ngIf="call.type === 'video' && call.status === 'connected'" style="position: absolute; inset: 0; border-radius: 20px; overflow: hidden; border: 3px solid #7b69ee; background: #000; display: flex; align-items: center; justify-content: center; width: 320px; height: 240px; transform: translateY(-20px);">
-              <div style="text-align: center; color: #ffffff;">
-                <i class="bi bi-person-video3" style="font-size: 3rem; color: #7b69ee; animation: float 4s infinite;"></i>
-                <div style="font-size: 0.85rem; margin-top: 0.5rem; color: #adadad;">[ Simulating Video Stream ]</div>
-              </div>
-            </div>
-
-            <!-- Initials for audio call or ringing video call -->
-            <div *ngIf="call.type === 'audio' || call.status === 'ringing'" style="width: 140px; height: 140px; border-radius: 50%; background: #7b69ee; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 3rem; font-weight: bold; box-shadow: 0 0 32px rgba(123, 105, 238, 0.4);">
-              {{ getInitials(call.user.name) }}
-            </div>
-          </div>
-
-          <!-- Metadata -->
-          <div style="text-align: center; margin-top: 1rem;">
-            <h2 style="font-size: 1.6rem; color: #ffffff; margin-bottom: 0.5rem;">{{ call.user.name }}</h2>
-            <p style="font-size: 0.95rem; color: #adadad; margin: 0; font-family: monospace;">
-              <span *ngIf="call.status === 'ringing'">Calling via {{ call.type }}...</span>
-              <span *ngIf="call.status === 'connected'" style="color: #4caf50;">
-                Connected — {{ formatCallDuration(call.duration) }}
-              </span>
-            </p>
-          </div>
-
-          <!-- Controls panel -->
-          <div style="display: flex; gap: 1.5rem; background: #202020; padding: 1rem 2.5rem; border-radius: 40px; border: 1px solid #3d3d3d; box-shadow: 0 8px 24px rgba(0,0,0,0.5); align-items: center;">
-            <button style="background: none; border: none; color: #ffffff; font-size: 1.35rem; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; background: #2f2f32;" title="Mute Microphone">
-              <i class="bi bi-mic-fill"></i>
-            </button>
-            <button style="background: none; border: none; color: #ffffff; font-size: 1.35rem; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; background: #2f2f32;" title="Toggle Camera">
-              <i class="bi bi-camera-video-fill"></i>
-            </button>
-            <button (click)="hangUpCall()" style="background: none; border: none; color: #ffffff; font-size: 1.35rem; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 52px; height: 52px; border-radius: 50%; background: #f44336;" title="Hang Up">
-              <i class="bi bi-telephone-x-fill"></i>
-            </button>
-          </div>
-
-        </div>
-      </div>
+      <!-- Calling overlay removed -->
 
     </div>
   `,
@@ -1859,6 +1870,143 @@ import { AuthService } from '../../services/auth.service';
       color: #ffffff;
       font-weight: 600;
     }
+    .teams-format-toolbar button {
+      background: none;
+      border: none;
+      color: #adadad;
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: background 0.15s, color 0.15s;
+    }
+    .teams-format-toolbar button:hover {
+      background: #2d2d2d;
+      color: #ffffff;
+    }
+    .menu-item {
+      background: none;
+      border: none;
+      color: #adadad;
+      padding: 0.45rem 1rem;
+      text-align: left;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      width: 100%;
+      transition: background 0.15s, color 0.15s;
+    }
+    .menu-item:hover {
+      background: #2d2d2d !important;
+      color: #ffffff !important;
+    }
+    .menu-item i {
+      font-size: 0.9rem;
+      color: #7b69ee;
+    }
+    .bi-type.active {
+      color: #7b69ee !important;
+    }
+    .rich-editor:empty::before {
+      content: attr(placeholder);
+      color: #888888;
+      pointer-events: none;
+    }
+    .rich-editor table {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1px solid #3d3d3d;
+      margin: 0.5rem 0;
+    }
+    .rich-editor th, .rich-editor td {
+      border: 1px solid #3d3d3d;
+      padding: 0.5rem;
+      font-size: 0.82rem;
+    }
+    .rich-editor blockquote {
+      border-left: 3px solid #7b69ee;
+      margin: 0.5rem 0;
+      padding-left: 0.75rem;
+      color: #adadad;
+      font-style: italic;
+    }
+    .rich-editor pre {
+      background: #151515;
+      border: 1px solid #2d2d2d;
+      padding: 0.5rem;
+      font-family: 'Courier New', Courier, monospace;
+      border-radius: 4px;
+      color: #4caf50;
+      margin: 0.5rem 0;
+    }
+    .tb-color-menu span:hover {
+      transform: scale(1.15);
+      border-color: #ffffff !important;
+    }
+    .color-dropdown {
+      position: absolute;
+      bottom: 30px;
+      left: 0;
+      background: #252528;
+      border: 1px solid #3d3d3d;
+      border-radius: 4px;
+      padding: 0.35rem;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+      z-index: 1000;
+      width: 100px;
+    }
+    .color-dropdown span {
+      width: 16px;
+      height: 16px;
+      border-radius: 2px;
+      cursor: pointer;
+      border: 1px solid #555;
+    }
+    .color-dropdown span:hover {
+      transform: scale(1.15);
+      border-color: #ffffff;
+    }
+    .tb-select {
+      font-size: 0.72rem !important;
+      font-family: inherit;
+    }
+    .tb-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .attached-file-badge span:hover {
+      transform: scale(1.2);
+    }
+    .file-attachment-card {
+      margin: 0.5rem 0;
+    }
+    .chat-session-row.unread {
+      background: rgba(123, 105, 238, 0.05);
+      border-left-color: #7b69ee !important;
+    }
+    .chat-session-row.unread .session-title-text {
+      font-weight: 800 !important;
+      color: #ffffff !important;
+    }
+    .chat-session-row.unread .session-last-excerpt {
+      font-weight: 700 !important;
+      color: #ffffff !important;
+    }
+    .unread-dot {
+      background: #7b69ee !important;
+    }
+    .teams-outer-layout {
+      height: calc(100vh - 70px) !important;
+    }
   `]
 })
 export class ChatComponent implements OnInit, OnDestroy {
@@ -1896,20 +2044,11 @@ export class ChatComponent implements OnInit, OnDestroy {
   // Search inside chat
   chatSearchQuery = '';
 
-  // Call simulation state
-  activeCall = signal<{
-    user: any;
-    type: 'audio' | 'video';
-    status: 'ringing' | 'connected';
-    duration: number;
-  } | null>(null);
-
   readCounts: { [sessionId: string]: number } = {};
 
-  private callTimerId: any;
   private pollIntervalId: any;
 
-  // NEW LAYOUT & FEED SIGNALS
+  // VIEWPORTS NAVIGATION AND BADGES
   activeSidebarTab = signal<'Chat' | 'Activity' | 'Calendar' | 'Calls'>('Chat');
 
   callLogs = signal<Array<{
@@ -1919,11 +2058,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     direction: 'incoming' | 'outgoing' | 'missed';
     timestamp: Date;
     duration?: number;
-  }>>([
-    { id: '1', userName: 'Sarah Jenkins', type: 'video', direction: 'incoming', timestamp: new Date(Date.now() - 3600000), duration: 124 },
-    { id: '2', userName: 'Alex Chen', type: 'audio', direction: 'outgoing', timestamp: new Date(Date.now() - 7200000), duration: 45 },
-    { id: '3', userName: 'Marcus Vance', type: 'video', direction: 'missed', timestamp: new Date(Date.now() - 86400000) }
-  ]);
+  }>>([]);
 
   activities = signal<Array<{
     id: string;
@@ -1952,9 +2087,24 @@ export class ChatComponent implements OnInit, OnDestroy {
     { title: 'Architecture Sync', time: '4:00 PM', day: 18, type: 'internal' }
   ]);
 
-  // Sound synthesis context
-  private audioCtx: AudioContext | null = null;
-  private ringIntervalId: any = null;
+  // Rich toolbar states
+  showFormatToolbar = signal(false);
+  emojiPickerOpen = signal(false);
+  gifPickerOpen = signal(false);
+  highlightPickerOpen = signal(false);
+  colorPickerOpen = signal(false);
+  moreFormattingOpen = signal(false);
+  attachedFileName = signal('');
+
+  highlightColors = ['#ffff00', '#00ff00', '#ff00ff', '#00ffff', '#ffa500', '#ffc0cb', '#adff2f', '#ffffff'];
+  fontColors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ffa500', '#a200ff', '#ffffff', '#adadad'];
+  emojis = ['😊', '👍', '❤️', '😆', '😮', '😢', '🔥', '👏', '🎉', '💡', '🚀', '💯'];
+  gifs = [
+    'https://media.giphy.com/media/l3q2zVr6cu95nF6O4/giphy.gif', // Celebrations
+    'https://media.giphy.com/media/3o7abKhOpu0NXS3wy4/giphy.gif', // Coding/Typing
+    'https://media.giphy.com/media/26n6WywJyum39Xabe/giphy.gif', // Success/High Five
+    'https://media.giphy.com/media/d31w24psGYeekCZy/giphy.gif'  // Nice
+  ];
 
   ngOnInit() {
     // Load read counts
@@ -1973,7 +2123,6 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.callLogs.set(parsed.map((l: any) => ({ ...l, timestamp: new Date(l.timestamp) })));
       } catch {}
     } else {
-      // Seed default logs if none exist in localStorage
       const dummyLogs = [
         { id: '1', userName: 'Sarah Jenkins', type: 'video' as const, direction: 'incoming' as const, timestamp: new Date(Date.now() - 3600000), duration: 124 },
         { id: '2', userName: 'Alex Chen', type: 'audio' as const, direction: 'outgoing' as const, timestamp: new Date(Date.now() - 7200000), duration: 45 },
@@ -1997,7 +2146,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.loadMyChats();
     this.loadMembersList();
 
-    // Setup simple polling every 4 seconds to fetch new messages/chats (simulating websockets)
     this.pollIntervalId = setInterval(() => {
       this.loadMyChats(true);
       this.loadMembersList();
@@ -2005,19 +2153,14 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.stopRingingSound();
     if (this.pollIntervalId) {
       clearInterval(this.pollIntervalId);
-    }
-    if (this.callTimerId) {
-      clearInterval(this.callTimerId);
     }
   }
 
   loadMyChats(isSilent: boolean = false) {
     this.chatService.getMyChats().subscribe({
       next: (chats) => {
-        // Initialize readCounts for any newly-encountered chats to avoid unread highlight on load
         chats.forEach(c => {
           if (this.readCounts[c.id] === undefined) {
             this.readCounts[c.id] = c.messages.length;
@@ -2025,7 +2168,6 @@ export class ChatComponent implements OnInit, OnDestroy {
         });
         localStorage.setItem('orbitops_chat_read_counts', JSON.stringify(this.readCounts));
 
-        // Before updating, check for new messages to trigger Activity logs
         if (isSilent && this.activeSessions().length > 0) {
           chats.forEach(newChat => {
             const oldChat = this.activeSessions().find(c => c.id === newChat.id);
@@ -2045,7 +2187,6 @@ export class ChatComponent implements OnInit, OnDestroy {
 
         this.activeSessions.set(chats);
 
-        // Sync selected session message details
         if (this.selectedSession()) {
           const updated = chats.find(c => c.id === this.selectedSession()?.id);
           if (updated) {
@@ -2063,7 +2204,7 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   getDemoStatus(name: string): string {
     const lower = (name || '').toLowerCase();
-    if (lower.includes('piyush')) {
+    if (lower.includes('piyush') || lower.includes('chetan')) {
       return 'Available';
     } else if (lower.includes('elena') || lower.includes('marcus') || lower.includes('jane')) {
       return 'Offline';
@@ -2072,45 +2213,11 @@ export class ChatComponent implements OnInit, OnDestroy {
     }
   }
 
-  private seedDefaultDatabaseChats() {
-    // Check if we already have chats or if members are not loaded yet
-    if (this.activeSessions().length > 0 || this.membersList().length === 0) return;
-
-    // Pick Piyush Sharma and Alex Chen
-    const piyush = this.membersList().find(m => m.name.toLowerCase().includes('piyush'));
-    const alex = this.membersList().find(m => m.name.toLowerCase().includes('alex'));
-
-    if (piyush) {
-      this.chatService.createChat([piyush.id]).subscribe({
-        next: (session) => {
-          this.chatService.sendMessage(session.id, "Hi Piyush, let's sync up on the HiBob API migration.").subscribe({
-            next: () => {
-              this.chatService.sendMessage(session.id, "Sure, I'll review the endpoints and get back to you.").subscribe({
-                next: () => this.loadMyChats(true)
-              });
-            }
-          });
-        }
-      });
-    }
-
-    if (alex) {
-      this.chatService.createChat([alex.id]).subscribe({
-        next: (session) => {
-          this.chatService.sendMessage(session.id, "Hello Alex, did you check the SOC2 compliance checklist?").subscribe({
-            next: () => this.loadMyChats(true)
-          });
-        }
-      });
-    }
-  }
-
   loadMembersList() {
     this.chatService.searchUsers('').subscribe({
       next: (users) => {
         const mappedUsers = users.map(u => ({ ...u, status: this.getDemoStatus(u.name) }));
         this.membersList.set(mappedUsers);
-        this.seedDefaultDatabaseChats();
       }
     });
   }
@@ -2165,20 +2272,8 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.scrollToBottom();
   }
 
-  sendChatMessage() {
-    const content = this.newMessageContent().trim();
-    const session = this.selectedSession();
-    if (content === '' || !session) return;
-
-    this.newMessageContent.set('');
-    this.chatService.sendMessage(session.id, content).subscribe({
-      next: (msg) => {
-        session.messages.push(msg);
-        this.scrollToBottom();
-        this.loadMyChats(true);
-      }
-    });
-  }
+  // Not used in rich text mode, but kept for compatibility
+  sendChatMessage() {}
 
   // Filtered Chats (only show chats that have at least one message, or is currently selected)
   activeSessionsFiltered() {
@@ -2254,157 +2349,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     return actualMember ? actualMember.status : this.getDemoStatus(otherUser.name);
   }
 
-  // SOUND SYNTHESIS
-  startRingingSound() {
-    try {
-      this.audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
-      
-      const playTone = () => {
-        if (!this.audioCtx) return;
-        const osc1 = this.audioCtx.createOscillator();
-        const osc2 = this.audioCtx.createOscillator();
-        const gain = this.audioCtx.createGain();
-        
-        osc1.frequency.value = 440;
-        osc2.frequency.value = 480;
-        
-        gain.gain.setValueAtTime(0, this.audioCtx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.25, this.audioCtx.currentTime + 0.1);
-        gain.gain.setValueAtTime(0.25, this.audioCtx.currentTime + 1.8);
-        gain.gain.linearRampToValueAtTime(0, this.audioCtx.currentTime + 2.0);
-        
-        osc1.connect(gain);
-        osc2.connect(gain);
-        gain.connect(this.audioCtx.destination);
-        
-        osc1.start();
-        osc2.start();
-        
-        setTimeout(() => {
-          try {
-            osc1.stop();
-            osc2.stop();
-          } catch {}
-        }, 2000);
-      };
-
-      playTone();
-      this.ringIntervalId = setInterval(() => {
-        playTone();
-      }, 3000);
-    } catch (e) {
-      console.warn('Audio ringing synthesis block:', e);
-    }
-  }
-
-  stopRingingSound() {
-    if (this.ringIntervalId) {
-      clearInterval(this.ringIntervalId);
-      this.ringIntervalId = null;
-    }
-    if (this.audioCtx) {
-      try {
-        this.audioCtx.close();
-      } catch {}
-      this.audioCtx = null;
-    }
-  }
-
-  playHangupSound() {
-    try {
-      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      
-      osc.frequency.value = 320;
-      gain.gain.setValueAtTime(0.18, ctx.currentTime);
-      gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.25);
-      
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start();
-      setTimeout(() => {
-        try {
-          osc.stop();
-          ctx.close();
-        } catch {}
-      }, 250);
-    } catch {}
-  }
-
-  triggerCallSimulation(user: any, type: 'audio' | 'video') {
-    if (this.callTimerId) clearInterval(this.callTimerId);
-    this.stopRingingSound();
-    
-    this.activeCall.set({
-      user,
-      type,
-      status: 'ringing',
-      duration: 0
-    });
-
-    this.startRingingSound();
-
-    setTimeout(() => {
-      const call = this.activeCall();
-      if (call && call.status === 'ringing') {
-        this.stopRingingSound();
-        call.status = 'connected';
-        this.activeCall.set({ ...call });
-        
-        this.callTimerId = setInterval(() => {
-          const c = this.activeCall();
-          if (c && c.status === 'connected') {
-            c.duration++;
-            this.activeCall.set({ ...c });
-          }
-        }, 1000);
-      }
-    }, 4000); // Ring for 4s then connect
-  }
-
-  hangUpCall() {
-    this.stopRingingSound();
-    this.playHangupSound();
-    
-    const call = this.activeCall();
-    if (call) {
-      const newLog = {
-        id: Math.random().toString(),
-        userName: call.user.name,
-        type: call.type,
-        direction: 'outgoing' as const,
-        timestamp: new Date(),
-        duration: call.duration
-      };
-      
-      this.callLogs.update(logs => [newLog, ...logs]);
-      localStorage.setItem('orbitops_call_logs', JSON.stringify(this.callLogs()));
-      
-      // Also add an activity feed notification
-      const newActivity = {
-        id: Math.random().toString(),
-        title: `Outgoing ${call.type} call`,
-        description: `Completed call to ${call.user.name} duration: ${this.formatCallDuration(call.duration)}`,
-        timestamp: new Date(),
-        type: 'call' as const,
-        read: false
-      };
-      this.activities.update(list => [newActivity, ...list]);
-      localStorage.setItem('orbitops_activities', JSON.stringify(this.activities()));
-      
-      if (this.activeSidebarTab() !== 'Activity') {
-        this.activityBadge.update(b => b + 1);
-      }
-    }
-
-    if (this.callTimerId) {
-      clearInterval(this.callTimerId);
-      this.callTimerId = null;
-    }
-    this.activeCall.set(null);
-  }
-
   clearCallLogs() {
     this.callLogs.set([]);
     localStorage.removeItem('orbitops_call_logs');
@@ -2436,7 +2380,6 @@ export class ChatComponent implements OnInit, OnDestroy {
       return false;
     }
     if (this.readCounts[session.id] === undefined) {
-      // Initialize read count to prevent initial load unread highlights
       this.readCounts[session.id] = session.messages.length;
       localStorage.setItem('orbitops_chat_read_counts', JSON.stringify(this.readCounts));
       return false;
@@ -2543,7 +2486,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     }, 50);
   }
 
-  // VIEWPORTS NAVIGATION AND BADGES
   selectSidebarTab(tab: 'Chat' | 'Activity' | 'Calendar' | 'Calls') {
     this.activeSidebarTab.set(tab);
     if (tab === 'Activity') {
@@ -2562,7 +2504,6 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   clickActivity(act: any) {
-    // Mark clicked activity as read
     this.activities.update(list => list.map(a => a.id === act.id ? { ...a, read: true } : a));
     localStorage.setItem('orbitops_activities', JSON.stringify(this.activities()));
     
@@ -2598,4 +2539,251 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.activityBadge.update(b => b + 1);
     }
   }
+
+  // RICH TEXT TOOLBAR LOGIC
+  execCmd(cmd: string, val: string = '') {
+    document.execCommand(cmd, false, val);
+    this.highlightPickerOpen.set(false);
+    this.colorPickerOpen.set(false);
+    this.moreFormattingOpen.set(false);
+  }
+
+  onFontSizeChange(event: any) {
+    const val = event.target.value;
+    this.execCmd('fontSize', val);
+  }
+
+  insertLink() {
+    const url = prompt('Enter link URL:');
+    if (url) {
+      this.execCmd('createLink', url);
+    }
+  }
+
+  insertEmoji(emoji: string) {
+    const editor = document.querySelector('.rich-editor') as HTMLElement;
+    if (editor) {
+      editor.focus();
+      document.execCommand('insertText', false, emoji);
+    }
+    this.emojiPickerOpen.set(false);
+  }
+
+  insertGif(gifUrl: string) {
+    const editor = document.querySelector('.rich-editor') as HTMLElement;
+    if (editor) {
+      editor.focus();
+      const imgHtml = `<img src="${gifUrl}" style="max-width: 150px; border-radius: 4px; display: block; margin-top: 0.5rem;" />`;
+      document.execCommand('insertHTML', false, imgHtml);
+    }
+    this.gifPickerOpen.set(false);
+  }
+
+  triggerFileInput() {
+    const fileEl = document.querySelector('input[type="file"]') as HTMLInputElement;
+    if (fileEl) {
+      fileEl.click();
+    }
+  }
+
+  onFileAttached(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.attachedFileName.set(file.name);
+      const editor = document.querySelector('.rich-editor') as HTMLElement;
+      if (editor) {
+        editor.focus();
+        const fileCard = `
+          <div class="file-attachment-card" style="display: inline-flex; align-items: center; gap: 0.5rem; background: #2a2a2d; border: 1px solid #3d3d3d; border-radius: 6px; padding: 0.5rem; max-width: 280px; margin-top: 0.5rem; user-select: none;" contenteditable="false">
+            <i class="bi bi-file-earmark-fill" style="color: #7b69ee; font-size: 1.5rem;"></i>
+            <div style="display: flex; flex-direction: column; overflow: hidden; text-align: left;">
+              <span style="font-size: 0.8rem; color: #fff; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 180px;">${file.name}</span>
+              <span style="font-size: 0.65rem; color: #888;">${(file.size / 1024).toFixed(1)} KB</span>
+            </div>
+          </div>
+          <br/>
+        `;
+        document.execCommand('insertHTML', false, fileCard);
+      }
+    }
+  }
+
+  clearAttachment() {
+    this.attachedFileName.set('');
+  }
+
+  clearEditor() {
+    const editor = document.querySelector('.rich-editor') as HTMLElement;
+    if (editor) {
+      editor.innerHTML = '';
+    }
+  }
+
+  insertTable() {
+    const tableHtml = `
+      <table style="width: 100%; border-collapse: collapse; border: 1px solid #3d3d3d; margin: 0.5rem 0;">
+        <thead>
+          <tr style="background: #2a2a2d; border-bottom: 2px solid #3d3d3d;">
+            <th style="padding: 0.5rem; border: 1px solid #3d3d3d; text-align: left; font-size: 0.8rem; color: #adadad;">Col 1</th>
+            <th style="padding: 0.5rem; border: 1px solid #3d3d3d; text-align: left; font-size: 0.8rem; color: #adadad;">Col 2</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding: 0.5rem; border: 1px solid #3d3d3d; font-size: 0.82rem; color: #fff;">Data 1</td>
+            <td style="padding: 0.5rem; border: 1px solid #3d3d3d; font-size: 0.82rem; color: #fff;">Data 2</td>
+          </tr>
+        </tbody>
+      </table>
+      <p></p>
+    `;
+    const editor = document.querySelector('.rich-editor') as HTMLElement;
+    if (editor) {
+      editor.focus();
+      document.execCommand('insertHTML', false, tableHtml);
+    }
+    this.moreFormattingOpen.set(false);
+  }
+
+  insertTableRow() {
+    const editor = document.querySelector('.rich-editor') as HTMLElement;
+    if (editor) {
+      const sel = window.getSelection();
+      if (sel && sel.rangeCount > 0) {
+        let node: any = sel.anchorNode;
+        while (node && node.nodeName !== 'TR' && node !== editor) {
+          node = node.parentNode;
+        }
+        if (node && node.nodeName === 'TR') {
+          const cellsCount = node.cells.length;
+          const newRow = document.createElement('tr');
+          for (let i = 0; i < cellsCount; i++) {
+            const td = document.createElement('td');
+            td.style.padding = '0.5rem';
+            td.style.border = '1px solid #3d3d3d';
+            td.style.fontSize = '0.82rem';
+            td.style.color = '#fff';
+            td.innerHTML = 'New Cell';
+            newRow.appendChild(td);
+          }
+          node.parentNode.insertBefore(newRow, node.nextSibling);
+        }
+      }
+    }
+    this.moreFormattingOpen.set(false);
+  }
+
+  insertTableCol() {
+    const editor = document.querySelector('.rich-editor') as HTMLElement;
+    if (editor) {
+      const sel = window.getSelection();
+      if (sel && sel.rangeCount > 0) {
+        let node: any = sel.anchorNode;
+        while (node && node.nodeName !== 'TD' && node.nodeName !== 'TH' && node !== editor) {
+          node = node.parentNode;
+        }
+        if (node && (node.nodeName === 'TD' || node.nodeName === 'TH')) {
+          const colIndex = node.cellIndex;
+          let trNode: any = node.parentNode;
+          let tableNode = trNode.parentNode;
+          if (tableNode.nodeName === 'TBODY' || tableNode.nodeName === 'THEAD') {
+            tableNode = tableNode.parentNode;
+          }
+          Array.from(tableNode.rows).forEach((row: any) => {
+            const cellType = row.parentNode.nodeName === 'THEAD' ? 'th' : 'td';
+            const newCell = document.createElement(cellType);
+            newCell.style.padding = '0.5rem';
+            newCell.style.border = '1px solid #3d3d3d';
+            newCell.style.fontSize = '0.82rem';
+            newCell.style.color = colIndex === 0 ? '#adadad' : '#fff';
+            newCell.innerHTML = 'New Col';
+            row.insertBefore(newCell, row.cells[colIndex + 1]);
+          });
+        }
+      }
+    }
+    this.moreFormattingOpen.set(false);
+  }
+
+  deleteTable() {
+    const editor = document.querySelector('.rich-editor') as HTMLElement;
+    if (editor) {
+      const sel = window.getSelection();
+      if (sel && sel.rangeCount > 0) {
+        let node: any = sel.anchorNode;
+        while (node && node.nodeName !== 'TABLE' && node !== editor) {
+          node = node.parentNode;
+        }
+        if (node && node.nodeName === 'TABLE') {
+          node.parentNode.removeChild(node);
+        }
+      }
+    }
+    this.moreFormattingOpen.set(false);
+  }
+
+  toggleFormatToolbar() {
+    this.showFormatToolbar.update(v => !v);
+  }
+
+  toggleEmojiPicker() {
+    this.emojiPickerOpen.update(v => !v);
+    this.gifPickerOpen.set(false);
+  }
+
+  toggleGifPicker() {
+    this.gifPickerOpen.update(v => !v);
+    this.emojiPickerOpen.set(false);
+  }
+
+  toggleHighlightPicker() {
+    this.highlightPickerOpen.update(v => !v);
+    this.colorPickerOpen.set(false);
+  }
+
+  toggleColorPicker() {
+    this.colorPickerOpen.update(v => !v);
+    this.highlightPickerOpen.set(false);
+  }
+
+  toggleMoreFormatting() {
+    this.moreFormattingOpen.update(v => !v);
+  }
+
+  isEditorEmpty(html: string): boolean {
+    if (!html) return true;
+    const text = html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, '').trim();
+    if (html.includes('<img') || html.includes('file-attachment-card') || html.includes('<table') || html.includes('<hr')) {
+      return false;
+    }
+    return text === '';
+  }
+
+  sendRichChatMessage(editorEl: HTMLElement) {
+    const content = editorEl.innerHTML.trim();
+    const session = this.selectedSession();
+    if (this.isEditorEmpty(content) || !session) return;
+
+    editorEl.innerHTML = '';
+    this.attachedFileName.set('');
+    
+    this.chatService.sendMessage(session.id, content).subscribe({
+      next: (msg) => {
+        session.messages.push(msg);
+        this.scrollToBottom();
+        this.loadMyChats(true);
+      }
+    });
+  }
+
+  onEditorKeydown(event: KeyboardEvent, editor: HTMLElement) {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      this.sendRichChatMessage(editor);
+    }
+  }
+
+  // Placeholders/No-ops for calling compatibility
+  triggerCallSimulation(user: any, type: string) {}
+  stopRingingSound() {}
 }

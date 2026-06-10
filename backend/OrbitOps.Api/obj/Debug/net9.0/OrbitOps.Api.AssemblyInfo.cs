@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("OrbitOps.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b3ff4585f5015a6f3d72597bd536978f108a1db9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d9c526d510aaab4cd17fd6aa6a4751927e7c2052")]
 [assembly: System.Reflection.AssemblyProductAttribute("OrbitOps.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("OrbitOps.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

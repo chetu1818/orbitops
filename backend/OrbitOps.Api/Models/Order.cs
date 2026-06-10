@@ -19,5 +19,14 @@ namespace OrbitOps.Api.Models
         public string Status { get; set; } = "Awaiting Assignment";
         public string EstimatedCompletionTime { get; set; } = "Awaiting Review";
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        [System.ComponentModel.DataAnnotations.Schema.NotMapped]
+        public string ClientName { get; set; } = string.Empty;
+
+        [System.ComponentModel.DataAnnotations.Schema.NotMapped]
+        public string ClientCompany { get; set; } = string.Empty;
+
+        [System.ComponentModel.DataAnnotations.Schema.NotMapped]
+        public string ClientEmail { get; set; } = string.Empty;
     }
 }
