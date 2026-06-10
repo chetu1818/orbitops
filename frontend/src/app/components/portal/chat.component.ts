@@ -14,44 +14,29 @@ import { AuthService } from '../../services/auth.service';
       <!-- 1. LEFT-MOST NAVIGATION ICON SIDEBAR -->
       <div class="teams-nav-sidebar">
         <div class="nav-top-icons">
-          <div class="nav-icon-wrapper" title="Activity">
+          <div class="nav-icon-wrapper" [class.active]="activeSidebarTab() === 'Activity'" (click)="selectSidebarTab('Activity')" title="Activity">
             <i class="bi bi-bell-fill"></i>
             <span class="icon-label">Activity</span>
+            <span class="badge" *ngIf="activityBadge() > 0">{{ activityBadge() }}</span>
           </div>
-          <div class="nav-icon-wrapper active" title="Chat">
+          <div class="nav-icon-wrapper" [class.active]="activeSidebarTab() === 'Chat'" (click)="selectSidebarTab('Chat')" title="Chat">
             <i class="bi bi-chat-left-text-fill"></i>
             <span class="icon-label">Chat</span>
-            <span class="badge">4</span>
+            <span class="badge" *ngIf="chatBadge() > 0">{{ chatBadge() }}</span>
           </div>
-          <div class="nav-icon-wrapper" title="Teams">
-            <i class="bi bi-people-fill"></i>
-            <span class="icon-label">Teams</span>
-          </div>
-          <div class="nav-icon-wrapper" title="Calendar">
+          <div class="nav-icon-wrapper" [class.active]="activeSidebarTab() === 'Calendar'" (click)="selectSidebarTab('Calendar')" title="Calendar">
             <i class="bi bi-calendar3"></i>
             <span class="icon-label">Calendar</span>
           </div>
-          <div class="nav-icon-wrapper" title="Calls">
+          <div class="nav-icon-wrapper" [class.active]="activeSidebarTab() === 'Calls'" (click)="selectSidebarTab('Calls')" title="Calls">
             <i class="bi bi-telephone-fill"></i>
             <span class="icon-label">Calls</span>
-          </div>
-          <div class="nav-icon-wrapper" title="Files">
-            <i class="bi bi-file-earmark-fill"></i>
-            <span class="icon-label">Files</span>
-          </div>
-        </div>
-        <div class="nav-bottom-icons">
-          <div class="nav-avatar-badge b-avatar">B</div>
-          <div class="nav-avatar-badge pc-avatar">PC</div>
-          <div class="nav-avatar-badge pc-avatar2">
-            PC
-            <span class="avatar-badge-dot">2</span>
           </div>
         </div>
       </div>
 
       <!-- 2. SECOND SIDEBAR: CHANNELS & QUICK VIEWS & CHATS -->
-      <div class="teams-chat-sidebar">
+      <div class="teams-chat-sidebar" *ngIf="activeSidebarTab() === 'Chat'">
         <!-- Sidebar Header -->
         <div class="sidebar-header">
           <span class="header-title">Chat</span>
@@ -111,12 +96,15 @@ import { AuthService } from '../../services/auth.service';
               <span class="member-name">{{ user.name }}</span>
               <span class="member-role">{{ user.role }}</span>
             </div>
-            <span class="status-indicator" [class.online]="user.status === 'Available'" [class.busy]="user.status === 'Busy'"></span>
+            <span class="status-indicator" 
+                  [class.online]="user.status === 'Available'" 
+                  [class.busy]="user.status === 'Busy'"
+                  [class.offline]="user.status === 'Offline'"></span>
           </div>
           <div *ngIf="searchResults().length === 0" class="no-results-text">No matching members found.</div>
         </div>
 
-        <!-- Collapsible Contacted Users -->
+        <!-- Collapsible Contacted Users (only those with message history) -->
         <div class="collapsible-section">
           <div class="section-trigger" (click)="toggleSection('contacted')">
             <i class="bi" [class.bi-chevron-down]="sectionsOpen['contacted']" [class.bi-chevron-right]="!sectionsOpen['contacted']"></i>
@@ -129,6 +117,10 @@ import { AuthService } from '../../services/auth.service';
                 <span class="member-name">{{ cUser.name }}</span>
                 <span class="member-role">{{ cUser.role }}</span>
               </div>
+              <span class="status-indicator" 
+                    [class.online]="cUser.status === 'Available'" 
+                    [class.busy]="cUser.status === 'Busy'"
+                    [class.offline]="cUser.status === 'Offline'"></span>
             </div>
             <div *ngIf="contactedUsers().length === 0" class="no-chats-placeholder" style="padding: 0.5rem 1.25rem; text-align: left;">
               No contacted users yet.
@@ -136,36 +128,7 @@ import { AuthService } from '../../services/auth.service';
           </div>
         </div>
 
-        <!-- Collapsible Phase 3 Make (Members List) -->
-        <div class="collapsible-section">
-          <div class="section-trigger" (click)="toggleSection('members')">
-            <i class="bi" [class.bi-chevron-down]="sectionsOpen['members']" [class.bi-chevron-right]="!sectionsOpen['members']"></i>
-            <span>Phase 3 Make</span>
-          </div>
-          <div class="section-content" *ngIf="sectionsOpen['members']">
-            <!-- Current User (You) -->
-            <div class="member-item" *ngIf="authService.currentUser() as currentUser" (click)="selectContactedUser(currentUser)">
-              <div class="member-avatar self">{{ getInitials(currentUser.name) }}</div>
-              <div class="member-info">
-                <span class="member-name">{{ currentUser.name }} (You)</span>
-                <span class="member-role">Client Admin</span>
-              </div>
-              <span class="status-indicator online"></span>
-            </div>
-
-            <!-- Other Members -->
-            <div *ngFor="let member of membersList()" class="member-item" (click)="selectContactedUser(member)">
-              <div class="member-avatar">{{ getInitials(member.name) }}</div>
-              <div class="member-info">
-                <span class="member-name">{{ member.name }}</span>
-                <span class="member-role">{{ member.role }}</span>
-              </div>
-              <span class="status-indicator" [class.online]="member.status === 'Available'" [class.busy]="member.status === 'Busy'"></span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Collapsible Chats (Recent Active Chats) -->
+        <!-- Collapsible Chats (Recent Active Chats with message history) -->
         <div class="collapsible-section chats-section-wrapper">
           <div class="section-trigger" (click)="toggleSection('chats')">
             <i class="bi" [class.bi-chevron-down]="sectionsOpen['chats']" [class.bi-chevron-right]="!sectionsOpen['chats']"></i>
@@ -173,7 +136,7 @@ import { AuthService } from '../../services/auth.service';
           </div>
           <div class="section-content scrollable-chats" *ngIf="sectionsOpen['chats']">
             <div 
-              *ngFor="let session of activeSessions()" 
+              *ngFor="let session of activeSessionsFiltered()" 
               class="chat-session-row" 
               [class.active]="selectedSession()?.id === session.id"
               [class.unread]="isSessionUnread(session)"
@@ -181,7 +144,10 @@ import { AuthService } from '../../services/auth.service';
             >
               <div class="session-avatar-circle">
                 {{ getInitials(session.title) }}
-                <span class="session-status-dot online"></span>
+                <span class="session-status-dot" 
+                      [class.online]="getSessionStatus(session) === 'Available'" 
+                      [class.busy]="getSessionStatus(session) === 'Busy'"
+                      [class.offline]="getSessionStatus(session) === 'Offline'"></span>
               </div>
               <div class="session-details">
                 <div class="session-row-header">
@@ -195,16 +161,18 @@ import { AuthService } from '../../services/auth.service';
               <!-- Unread badge/dot -->
               <span *ngIf="isSessionUnread(session)" class="unread-dot" style="width: 8px; height: 8px; border-radius: 50%; background: #7b69ee; margin-left: 0.5rem; flex-shrink: 0;"></span>
             </div>
-            <div *ngIf="activeSessions().length === 0" class="no-chats-placeholder">
-              No recent conversations. Use search or select a member above.
+            <div *ngIf="activeSessionsFiltered().length === 0" class="no-chats-placeholder">
+              No recent conversations. Use search above.
             </div>
           </div>
         </div>
 
       </div>
 
-      <!-- 3. MAIN CHAT VIEWPORT -->
-      <div class="teams-chat-viewport">
+      <!-- 3. MAIN VIEWPORTS -->
+      
+      <!-- A. CHAT VIEWPORT -->
+      <div class="teams-chat-viewport" *ngIf="activeSidebarTab() === 'Chat'">
         <ng-container *ngIf="selectedSession() as session; else noSessionSelected">
           
           <!-- Viewport Header -->
@@ -212,7 +180,10 @@ import { AuthService } from '../../services/auth.service';
             <div class="header-left">
               <div class="header-avatar" (click)="fetchAndShowProfileById(session.id, session.title)" style="cursor: pointer;">
                 {{ getInitials(session.title) }}
-                <span class="header-status online"></span>
+                <span class="header-status" 
+                      [class.online]="getSessionStatus(session) === 'Available'" 
+                      [class.busy]="getSessionStatus(session) === 'Busy'"
+                      [class.offline]="getSessionStatus(session) === 'Offline'"></span>
               </div>
               <div class="header-title-container">
                 <!-- Inline Chat Rename Toggle -->
@@ -311,12 +282,12 @@ import { AuthService } from '../../services/auth.service';
 
                     <!-- Floating Hover Reactions Bar -->
                     <div class="bubble-reaction-bar">
-                      <span class="reaction-emoji" title="Like">👍</span>
-                      <span class="reaction-emoji" title="Heart">❤️</span>
-                      <span class="reaction-emoji" title="Laugh">😆</span>
-                      <span class="reaction-emoji" title="Surprised">😮</span>
-                      <span class="reaction-emoji" title="Sad">😢</span>
-                      <span class="reaction-emoji" title="More">...</span>
+                       <span class="reaction-emoji" title="Like">👍</span>
+                       <span class="reaction-emoji" title="Heart">❤️</span>
+                       <span class="reaction-emoji" title="Laugh">😆</span>
+                       <span class="reaction-emoji" title="Surprised">😮</span>
+                       <span class="reaction-emoji" title="Sad">😢</span>
+                       <span class="reaction-emoji" title="More">...</span>
                     </div>
                   </div>
                 </div>
@@ -362,9 +333,148 @@ import { AuthService } from '../../services/auth.service';
           <div class="no-session-splash">
             <div class="splash-logo"><i class="bi bi-chat-left-dots"></i></div>
             <h3>Microsoft Teams Collaboration</h3>
-            <p>Select a group conversation under **Chats**, search team members, or click on a member in the **Phase 3 Make** list to begin direct messaging.</p>
+            <p>Select a conversation under **Chats** or search team members above to begin direct messaging.</p>
           </div>
         </ng-template>
+      </div>
+
+      <!-- B. CALENDAR VIEWPORT -->
+      <div class="teams-calendar-viewport" *ngIf="activeSidebarTab() === 'Calendar'">
+        <div class="calendar-header">
+          <h2>Calendar</h2>
+          <div style="font-size: 1.1rem; font-weight: 600; color: #ffffff; background: #2d2d2d; padding: 0.35rem 0.85rem; border-radius: 4px;">June 2026</div>
+        </div>
+        
+        <div class="calendar-grid-header">
+          <div>MON</div><div>TUE</div><div>WED</div><div>THU</div><div>FRI</div><div>SAT</div><div>SUN</div>
+        </div>
+        
+        <div class="calendar-grid">
+          <!-- Empty days before June 1, 2026 (June 1 is a Monday, so 0 empty days!) -->
+          <!-- Day cells from 1 to 30 -->
+          <div *ngFor="let day of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30]" 
+               class="calendar-cell"
+               [class.today]="day === 10">
+            <div class="calendar-day-num">{{ day }} <span *ngIf="day === 10" style="font-size: 0.65rem; background: #7b69ee; color: #ffffff; padding: 1px 4px; border-radius: 3px; margin-left: 2px;">Today</span></div>
+            <div class="calendar-events-container" style="overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 2px;">
+              <div *ngFor="let ev of getEventsForDay(day)" 
+                   class="calendar-event" 
+                   [class.internal]="ev.type === 'internal'"
+                   [class.client]="ev.type === 'client'"
+                   [class.critical]="ev.type === 'critical'"
+                   [title]="ev.title">
+                {{ ev.time }} - {{ ev.title }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- C. CALLS VIEWPORT -->
+      <div class="teams-calls-viewport" *ngIf="activeSidebarTab() === 'Calls'">
+        <div class="calls-main-content">
+          <div class="calls-header">
+            <h2>Call History</h2>
+            <button (click)="clearCallLogs()" class="btn btn-secondary" style="font-size: 0.8rem; padding: 0.35rem 0.75rem; border: 1px solid #3d3d3d; color: #adadad; background: #252528;">
+              <i class="bi bi-trash"></i> Clear Logs
+            </button>
+          </div>
+          
+          <div class="calls-log-list">
+            <div *ngFor="let log of callLogs()" class="calls-log-row">
+              <div class="call-user-info">
+                <span class="call-direction-icon" 
+                      [class.incoming]="log.direction === 'incoming'"
+                      [class.outgoing]="log.direction === 'outgoing'"
+                      [class.missed]="log.direction === 'missed'">
+                  <i class="bi" 
+                     [class.bi-telephone-inbound-fill]="log.direction === 'incoming'"
+                     [class.bi-telephone-outbound-fill]="log.direction === 'outgoing'"
+                     [class.bi-telephone-x-fill]="log.direction === 'missed'"></i>
+                </span>
+                <div style="display: flex; flex-direction: column;">
+                  <span style="font-size: 0.85rem; font-weight: 600; color: #ffffff;">{{ log.userName }}</span>
+                  <span style="font-size: 0.72rem; color: #888888;">{{ log.timestamp | date:'MMM d, yyyy HH:mm' }}</span>
+                </div>
+              </div>
+              
+              <div style="display: flex; align-items: center; gap: 1.5rem;">
+                <span style="font-size: 0.78rem; color: #adadad; display: flex; align-items: center; gap: 0.35rem;">
+                  <i class="bi" [class.bi-camera-video-fill]="log.type === 'video'" [class.bi-telephone-fill]="log.type === 'audio'"></i> 
+                  {{ log.type | titlecase }} Call
+                </span>
+                <span style="font-size: 0.78rem; color: #adadad;">
+                  {{ log.duration ? formatCallDuration(log.duration) : 'No answer' }}
+                </span>
+                <button (click)="triggerCallSimulation({ name: log.userName }, log.type)" class="speed-dial-btn" title="Call back" style="background: #252528; border-color: #3d3d3d; width: 30px; height: 30px;">
+                  <i class="bi bi-telephone-fill" style="color: #4caf50;"></i>
+                </button>
+              </div>
+            </div>
+            <div *ngIf="callLogs().length === 0" class="no-chats-placeholder" style="padding: 3rem; text-align: center; background: #202020; border-radius: 6px; border: 1px solid #2d2d2d;">
+              No call history logs found.
+            </div>
+          </div>
+        </div>
+        
+        <!-- Calls Sidebar (Speed Dial) -->
+        <div class="calls-sidebar">
+          <h3>Speed dial</h3>
+          <div class="speed-dial-list">
+            <div *ngFor="let user of membersList()" class="speed-dial-row">
+              <div class="speed-dial-user">
+                <span style="font-size: 0.82rem; font-weight: 600; color: #ffffff;">{{ user.name }}</span>
+                <span style="font-size: 0.68rem; color: #adadad;">{{ user.role }}</span>
+              </div>
+              <div class="speed-dial-actions">
+                <button (click)="triggerCallSimulation(user, 'audio')" class="speed-dial-btn" title="Voice call">
+                  <i class="bi bi-telephone-fill"></i>
+                </button>
+                <button (click)="triggerCallSimulation(user, 'video')" class="speed-dial-btn" title="Video call">
+                  <i class="bi bi-camera-video-fill"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- D. ACTIVITY VIEWPORT -->
+      <div class="teams-activity-viewport" *ngIf="activeSidebarTab() === 'Activity'">
+        <div class="activity-header">
+          <h2>Feed</h2>
+        </div>
+        
+        <div class="activity-list">
+          <div *ngFor="let act of activities()" 
+               class="activity-row" 
+               [class.unread]="!act.read"
+               (click)="clickActivity(act)">
+            
+            <div class="activity-avatar" 
+                 [class.message]="act.type === 'message'"
+                 [class.call]="act.type === 'call'"
+                 [class.order]="act.type === 'order'">
+              <i class="bi" 
+                 [class.bi-chat-left-text-fill]="act.type === 'message'"
+                 [class.bi-telephone-x-fill]="act.type === 'call'"
+                 [class.bi-arrow-repeat]="act.type === 'order'"></i>
+            </div>
+            
+            <div class="activity-details">
+              <div class="activity-row-header">
+                <span class="activity-title">{{ act.title }}</span>
+                <span class="activity-time">{{ act.timestamp | date:'MMM d, HH:mm' }}</span>
+              </div>
+              <span class="activity-desc">{{ act.description }}</span>
+            </div>
+            
+            <span *ngIf="!act.read" style="width: 8px; height: 8px; border-radius: 50%; background: #7b69ee; position: absolute; right: 1rem; top: 50%; transform: translateY(-50%);"></span>
+          </div>
+          <div *ngIf="activities().length === 0" class="no-chats-placeholder" style="padding: 3rem; text-align: center; background: #202020; border-radius: 6px; border: 1px solid #2d2d2d;">
+            No recent notifications or feed activity.
+          </div>
+        </div>
       </div>
 
       <!-- 4. RIGHT SIDE DETAIL PROFILE PANEL -->
@@ -396,18 +506,19 @@ import { AuthService } from '../../services/auth.service';
           <div>
             <label style="font-size: 0.68rem; color: #888888; text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 0.25rem;">Status</label>
             <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.25rem;">
-              <span style="width: 8px; height: 8px; border-radius: 50%;" [style.background-color]="selectedProfileUser.status === 'Busy' ? '#f44336' : '#4caf50'"></span>
-              <span style="font-size: 0.85rem; color: #ffffff;">{{ selectedProfileUser.status || 'Available' }}</span>
+              <span style="width: 8px; height: 8px; border-radius: 50%;" 
+                    [style.background-color]="selectedProfileUser.status === 'Available' ? '#22c55e' : (selectedProfileUser.status === 'Busy' ? '#ef4444' : '#eab308')"></span>
+              <span style="font-size: 0.85rem; color: #ffffff;">{{ selectedProfileUser.status === 'Available' ? 'Online' : (selectedProfileUser.status === 'Busy' ? 'In Meeting' : 'Offline') }}</span>
             </div>
           </div>
         </div>
 
         <!-- Call and Video Action Shortcuts in Profile Panel -->
         <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: auto;">
-          <button (click)="triggerCallSimulation(selectedProfileUser, 'audio')" class="btn btn-secondary" style="width: 100%; justify-content: center; font-size: 0.85rem; padding: 0.5rem 1rem; border: 1px solid #3d3d3d;">
+          <button (click)="triggerCallSimulation(selectedProfileUser, 'audio')" class="btn btn-secondary" style="width: 100%; justify-content: center; font-size: 0.85rem; padding: 0.5rem 1rem; border: 1px solid #3d3d3d; background: #252528; color: #adadad;">
             <i class="bi bi-telephone-fill"></i> Voice Call
           </button>
-          <button (click)="triggerCallSimulation(selectedProfileUser, 'video')" class="btn btn-primary" style="width: 100%; justify-content: center; font-size: 0.85rem; padding: 0.5rem 1rem; background: #7b69ee;">
+          <button (click)="triggerCallSimulation(selectedProfileUser, 'video')" class="btn btn-primary" style="width: 100%; justify-content: center; font-size: 0.85rem; padding: 0.5rem 1rem; background: #7b69ee; border-color: #7b69ee; color: #ffffff;">
             <i class="bi bi-camera-video-fill"></i> Video Call
           </button>
         </div>
@@ -502,6 +613,14 @@ import { AuthService } from '../../services/auth.service';
     </div>
   `,
   styles: [`
+    :host {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      width: 100%;
+      height: 100%;
+    }
+
     /* TEAMS DARK MODE MATRIX THEME & STYLES */
     .teams-outer-layout {
       display: flex;
@@ -510,6 +629,7 @@ import { AuthService } from '../../services/auth.service';
       color: #adadad;
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       overflow: hidden;
+      width: 100%;
     }
 
     /* 1. LEFT-MOST NAVIGATION BAR */
@@ -524,7 +644,7 @@ import { AuthService } from '../../services/auth.service';
       align-items: center;
       padding: 0.75rem 0;
     }
-    .nav-top-icons, .nav-bottom-icons {
+    .nav-top-icons {
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -568,46 +688,6 @@ import { AuthService } from '../../services/auth.service';
       font-weight: 700;
       padding: 1px 5px;
       border-radius: 9px;
-      border: 1px solid #181818;
-    }
-    .nav-avatar-badge {
-      width: 34px;
-      height: 34px;
-      border-radius: 4px;
-      font-size: 0.85rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      position: relative;
-    }
-    .b-avatar {
-      background: #3a1d1d;
-      color: #e57373;
-    }
-    .pc-avatar {
-      background: #1b5e20;
-      color: #81c784;
-    }
-    .pc-avatar2 {
-      background: #0d47a1;
-      color: #64b5f6;
-    }
-    .avatar-badge-dot {
-      position: absolute;
-      bottom: -4px;
-      right: -4px;
-      background: #c43131;
-      color: #ffffff;
-      font-size: 0.6rem;
-      font-weight: 700;
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       border: 1px solid #181818;
     }
 
@@ -803,7 +883,7 @@ import { AuthService } from '../../services/auth.service';
       color: #909090;
     }
 
-    /* Member List styles (Phase 3 Make) */
+    /* Member List styles */
     .member-item {
       display: flex;
       align-items: center;
@@ -827,10 +907,6 @@ import { AuthService } from '../../services/auth.service';
       font-size: 0.72rem;
       font-weight: 700;
     }
-    .member-avatar.self {
-      background: #311b92;
-      color: #d1c4e9;
-    }
     .member-info {
       display: flex;
       flex-direction: column;
@@ -853,20 +929,23 @@ import { AuthService } from '../../services/auth.service';
       text-overflow: ellipsis;
     }
     .status-indicator {
-      width: 7px;
-      height: 7px;
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
       position: absolute;
       right: 1.25rem;
       top: 50%;
       transform: translateY(-50%);
-      background: #888888;
+      background: #eab308; /* Default yellow (offline) */
     }
     .status-indicator.online {
-      background: #4caf50;
+      background: #22c55e !important; /* green (online/available) */
     }
     .status-indicator.busy {
-      background: #f44336;
+      background: #ef4444 !important; /* red (busy/in meeting) */
+    }
+    .status-indicator.offline {
+      background: #eab308 !important; /* yellow (offline) */
     }
 
     /* Active Chats list item */
@@ -904,16 +983,23 @@ import { AuthService } from '../../services/auth.service';
       flex-shrink: 0;
     }
     .session-status-dot {
-      width: 7px;
-      height: 7px;
+      width: 9px;
+      height: 9px;
       border-radius: 50%;
       border: 1px solid #202020;
       position: absolute;
-      bottom: 0;
-      right: 0;
+      bottom: -1px;
+      right: -1px;
+      background: #eab308; /* yellow */
     }
     .session-status-dot.online {
-      background: #4caf50;
+      background: #22c55e !important; /* green */
+    }
+    .session-status-dot.busy {
+      background: #ef4444 !important; /* red */
+    }
+    .session-status-dot.offline {
+      background: #eab308 !important; /* yellow */
     }
     .session-details {
       display: flex;
@@ -993,16 +1079,23 @@ import { AuthService } from '../../services/auth.service';
       position: relative;
     }
     .header-status {
-      width: 9px;
-      height: 9px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
       border: 1px solid #202020;
       position: absolute;
-      bottom: 0;
-      right: 0;
+      bottom: -1px;
+      right: -1px;
+      background: #eab308;
     }
     .header-status.online {
-      background: #4caf50;
+      background: #22c55e !important;
+    }
+    .header-status.busy {
+      background: #ef4444 !important;
+    }
+    .header-status.offline {
+      background: #eab308 !important;
     }
     .header-title-container {
       display: flex;
@@ -1168,6 +1261,7 @@ import { AuthService } from '../../services/auth.service';
       font-size: 0.68rem;
       font-weight: 700;
       margin-top: 0.25rem;
+      cursor: pointer;
     }
     .avatar-spacer {
       width: 28px;
@@ -1210,9 +1304,6 @@ import { AuthService } from '../../services/auth.service';
       background: #5c2d91; /* High-contrast Teams Royal Purple */
       border-color: #6d3ca7;
       color: #ffffff;
-    }
-    .msg-sender-avatar {
-      cursor: pointer;
     }
     @keyframes ring-pulse {
       0% {
@@ -1462,6 +1553,312 @@ import { AuthService } from '../../services/auth.service';
       color: #909090;
       padding: 1rem;
     }
+
+    /* Calendar styles */
+    .teams-calendar-viewport {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #1f1f1f;
+      height: 100%;
+      overflow-y: auto;
+      padding: 1.5rem 2.5rem;
+    }
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    .calendar-header h2 {
+      font-size: 1.5rem;
+      color: #ffffff;
+      margin: 0;
+    }
+    .calendar-grid-header {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 1px;
+      background: #2d2d2d;
+      text-align: center;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #909090;
+      padding: 0.5rem 0;
+      border-radius: 4px 4px 0 0;
+    }
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      grid-auto-rows: 100px;
+      gap: 1px;
+      background: #2d2d2d;
+      border-radius: 0 0 4px 4px;
+      overflow: hidden;
+      border: 1px solid #2d2d2d;
+    }
+    .calendar-cell {
+      background: #1f1f1f;
+      padding: 0.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      position: relative;
+    }
+    .calendar-cell:hover {
+      background: #242424;
+    }
+    .calendar-day-num {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #8c8c8c;
+    }
+    .calendar-cell.today .calendar-day-num {
+      color: #7b69ee;
+      font-weight: bold;
+    }
+    .calendar-event {
+      font-size: 0.65rem;
+      padding: 0.15rem 0.35rem;
+      border-radius: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-weight: 600;
+    }
+    .calendar-event.internal {
+      background: rgba(123, 105, 238, 0.15);
+      color: #a78bfa;
+      border-left: 2px solid #7b69ee;
+    }
+    .calendar-event.client {
+      background: rgba(34, 197, 94, 0.15);
+      color: #4caf50;
+      border-left: 2px solid #22c55e;
+    }
+    .calendar-event.critical {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border-left: 2px solid #ef4444;
+    }
+
+    /* Calls styles */
+    .teams-calls-viewport {
+      flex: 1;
+      display: flex;
+      background: #1f1f1f;
+      height: 100%;
+      overflow: hidden;
+    }
+    .calls-main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 1.5rem 2.5rem;
+      overflow-y: auto;
+    }
+    .calls-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    .calls-header h2 {
+      font-size: 1.5rem;
+      color: #ffffff;
+      margin: 0;
+    }
+    .calls-log-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .calls-log-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #202020;
+      border: 1px solid #2d2d2d;
+      padding: 0.75rem 1.25rem;
+      border-radius: 6px;
+      transition: background 0.15s;
+    }
+    .calls-log-row:hover {
+      background: #252528;
+    }
+    .call-user-info {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+    .call-direction-icon {
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .call-direction-icon.incoming {
+      color: #22c55e;
+    }
+    .call-direction-icon.outgoing {
+      color: #3b82f6;
+    }
+    .call-direction-icon.missed {
+      color: #ef4444;
+    }
+    .calls-sidebar {
+      width: 320px;
+      background: #202020;
+      border-left: 1px solid #2d2d2d;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+    .calls-sidebar h3 {
+      font-size: 1.05rem;
+      color: #ffffff;
+      margin: 0 0 1rem 0;
+    }
+    .speed-dial-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+    .speed-dial-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #292929;
+      padding: 0.55rem 0.85rem;
+      border-radius: 6px;
+      border: 1px solid #3d3d3d;
+    }
+    .speed-dial-user {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.25;
+    }
+    .speed-dial-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .speed-dial-btn {
+      background: #202020;
+      border: 1px solid #3d3d3d;
+      color: #adadad;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.82rem;
+      transition: all 0.15s;
+    }
+    .speed-dial-btn:hover {
+      background: #7b69ee;
+      color: #ffffff;
+      border-color: #7b69ee;
+    }
+
+    /* Activity feed styles */
+    .teams-activity-viewport {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #1f1f1f;
+      height: 100%;
+      overflow-y: auto;
+      padding: 1.5rem 2.5rem;
+    }
+    .activity-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    .activity-header h2 {
+      font-size: 1.5rem;
+      color: #ffffff;
+      margin: 0;
+    }
+    .activity-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .activity-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: #202020;
+      border: 1px solid #2d2d2d;
+      padding: 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      position: relative;
+      border-left: 3px solid transparent;
+      transition: background 0.15s;
+    }
+    .activity-row:hover {
+      background: #252528;
+    }
+    .activity-row.unread {
+      background: rgba(123, 105, 238, 0.05);
+      border-left-color: #7b69ee;
+    }
+    .activity-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+    .activity-avatar.message {
+      background: rgba(123, 105, 238, 0.15);
+      color: #a78bfa;
+    }
+    .activity-avatar.call {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+    }
+    .activity-avatar.order {
+      background: rgba(34, 197, 94, 0.15);
+      color: #4caf50;
+    }
+    .activity-details {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      line-height: 1.3;
+    }
+    .activity-row-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+    .activity-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+    .activity-time {
+      font-size: 0.65rem;
+      color: #808080;
+    }
+    .activity-desc {
+      font-size: 0.78rem;
+      color: #adadad;
+    }
+    .activity-row.unread .activity-desc {
+      color: #ffffff;
+      font-weight: 600;
+    }
   `]
 })
 export class ChatComponent implements OnInit, OnDestroy {
@@ -1489,7 +1886,6 @@ export class ChatComponent implements OnInit, OnDestroy {
   // Sections collapsible state
   sectionsOpen: { [key: string]: boolean } = {
     quickViews: true,
-    members: true,
     chats: true,
     contacted: true
   };
@@ -1513,15 +1909,94 @@ export class ChatComponent implements OnInit, OnDestroy {
   private callTimerId: any;
   private pollIntervalId: any;
 
+  // NEW LAYOUT & FEED SIGNALS
+  activeSidebarTab = signal<'Chat' | 'Activity' | 'Calendar' | 'Calls'>('Chat');
+
+  callLogs = signal<Array<{
+    id: string;
+    userName: string;
+    type: 'audio' | 'video';
+    direction: 'incoming' | 'outgoing' | 'missed';
+    timestamp: Date;
+    duration?: number;
+  }>>([
+    { id: '1', userName: 'Sarah Jenkins', type: 'video', direction: 'incoming', timestamp: new Date(Date.now() - 3600000), duration: 124 },
+    { id: '2', userName: 'Alex Chen', type: 'audio', direction: 'outgoing', timestamp: new Date(Date.now() - 7200000), duration: 45 },
+    { id: '3', userName: 'Marcus Vance', type: 'video', direction: 'missed', timestamp: new Date(Date.now() - 86400000) }
+  ]);
+
+  activities = signal<Array<{
+    id: string;
+    title: string;
+    description: string;
+    timestamp: Date;
+    type: 'message' | 'call' | 'order';
+    read: boolean;
+    sessionId?: string;
+  }>>([
+    { id: '1', title: 'Missed Call', description: 'You missed a video call from Marcus Vance', timestamp: new Date(Date.now() - 86400000), type: 'call', read: false },
+    { id: '2', title: 'Order Update', description: 'Order ORD-7241 status changed to In Progress', timestamp: new Date(Date.now() - 43200000), type: 'order', read: true }
+  ]);
+  activityBadge = signal<number>(1);
+
+  calendarEvents = signal<Array<{
+    title: string;
+    time: string;
+    day: number;
+    type: 'internal' | 'client' | 'critical';
+  }>>([
+    { title: 'SOC2 Compliance Alignment', time: '10:00 AM', day: 8, type: 'critical' },
+    { title: 'HiBob API Migration Planning', time: '2:00 PM', day: 10, type: 'internal' },
+    { title: 'Payroll Sync Live Review', time: '11:30 AM', day: 12, type: 'client' },
+    { title: 'BambooHR Onboarding', time: '9:00 AM', day: 15, type: 'client' },
+    { title: 'Architecture Sync', time: '4:00 PM', day: 18, type: 'internal' }
+  ]);
+
+  // Sound synthesis context
+  private audioCtx: AudioContext | null = null;
+  private ringIntervalId: any = null;
+
   ngOnInit() {
-    const stored = localStorage.getItem('orbitops_chat_read_counts');
-    if (stored) {
+    // Load read counts
+    const storedCounts = localStorage.getItem('orbitops_chat_read_counts');
+    if (storedCounts) {
       try {
-        this.readCounts = JSON.parse(stored);
+        this.readCounts = JSON.parse(storedCounts);
       } catch {}
     }
+
+    // Load Call Logs
+    const storedLogs = localStorage.getItem('orbitops_call_logs');
+    if (storedLogs && storedLogs !== '[]') {
+      try {
+        const parsed = JSON.parse(storedLogs);
+        this.callLogs.set(parsed.map((l: any) => ({ ...l, timestamp: new Date(l.timestamp) })));
+      } catch {}
+    } else {
+      // Seed default logs if none exist in localStorage
+      const dummyLogs = [
+        { id: '1', userName: 'Sarah Jenkins', type: 'video' as const, direction: 'incoming' as const, timestamp: new Date(Date.now() - 3600000), duration: 124 },
+        { id: '2', userName: 'Alex Chen', type: 'audio' as const, direction: 'outgoing' as const, timestamp: new Date(Date.now() - 7200000), duration: 45 },
+        { id: '3', userName: 'Marcus Vance', type: 'video' as const, direction: 'missed' as const, timestamp: new Date(Date.now() - 86400000) }
+      ];
+      this.callLogs.set(dummyLogs);
+      localStorage.setItem('orbitops_call_logs', JSON.stringify(dummyLogs));
+    }
+
+    // Load Activities
+    const storedActs = localStorage.getItem('orbitops_activities');
+    if (storedActs) {
+      try {
+        const parsed = JSON.parse(storedActs);
+        this.activities.set(parsed.map((a: any) => ({ ...a, timestamp: new Date(a.timestamp) })));
+        const unreadCount = parsed.filter((a: any) => !a.read).length;
+        this.activityBadge.set(unreadCount);
+      } catch {}
+    }
+
     this.loadMyChats();
     this.loadMembersList();
+
     // Setup simple polling every 4 seconds to fetch new messages/chats (simulating websockets)
     this.pollIntervalId = setInterval(() => {
       this.loadMyChats(true);
@@ -1530,6 +2005,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.stopRingingSound();
     if (this.pollIntervalId) {
       clearInterval(this.pollIntervalId);
     }
@@ -1541,7 +2017,34 @@ export class ChatComponent implements OnInit, OnDestroy {
   loadMyChats(isSilent: boolean = false) {
     this.chatService.getMyChats().subscribe({
       next: (chats) => {
+        // Initialize readCounts for any newly-encountered chats to avoid unread highlight on load
+        chats.forEach(c => {
+          if (this.readCounts[c.id] === undefined) {
+            this.readCounts[c.id] = c.messages.length;
+          }
+        });
+        localStorage.setItem('orbitops_chat_read_counts', JSON.stringify(this.readCounts));
+
+        // Before updating, check for new messages to trigger Activity logs
+        if (isSilent && this.activeSessions().length > 0) {
+          chats.forEach(newChat => {
+            const oldChat = this.activeSessions().find(c => c.id === newChat.id);
+            const oldMsgCount = oldChat ? oldChat.messages.length : (this.readCounts[newChat.id] || 0);
+            const newMsgCount = newChat.messages ? newChat.messages.length : 0;
+            
+            if (newMsgCount > oldMsgCount) {
+              const newMsgs = newChat.messages.slice(oldMsgCount);
+              newMsgs.forEach(msg => {
+                if (msg.senderId !== this.authService.currentUser()?.id) {
+                  this.triggerNewMessageNotification(newChat, msg);
+                }
+              });
+            }
+          });
+        }
+
         this.activeSessions.set(chats);
+
         // Sync selected session message details
         if (this.selectedSession()) {
           const updated = chats.find(c => c.id === this.selectedSession()?.id);
@@ -1558,10 +2061,56 @@ export class ChatComponent implements OnInit, OnDestroy {
     });
   }
 
+  getDemoStatus(name: string): string {
+    const lower = (name || '').toLowerCase();
+    if (lower.includes('piyush')) {
+      return 'Available';
+    } else if (lower.includes('elena') || lower.includes('marcus') || lower.includes('jane')) {
+      return 'Offline';
+    } else {
+      return 'Busy'; // Meeting
+    }
+  }
+
+  private seedDefaultDatabaseChats() {
+    // Check if we already have chats or if members are not loaded yet
+    if (this.activeSessions().length > 0 || this.membersList().length === 0) return;
+
+    // Pick Piyush Sharma and Alex Chen
+    const piyush = this.membersList().find(m => m.name.toLowerCase().includes('piyush'));
+    const alex = this.membersList().find(m => m.name.toLowerCase().includes('alex'));
+
+    if (piyush) {
+      this.chatService.createChat([piyush.id]).subscribe({
+        next: (session) => {
+          this.chatService.sendMessage(session.id, "Hi Piyush, let's sync up on the HiBob API migration.").subscribe({
+            next: () => {
+              this.chatService.sendMessage(session.id, "Sure, I'll review the endpoints and get back to you.").subscribe({
+                next: () => this.loadMyChats(true)
+              });
+            }
+          });
+        }
+      });
+    }
+
+    if (alex) {
+      this.chatService.createChat([alex.id]).subscribe({
+        next: (session) => {
+          this.chatService.sendMessage(session.id, "Hello Alex, did you check the SOC2 compliance checklist?").subscribe({
+            next: () => this.loadMyChats(true)
+          });
+        }
+      });
+    }
+  }
+
   loadMembersList() {
     this.chatService.searchUsers('').subscribe({
       next: (users) => {
-        this.membersList.set(users);
+        const mappedUsers = users.map(u => ({ ...u, status: this.getDemoStatus(u.name) }));
+        this.membersList.set(mappedUsers);
+        this.seedDefaultDatabaseChats();
       }
     });
   }
@@ -1573,7 +2122,10 @@ export class ChatComponent implements OnInit, OnDestroy {
       return;
     }
     this.chatService.searchUsers(q).subscribe({
-      next: (users) => this.searchResults.set(users)
+      next: (users) => {
+        const mapped = users.map(u => ({ ...u, status: this.getDemoStatus(u.name) }));
+        this.searchResults.set(mapped);
+      }
     });
   }
 
@@ -1581,7 +2133,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     const q = this.inviteSearchQuery().trim();
     this.chatService.searchUsers(q).subscribe({
       next: (users) => {
-        // Exclude users already present in the active conversation
         const activeIds = this.selectedSession()?.participantIds || [];
         this.inviteCandidates.set(users.filter(u => !activeIds.includes(u.id)));
       }
@@ -1593,13 +2144,12 @@ export class ChatComponent implements OnInit, OnDestroy {
       next: (sessionRes) => {
         this.clearSearch();
         this.loadMyChats();
-        // Set as active
+        
         setTimeout(() => {
           const found = this.activeSessions().find(c => c.id === sessionRes.id);
           if (found) {
             this.selectSession(found);
           } else {
-            // Decorable session object
             this.selectedSession.set(sessionRes);
           }
         }, 100);
@@ -1623,7 +2173,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.newMessageContent.set('');
     this.chatService.sendMessage(session.id, content).subscribe({
       next: (msg) => {
-        // Appends and scrolls locally
         session.messages.push(msg);
         this.scrollToBottom();
         this.loadMyChats(true);
@@ -1631,18 +2180,29 @@ export class ChatComponent implements OnInit, OnDestroy {
     });
   }
 
-  // contactedUsers list computing
+  // Filtered Chats (only show chats that have at least one message, or is currently selected)
+  activeSessionsFiltered() {
+    const selectedId = this.selectedSession()?.id;
+    return this.activeSessions().filter(s => (s.messages && s.messages.length > 0) || s.id === selectedId);
+  }
+
   contactedUsers() {
     const currentUserId = this.authService.currentUser()?.id;
     const usersMap = new Map<string, any>();
     
     this.activeSessions().forEach(session => {
-      if (session.participants) {
-        session.participants.forEach(p => {
-          if (p.id !== currentUserId) {
-            usersMap.set(p.id, p);
-          }
-        });
+      if (session.messages && session.messages.length > 0) {
+        if (session.participants) {
+          session.participants.forEach(p => {
+            if (p.id !== currentUserId) {
+              const actualMember = this.membersList().find(m => m.id === p.id);
+              usersMap.set(p.id, {
+                ...p,
+                status: actualMember ? actualMember.status : 'Offline'
+              });
+            }
+          });
+        }
       }
     });
     
@@ -1658,8 +2218,13 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   selectContactedUser(contact: any) {
-    this.showProfile(contact);
-    this.startChatWith(contact);
+    const mappedContact = { ...contact };
+    const actualMember = this.membersList().find(m => m.id === contact.id);
+    if (actualMember) {
+      mappedContact.status = actualMember.status;
+    }
+    this.showProfile(mappedContact);
+    this.startChatWith(mappedContact);
   }
 
   fetchAndShowProfileById(userId: string, userName: string) {
@@ -1676,13 +2241,100 @@ export class ChatComponent implements OnInit, OnDestroy {
         email: `${userName.toLowerCase().replace(/\s+/g, '')}@orbit.ai`,
         role: 'Team Member',
         company: 'OrbitOps Client',
-        status: 'Available'
+        status: this.getDemoStatus(userName)
       });
     }
   }
 
+  getSessionStatus(session: ChatSession): string {
+    const currentUserId = this.authService.currentUser()?.id;
+    const otherUser = session.participants?.find(p => p.id !== currentUserId);
+    if (!otherUser) return 'Available';
+    const actualMember = this.membersList().find(m => m.id === otherUser.id);
+    return actualMember ? actualMember.status : this.getDemoStatus(otherUser.name);
+  }
+
+  // SOUND SYNTHESIS
+  startRingingSound() {
+    try {
+      this.audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      
+      const playTone = () => {
+        if (!this.audioCtx) return;
+        const osc1 = this.audioCtx.createOscillator();
+        const osc2 = this.audioCtx.createOscillator();
+        const gain = this.audioCtx.createGain();
+        
+        osc1.frequency.value = 440;
+        osc2.frequency.value = 480;
+        
+        gain.gain.setValueAtTime(0, this.audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.25, this.audioCtx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.25, this.audioCtx.currentTime + 1.8);
+        gain.gain.linearRampToValueAtTime(0, this.audioCtx.currentTime + 2.0);
+        
+        osc1.connect(gain);
+        osc2.connect(gain);
+        gain.connect(this.audioCtx.destination);
+        
+        osc1.start();
+        osc2.start();
+        
+        setTimeout(() => {
+          try {
+            osc1.stop();
+            osc2.stop();
+          } catch {}
+        }, 2000);
+      };
+
+      playTone();
+      this.ringIntervalId = setInterval(() => {
+        playTone();
+      }, 3000);
+    } catch (e) {
+      console.warn('Audio ringing synthesis block:', e);
+    }
+  }
+
+  stopRingingSound() {
+    if (this.ringIntervalId) {
+      clearInterval(this.ringIntervalId);
+      this.ringIntervalId = null;
+    }
+    if (this.audioCtx) {
+      try {
+        this.audioCtx.close();
+      } catch {}
+      this.audioCtx = null;
+    }
+  }
+
+  playHangupSound() {
+    try {
+      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      
+      osc.frequency.value = 320;
+      gain.gain.setValueAtTime(0.18, ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.25);
+      
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      setTimeout(() => {
+        try {
+          osc.stop();
+          ctx.close();
+        } catch {}
+      }, 250);
+    } catch {}
+  }
+
   triggerCallSimulation(user: any, type: 'audio' | 'video') {
     if (this.callTimerId) clearInterval(this.callTimerId);
+    this.stopRingingSound();
     
     this.activeCall.set({
       user,
@@ -1691,9 +2343,12 @@ export class ChatComponent implements OnInit, OnDestroy {
       duration: 0
     });
 
+    this.startRingingSound();
+
     setTimeout(() => {
       const call = this.activeCall();
       if (call && call.status === 'ringing') {
+        this.stopRingingSound();
         call.status = 'connected';
         this.activeCall.set({ ...call });
         
@@ -1705,15 +2360,54 @@ export class ChatComponent implements OnInit, OnDestroy {
           }
         }, 1000);
       }
-    }, 3000);
+    }, 4000); // Ring for 4s then connect
   }
 
   hangUpCall() {
+    this.stopRingingSound();
+    this.playHangupSound();
+    
+    const call = this.activeCall();
+    if (call) {
+      const newLog = {
+        id: Math.random().toString(),
+        userName: call.user.name,
+        type: call.type,
+        direction: 'outgoing' as const,
+        timestamp: new Date(),
+        duration: call.duration
+      };
+      
+      this.callLogs.update(logs => [newLog, ...logs]);
+      localStorage.setItem('orbitops_call_logs', JSON.stringify(this.callLogs()));
+      
+      // Also add an activity feed notification
+      const newActivity = {
+        id: Math.random().toString(),
+        title: `Outgoing ${call.type} call`,
+        description: `Completed call to ${call.user.name} duration: ${this.formatCallDuration(call.duration)}`,
+        timestamp: new Date(),
+        type: 'call' as const,
+        read: false
+      };
+      this.activities.update(list => [newActivity, ...list]);
+      localStorage.setItem('orbitops_activities', JSON.stringify(this.activities()));
+      
+      if (this.activeSidebarTab() !== 'Activity') {
+        this.activityBadge.update(b => b + 1);
+      }
+    }
+
     if (this.callTimerId) {
       clearInterval(this.callTimerId);
       this.callTimerId = null;
     }
     this.activeCall.set(null);
+  }
+
+  clearCallLogs() {
+    this.callLogs.set([]);
+    localStorage.removeItem('orbitops_call_logs');
   }
 
   formatCallDuration(sec: number): string {
@@ -1741,8 +2435,13 @@ export class ChatComponent implements OnInit, OnDestroy {
     if (this.selectedSession()?.id === session.id) {
       return false;
     }
-    const stored = this.readCounts[session.id] || 0;
-    return session.messages.length > stored;
+    if (this.readCounts[session.id] === undefined) {
+      // Initialize read count to prevent initial load unread highlights
+      this.readCounts[session.id] = session.messages.length;
+      localStorage.setItem('orbitops_chat_read_counts', JSON.stringify(this.readCounts));
+      return false;
+    }
+    return session.messages.length > this.readCounts[session.id];
   }
 
   updateReadCount(session: ChatSession) {
@@ -1770,7 +2469,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Renaming chat
   startEditingTitle() {
     this.newChatTitle.set(this.selectedSession()?.title || '');
     this.isEditingTitle.set(true);
@@ -1797,7 +2495,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.isEditingTitle.set(false);
   }
 
-  // UI Helpers
   toggleSection(section: string) {
     this.sectionsOpen[section] = !this.sectionsOpen[section];
   }
@@ -1828,7 +2525,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     const prev = messages[index - 1];
     const current = messages[index];
     if (prev.senderId !== current.senderId) return true;
-    // Show avatar if message is sent > 2 minutes after the previous one
     const prevTime = new Date(prev.sentAt).getTime();
     const currentTime = new Date(current.sentAt).getTime();
     return (currentTime - prevTime) > 120000;
@@ -1845,5 +2541,61 @@ export class ChatComponent implements OnInit, OnDestroy {
         el.scrollTop = el.scrollHeight;
       }
     }, 50);
+  }
+
+  // VIEWPORTS NAVIGATION AND BADGES
+  selectSidebarTab(tab: 'Chat' | 'Activity' | 'Calendar' | 'Calls') {
+    this.activeSidebarTab.set(tab);
+    if (tab === 'Activity') {
+      this.activityBadge.set(0);
+      this.activities.update(list => list.map(a => ({ ...a, read: true })));
+      localStorage.setItem('orbitops_activities', JSON.stringify(this.activities()));
+    }
+  }
+
+  chatBadge(): number {
+    return this.activeSessions().filter(s => this.isSessionUnread(s)).length;
+  }
+
+  getEventsForDay(day: number) {
+    return this.calendarEvents().filter(e => e.day === day);
+  }
+
+  clickActivity(act: any) {
+    // Mark clicked activity as read
+    this.activities.update(list => list.map(a => a.id === act.id ? { ...a, read: true } : a));
+    localStorage.setItem('orbitops_activities', JSON.stringify(this.activities()));
+    
+    const unreadCount = this.activities().filter(a => !a.read).length;
+    this.activityBadge.set(unreadCount);
+
+    if (act.sessionId) {
+      const session = this.activeSessions().find(c => c.id === act.sessionId);
+      if (session) {
+        this.selectSidebarTab('Chat');
+        this.selectSession(session);
+      }
+    } else {
+      this.selectSidebarTab('Chat');
+    }
+  }
+
+  triggerNewMessageNotification(session: ChatSession, message: ChatMessage) {
+    const newActivity = {
+      id: Math.random().toString(),
+      title: `New message from ${message.senderName}`,
+      description: message.content.length > 60 ? `${message.content.substring(0, 60)}...` : message.content,
+      timestamp: new Date(message.sentAt),
+      type: 'message' as const,
+      read: false,
+      sessionId: session.id
+    };
+    
+    this.activities.update(list => [newActivity, ...list]);
+    localStorage.setItem('orbitops_activities', JSON.stringify(this.activities()));
+    
+    if (this.activeSidebarTab() !== 'Activity') {
+      this.activityBadge.update(b => b + 1);
+    }
   }
 }

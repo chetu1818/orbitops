@@ -45,14 +45,14 @@ import { AuthService } from '../../services/auth.service';
       </header>
 
       <!-- Main Portal Content -->
-      <main class="portal-main">
-        <div class="portal-container">
+      <main class="portal-main" [class.chat-main]="isChatPage()">
+        <div class="portal-container" [class.chat-container]="isChatPage()">
           <router-outlet></router-outlet>
         </div>
       </main>
 
       <!-- Portal Footer -->
-      <footer class="portal-footer">
+      <footer class="portal-footer" *ngIf="!isChatPage()">
         <div class="portal-container">
           <p>© 2026 OrbitOps.ai. Secure Enterprise Integration Console. SOC2 Compliant.</p>
         </div>
@@ -191,6 +191,23 @@ import { AuthService } from '../../services/auth.service';
       padding: 3rem 0;
       position: relative;
     }
+    .portal-main.chat-main {
+      padding: 0;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .portal-container.chat-container {
+      max-width: 100% !important;
+      width: 100% !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      flex: 1 !important;
+      align-items: stretch !important;
+      justify-content: stretch !important;
+    }
     .portal-footer {
       background: rgba(2, 8, 5, 0.9);
       border-top: 1px solid rgba(255, 255, 255, 0.03);
@@ -207,5 +224,9 @@ export class PortalLayoutComponent {
 
   onLogout() {
     this.authService.logout();
+  }
+
+  isChatPage(): boolean {
+    return this.router.url.includes('/portal/chat');
   }
 }
