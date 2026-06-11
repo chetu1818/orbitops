@@ -52,43 +52,7 @@ namespace OrbitOps.Api.Controllers
                 .OrderByDescending(c => c.LastMessageAt)
                 .ToList();
 
-            // Filter to only display chats corresponding to paid/completed transactions
-            var paidOrders = _context.Orders
-                .Where(o => o.Status == "Awaiting Assignment" || o.Status == "In Progress" || o.Status == "Completed")
-                .ToList();
-
-            var engineerNames = paidOrders.Select(o => o.EngineerName).Distinct().ToList();
-            var engineers = _context.Users
-                .Where(u => u.Role == "Engineer" && engineerNames.Contains(u.Name))
-                .ToList();
-
-            var validPairs = new HashSet<(string ClientId, string EngineerId)>();
-            foreach (var order in paidOrders)
-            {
-                var eng = engineers.FirstOrDefault(e => e.Name.Equals(order.EngineerName, StringComparison.OrdinalIgnoreCase));
-                if (eng != null)
-                {
-                    validPairs.Add((order.UserId, eng.Id));
-                }
-            }
-
-            myChats = myChats.Where(c =>
-            {
-                foreach (var p1 in c.ParticipantIds)
-                {
-                    foreach (var p2 in c.ParticipantIds)
-                    {
-                        if (p1 != p2)
-                        {
-                            if (validPairs.Contains((p1, p2)) || validPairs.Contains((p2, p1)))
-                            {
-                                return true;
-                            }
-                        }
-                    }
-                }
-                return false;
-            }).ToList();
+            // Return all chats where the user is a participant.
 
             var allUsers = _context.Users.ToList();
             var result = myChats.Select(c => {

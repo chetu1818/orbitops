@@ -1,6 +1,7 @@
 import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy, PLATFORM_ID, Inject, NgZone } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import * as THREE from 'three';
+import { SceneCacheService } from '../../services/scene-cache.service';
 
 interface ParticleData {
   r: number;
@@ -28,7 +29,7 @@ interface MeteoroidData {
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="canvas-wrapper">
+    <div class="canvas-wrapper" style="will-change: transform;">
       <canvas #headerCanvas></canvas>
     </div>
   `,
@@ -37,6 +38,7 @@ interface MeteoroidData {
       width: 100%;
       height: 100%;
       position: relative;
+      contain: strict;
     }
     canvas {
       width: 100%;
@@ -60,7 +62,7 @@ export class HomeHeader3dComponent implements AfterViewInit, OnDestroy {
   private particles: ParticleData[] = [];
   private activeMeteoroids: MeteoroidData[] = [];
   private lastMeteoroidSpawn = 0;
-  
+
   private themeObserver!: MutationObserver;
   private activeTheme = 'nova';
 
@@ -68,30 +70,35 @@ export class HomeHeader3dComponent implements AfterViewInit, OnDestroy {
   private mouse = { x: 0, y: 0 };
   private target = { x: 0, y: 0 };
 
+  // Performance — adaptive particle count based on device
+  private readonly isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  private readonly PARTICLE_COUNT = this.isMobile ? 3000 : 6000;
+
+  // Geometry constants (must match SceneCacheService CACHE_VERSION)
+  private readonly ARM_SCALE  = 8.5;
+  private readonly ARM_SPIRAL = 2.45;
+  private readonly NUM_ARMS   = 4;
+
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private sceneCache: SceneCacheService
   ) {}
 
   ngAfterViewInit() {
     if (isPlatformBrowser(this.platformId)) {
       this.initThree();
-      this.createGalaxy();
+      this.createGalaxyAsync();
       this.setupThemeObserver();
       this.setupListeners();
-      
-      this.ngZone.runOutsideAngular(() => {
-        this.animate();
-      });
     }
   }
 
   private initThree() {
-    const canvas = this.canvasRef.nativeElement;
+    const canvas    = this.canvasRef.nativeElement;
     const container = canvas.parentElement!;
 
-    this.scene = new THREE.Scene();
-    
+    this.scene  = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(
       45,
       container.clientWidth / container.clientHeight,
@@ -100,12 +107,16 @@ export class HomeHeader3dComponent implements AfterViewInit, OnDestroy {
     );
     this.camera.position.set(0, 0, 22);
 
+    // Cap pixel ratio at 1.5 — a ratio of 2 doubles GPU fill rate with marginal visual gain
+    const dpr = Math.min(window.devicePixelRatio, this.isMobile ? 1.2 : 1.5);
+
     this.renderer = new THREE.WebGLRenderer({
-      canvas: canvas,
-      alpha: true,
-      antialias: true
+      canvas,
+      alpha:     true,
+      antialias: !this.isMobile,   // disable MSAA on mobile for perf
+      powerPreference: 'high-performance'
     });
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    this.renderer.setPixelRatio(dpr);
     this.renderer.setSize(container.clientWidth, container.clientHeight);
     this.renderer.setClearColor(0x000000, 0);
 
@@ -117,94 +128,136 @@ export class HomeHeader3dComponent implements AfterViewInit, OnDestroy {
     this.scene.add(dirLight);
 
     this.galaxyGroup = new THREE.Group();
-    // Slanted premium angles
-    this.galaxyGroup.rotation.x = 1.15;
+    this.galaxyGroup.rotation.x =  1.15;
     this.galaxyGroup.rotation.y = -0.32;
     this.galaxyGroup.rotation.z = -0.68;
     this.scene.add(this.galaxyGroup);
   }
 
-  // Create soft round stardust textures
-  private createStarTexture(): THREE.CanvasTexture {
-    const canvas = document.createElement('canvas');
-    canvas.width = 16;
-    canvas.height = 16;
-    const ctx = canvas.getContext('2d')!;
-    const grad = ctx.createRadialGradient(8, 8, 0, 8, 8, 8);
-    grad.addColorStop(0, 'rgba(255, 255, 255, 1)');
-    grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, 16, 16);
-    
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.needsUpdate = true;
-    return texture;
-  }
+  // ── Galaxy creation (cache-aware) ─────────────────────────────────────────
 
-  private createGalaxy() {
-    const total = 6000;
-    this.galaxyGeometry = new THREE.BufferGeometry();
-    const positions = new Float32Array(total * 3);
-    const colors = new Float32Array(total * 3);
-    
-    const armScale = 8.5;
-    const numArms = 4;
-    const armSpiral = 2.45;
-
+  private async createGalaxyAsync() {
     this.activeTheme = document.documentElement.getAttribute('data-theme') || 'nova';
 
+    const cached = await this.sceneCache.loadGalaxyData(this.activeTheme);
+
+    if (cached) {
+      // Fast path: restore from IndexedDB cache
+      this.buildGalaxyFromArrays(cached.positions, cached.colors);
+    } else {
+      // Slow path: compute, then store
+      const { positions, colors } = this.computeGalaxyArrays();
+      this.buildGalaxyFromArrays(positions, colors);
+
+      // Save asynchronously — never block rendering
+      this.sceneCache.saveGalaxyData(positions, colors, this.activeTheme).catch(() => {});
+    }
+
+    // Start render loop only after galaxy is ready
+    this.ngZone.runOutsideAngular(() => {
+      this.animate();
+    });
+  }
+
+  /** Compute particle positions and colours from scratch. */
+  private computeGalaxyArrays(): { positions: Float32Array; colors: Float32Array } {
+    const total     = this.PARTICLE_COUNT;
+    const positions = new Float32Array(total * 3);
+    const colors    = new Float32Array(total * 3);
+
     for (let i = 0; i < total; i++) {
-      const t = Math.pow(Math.random(), 1.45); // Core bias
-      const armIndex = i % numArms;
-      const phiAngle = (armIndex * 2 * Math.PI) / numArms;
-      const theta = t * armSpiral * Math.PI + phiAngle;
+      const t        = Math.pow(Math.random(), 1.45);
+      const armIndex = i % this.NUM_ARMS;
+      const phiAngle = (armIndex * 2 * Math.PI) / this.NUM_ARMS;
+      const theta    = t * this.ARM_SPIRAL * Math.PI + phiAngle;
 
       const spreadX = (Math.random() - 0.5) * 1.4 * (t + 0.12);
       const spreadY = (Math.random() - 0.5) * 0.58 * (t + 0.06);
       const spreadZ = (Math.random() - 0.5) * 1.4 * (t + 0.12);
 
-      const r = t * armScale;
-      const omega = 0.0012 / (0.4 + t * 0.12);
-      const driftSpeed = 0.0004 + Math.random() * 0.0008;
+      const r = t * this.ARM_SCALE;
 
-      const color = this.getThemeColorForParticle(t, this.activeTheme);
-
-      positions[i * 3] = Math.cos(theta) * r + spreadX;
+      positions[i * 3]     = Math.cos(theta) * r + spreadX;
       positions[i * 3 + 1] = spreadY;
       positions[i * 3 + 2] = Math.sin(theta) * r + spreadZ;
 
-      colors[i * 3] = color.r;
+      const color = this.getThemeColorForParticle(t, this.activeTheme);
+      colors[i * 3]     = color.r;
       colors[i * 3 + 1] = color.g;
       colors[i * 3 + 2] = color.b;
 
-      this.particles.push({
-        r,
-        theta,
-        omega,
-        driftSpeed,
-        spreadX,
-        spreadY,
-        spreadZ,
-        armIndex,
-        baseColor: color
-      });
+      const omega      = 0.0012 / (0.4 + t * 0.12);
+      const driftSpeed = 0.0004 + Math.random() * 0.0008;
+      this.particles.push({ r, theta, omega, driftSpeed, spreadX, spreadY, spreadZ, armIndex, baseColor: color });
     }
 
+    return { positions, colors };
+  }
+
+  /** Rebuild ParticleData from loaded cache arrays (avoids re-running Math.random). */
+  private rebuildParticlesFromArrays(positions: Float32Array) {
+    const total = this.PARTICLE_COUNT;
+    this.particles = [];
+
+    for (let i = 0; i < total; i++) {
+      const x = positions[i * 3];
+      const z = positions[i * 3 + 2];
+      const r = Math.sqrt(x * x + z * z);
+      const t = r / this.ARM_SCALE;
+
+      this.particles.push({
+        r,
+        theta:      Math.atan2(z, x),
+        omega:      0.0012 / (0.4 + t * 0.12),
+        driftSpeed: 0.0004 + 0.0004,   // avg drift
+        spreadX:    0, spreadY: positions[i * 3 + 1], spreadZ: 0,
+        armIndex:   i % this.NUM_ARMS,
+        baseColor:  this.getThemeColorForParticle(t, this.activeTheme)
+      });
+    }
+  }
+
+  /** Attach BufferGeometry and Points to scene using pre-computed arrays. */
+  private buildGalaxyFromArrays(positions: Float32Array, colors: Float32Array) {
+    this.galaxyGeometry = new THREE.BufferGeometry();
     this.galaxyGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    this.galaxyGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    this.galaxyGeometry.setAttribute('color',    new THREE.BufferAttribute(colors,    3));
+
+    // Rebuild particle metadata (needed for animation)
+    this.rebuildParticlesFromArrays(positions);
 
     this.galaxyMaterial = new THREE.PointsMaterial({
-      size: 0.14,
-      vertexColors: true,
-      transparent: true,
-      blending: THREE.AdditiveBlending,
-      map: this.createStarTexture(),
-      depthWrite: false
+      size:          this.isMobile ? 0.16 : 0.14,
+      vertexColors:  true,
+      transparent:   true,
+      blending:      THREE.AdditiveBlending,
+      map:           this.createStarTexture(),
+      depthWrite:    false,
+      sizeAttenuation: true
     });
 
     this.galaxyPoints = new THREE.Points(this.galaxyGeometry, this.galaxyMaterial);
     this.galaxyGroup.add(this.galaxyPoints);
   }
+
+  // ── Star disc texture ─────────────────────────────────────────────────────
+
+  private createStarTexture(): THREE.CanvasTexture {
+    const canvas = document.createElement('canvas');
+    canvas.width  = 16;
+    canvas.height = 16;
+    const ctx  = canvas.getContext('2d')!;
+    const grad = ctx.createRadialGradient(8, 8, 0, 8, 8, 8);
+    grad.addColorStop(0, 'rgba(255,255,255,1)');
+    grad.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 16, 16);
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.needsUpdate = true;
+    return texture;
+  }
+
+  // ── Theme colour helpers ───────────────────────────────────────────────────
 
   private getThemeColorForParticle(t: number, theme: string): THREE.Color {
     const color = new THREE.Color();
@@ -239,12 +292,21 @@ export class HomeHeader3dComponent implements AfterViewInit, OnDestroy {
     return color;
   }
 
+  // ── Theme observer ────────────────────────────────────────────────────────
+
   private setupThemeObserver() {
     this.themeObserver = new MutationObserver(() => {
       const newTheme = document.documentElement.getAttribute('data-theme') || 'nova';
       if (newTheme !== this.activeTheme) {
         this.activeTheme = newTheme;
-        this.updateGalaxyThemeColors();
+        // Try to load new theme from cache first
+        this.sceneCache.loadGalaxyData(newTheme).then(cached => {
+          if (cached) {
+            this.updateGalaxyThemeColorsFromArrays(cached.colors);
+          } else {
+            this.updateGalaxyThemeColors();
+          }
+        });
       }
     });
     this.themeObserver.observe(document.documentElement, {
@@ -255,34 +317,49 @@ export class HomeHeader3dComponent implements AfterViewInit, OnDestroy {
 
   private updateGalaxyThemeColors() {
     const total = this.particles.length;
-    const cArr = this.galaxyGeometry.attributes['color'].array as Float32Array;
-    const armScale = 8.5;
+    const cArr  = this.galaxyGeometry.attributes['color'].array as Float32Array;
 
     for (let i = 0; i < total; i++) {
-      const p = this.particles[i];
-      const t = p.r / armScale;
+      const p    = this.particles[i];
+      const t    = p.r / this.ARM_SCALE;
       p.baseColor = this.getThemeColorForParticle(t, this.activeTheme);
-      
-      const fade = Math.max(0, 1 - p.r / armScale);
-      cArr[i * 3] = p.baseColor.r * fade;
+      const fade = Math.max(0, 1 - p.r / this.ARM_SCALE);
+      cArr[i * 3]     = p.baseColor.r * fade;
       cArr[i * 3 + 1] = p.baseColor.g * fade;
       cArr[i * 3 + 2] = p.baseColor.b * fade;
     }
     this.galaxyGeometry.attributes['color'].needsUpdate = true;
+
+    // Save the new theme colours into cache
+    const newColors = new Float32Array(cArr);
+    const positions = this.galaxyGeometry.attributes['position'].array as Float32Array;
+    this.sceneCache.saveGalaxyData(positions, newColors, this.activeTheme).catch(() => {});
   }
 
+  private updateGalaxyThemeColorsFromArrays(newColors: Float32Array) {
+    const cArr = this.galaxyGeometry.attributes['color'].array as Float32Array;
+    cArr.set(newColors);
+    // Rebuild particle baseColors
+    for (let i = 0; i < this.particles.length; i++) {
+      this.particles[i].baseColor = new THREE.Color(newColors[i * 3], newColors[i * 3 + 1], newColors[i * 3 + 2]);
+    }
+    this.galaxyGeometry.attributes['color'].needsUpdate = true;
+  }
+
+  // ── Event listeners ───────────────────────────────────────────────────────
+
   private setupListeners() {
-    window.addEventListener('mousemove', this.onMouseMove);
-    window.addEventListener('resize', this.onResize);
+    window.addEventListener('mousemove', this.onMouseMove, { passive: true });
+    window.addEventListener('resize',    this.onResize,    { passive: true });
   }
 
   private onMouseMove = (e: MouseEvent) => {
-    this.mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+    this.mouse.x =  (e.clientX / window.innerWidth)  * 2 - 1;
     this.mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
   };
 
   private onResize = () => {
-    const canvas = this.canvasRef.nativeElement;
+    const canvas    = this.canvasRef.nativeElement;
     const container = canvas.parentElement!;
     if (container) {
       this.camera.aspect = container.clientWidth / container.clientHeight;
@@ -291,165 +368,127 @@ export class HomeHeader3dComponent implements AfterViewInit, OnDestroy {
     }
   };
 
+  // ── Meteoroid spawning ─────────────────────────────────────────────────────
+
   private spawnMeteoroid() {
-    const size = 0.08 + Math.random() * 0.09;
-    // Flat rock distorted Dodecahedron
+    if (this.isMobile) return; // skip on mobile for perf
+
+    const size   = 0.08 + Math.random() * 0.09;
     const metGeo = new THREE.DodecahedronGeometry(size, 1);
-    
-    // Distort vertices slightly for realistic uneven rock look
     const posAttr = metGeo.attributes['position'];
+
     for (let k = 0; k < posAttr.count; k++) {
-      const vx = posAttr.getX(k);
-      const vy = posAttr.getY(k);
-      const vz = posAttr.getZ(k);
       posAttr.setXYZ(
         k,
-        vx + (Math.random() - 0.5) * 0.03,
-        vy + (Math.random() - 0.5) * 0.03,
-        vz + (Math.random() - 0.5) * 0.03
+        posAttr.getX(k) + (Math.random() - 0.5) * 0.03,
+        posAttr.getY(k) + (Math.random() - 0.5) * 0.03,
+        posAttr.getZ(k) + (Math.random() - 0.5) * 0.03
       );
     }
     metGeo.computeVertexNormals();
 
-    const metMat = new THREE.MeshStandardMaterial({
-      color: 0x1e202b,
-      roughness: 0.9,
-      metalness: 0.15,
-      flatShading: true
-    });
-    
-    const mesh = new THREE.Mesh(metGeo, metMat);
-    // Spawn off-left and high
+    const metMat = new THREE.MeshStandardMaterial({ color: 0x1e202b, roughness: 0.9, metalness: 0.15, flatShading: true });
+    const mesh   = new THREE.Mesh(metGeo, metMat);
     mesh.position.set(-16 - Math.random() * 5, 4 + Math.random() * 4, (Math.random() - 0.5) * 4);
     this.scene.add(mesh);
 
-    // Setup trailing points
-    const maxTrail = 45;
-    const trailGeo = new THREE.BufferGeometry();
-    const trailPositions = new Float32Array(maxTrail * 3);
-    const trailColors = new Float32Array(maxTrail * 3);
-    
-    // Setup initial points colors
+    const maxTrail        = 45;
+    const trailGeo        = new THREE.BufferGeometry();
+    const trailPositions  = new Float32Array(maxTrail * 3);
+    const trailColors     = new Float32Array(maxTrail * 3);
+
     let trailColor = new THREE.Color('#00f0ff');
-    if (this.activeTheme === 'cyber') trailColor = new THREE.Color('#ff007f');
-    else if (this.activeTheme === 'aurora') trailColor = new THREE.Color('#10b981');
-    else if (this.activeTheme === 'sunset') trailColor = new THREE.Color('#f97316');
-    else if (this.activeTheme === 'matrix') trailColor = new THREE.Color('#00ff66');
+    if (this.activeTheme === 'cyber')  trailColor = new THREE.Color('#ff007f');
+    if (this.activeTheme === 'aurora') trailColor = new THREE.Color('#10b981');
+    if (this.activeTheme === 'sunset') trailColor = new THREE.Color('#f97316');
+    if (this.activeTheme === 'matrix') trailColor = new THREE.Color('#00ff66');
 
     for (let k = 0; k < maxTrail; k++) {
-      const ratio = k / maxTrail;
-      const c = trailColor.clone().multiplyScalar(ratio);
-      trailColors[k * 3] = c.r;
+      const c = trailColor.clone().multiplyScalar(k / maxTrail);
+      trailColors[k * 3]     = c.r;
       trailColors[k * 3 + 1] = c.g;
       trailColors[k * 3 + 2] = c.b;
     }
 
     trailGeo.setAttribute('position', new THREE.BufferAttribute(trailPositions, 3));
-    trailGeo.setAttribute('color', new THREE.BufferAttribute(trailColors, 3));
+    trailGeo.setAttribute('color',    new THREE.BufferAttribute(trailColors,    3));
 
-    const trailPointsMat = new THREE.PointsMaterial({
-      size: 0.12,
-      vertexColors: true,
-      transparent: true,
-      blending: THREE.AdditiveBlending,
-      map: this.createStarTexture(),
-      depthWrite: false
-    });
-
-    const trailPoints = new THREE.Points(trailGeo, trailPointsMat);
+    const trailMat    = new THREE.PointsMaterial({ size: 0.12, vertexColors: true, transparent: true, blending: THREE.AdditiveBlending, map: this.createStarTexture(), depthWrite: false });
+    const trailPoints = new THREE.Points(trailGeo, trailMat);
     this.scene.add(trailPoints);
 
     this.activeMeteoroids.push({
       mesh,
-      velocity: new THREE.Vector3(
-        0.06 + Math.random() * 0.05,
-        -0.02 - Math.random() * 0.03,
-        (Math.random() - 0.5) * 0.012
-      ),
+      velocity: new THREE.Vector3(0.06 + Math.random() * 0.05, -0.02 - Math.random() * 0.03, (Math.random() - 0.5) * 0.012),
       trailPoints,
       trailGeo,
-      trailData: [],
-      spawnTime: Date.now()
+      trailData:  [],
+      spawnTime:  Date.now()
     });
   }
 
+  // ── Main render loop ───────────────────────────────────────────────────────
+
   private animate = () => {
     this.animationFrameId = requestAnimationFrame(this.animate);
-    
-    const pArr = this.galaxyGeometry.attributes['position'].array as Float32Array;
-    const cArr = this.galaxyGeometry.attributes['color'].array as Float32Array;
-    const armScale = 8.5;
-    const armSpiral = 2.45;
 
-    // 1. Update galaxy particles positions & drift
+    if (!this.galaxyGeometry) return;   // guard during async init
+
+    const pArr      = this.galaxyGeometry.attributes['position'].array as Float32Array;
+    const cArr      = this.galaxyGeometry.attributes['color'].array    as Float32Array;
+
+    // 1. Update galaxy particle positions
     for (let i = 0; i < this.particles.length; i++) {
       const p = this.particles[i];
-
-      // Spiral rotation increment
       p.theta += p.omega;
-      // Drift outwards
-      p.r += p.driftSpeed;
+      p.r     += p.driftSpeed;
 
-      const angle = p.theta + (p.r / armScale) * armSpiral;
-
-      pArr[i * 3] = Math.cos(angle) * p.r + p.spreadX;
+      const angle = p.theta + (p.r / this.ARM_SCALE) * this.ARM_SPIRAL;
+      pArr[i * 3]     = Math.cos(angle) * p.r + p.spreadX;
       pArr[i * 3 + 1] = p.spreadY;
       pArr[i * 3 + 2] = Math.sin(angle) * p.r + p.spreadZ;
 
-      // Soft fadeout at the boundary edges (to prevent harsh rectangle border clipping)
-      const fade = Math.max(0, 1 - p.r / armScale);
-      cArr[i * 3] = p.baseColor.r * fade;
+      const fade = Math.max(0, 1 - p.r / this.ARM_SCALE);
+      cArr[i * 3]     = p.baseColor.r * fade;
       cArr[i * 3 + 1] = p.baseColor.g * fade;
       cArr[i * 3 + 2] = p.baseColor.b * fade;
 
-      // Recycle outer stars back to core
-      if (p.r >= armScale) {
-        p.r = 0.05 + Math.random() * 0.2;
+      if (p.r >= this.ARM_SCALE) {
+        p.r     = 0.05 + Math.random() * 0.2;
         p.theta = Math.random() * Math.PI * 2;
-        p.baseColor = this.getThemeColorForParticle(p.r / armScale, this.activeTheme);
+        p.baseColor = this.getThemeColorForParticle(p.r / this.ARM_SCALE, this.activeTheme);
       }
     }
 
     this.galaxyGeometry.attributes['position'].needsUpdate = true;
-    this.galaxyGeometry.attributes['color'].needsUpdate = true;
+    this.galaxyGeometry.attributes['color'].needsUpdate    = true;
 
-    // Slowly rotate the galaxy group
     this.galaxyGroup.rotation.z += 0.00018;
 
-    // 2. Spawn meteoroids occasionally (every ~12 seconds)
-    if (Date.now() - this.lastMeteoroidSpawn > 12000) {
+    // 2. Meteoroid spawning (desktop only)
+    if (!this.isMobile && Date.now() - this.lastMeteoroidSpawn > 12000) {
       this.spawnMeteoroid();
       this.lastMeteoroidSpawn = Date.now();
     }
 
-    // 3. Update active meteoroids and their trails
+    // 3. Update meteoroids
     for (let i = this.activeMeteoroids.length - 1; i >= 0; i--) {
       const met = this.activeMeteoroids[i];
       met.mesh.position.add(met.velocity);
       met.mesh.rotation.x += 0.01;
       met.mesh.rotation.y += 0.015;
 
-      met.trailData.push({
-        x: met.mesh.position.x,
-        y: met.mesh.position.y,
-        z: met.mesh.position.z,
-        age: 0
-      });
-
-      if (met.trailData.length > 45) {
-        met.trailData.shift();
-      }
+      met.trailData.push({ x: met.mesh.position.x, y: met.mesh.position.y, z: met.mesh.position.z, age: 0 });
+      if (met.trailData.length > 45) met.trailData.shift();
 
       const trailPos = met.trailGeo.attributes['position'].array as Float32Array;
-      
       met.trailData.forEach((d, pIdx) => {
-        trailPos[pIdx * 3] = d.x + (Math.random() - 0.5) * 0.05;
+        trailPos[pIdx * 3]     = d.x + (Math.random() - 0.5) * 0.05;
         trailPos[pIdx * 3 + 1] = d.y + (Math.random() - 0.5) * 0.05;
         trailPos[pIdx * 3 + 2] = d.z + (Math.random() - 0.5) * 0.05;
       });
       met.trailGeo.attributes['position'].needsUpdate = true;
 
-      // Clean up out of bounds meteoroids
       if (met.mesh.position.x > 18 || Date.now() - met.spawnTime > 15000) {
         this.scene.remove(met.mesh);
         this.scene.remove(met.trailPoints);
@@ -461,7 +500,7 @@ export class HomeHeader3dComponent implements AfterViewInit, OnDestroy {
       }
     }
 
-    // 4. Interpolate camera view on mouse movement
+    // 4. Smooth camera parallax on mouse
     this.target.x += (this.mouse.x * 1.3 - this.target.x) * 0.035;
     this.target.y += (this.mouse.y * 1.3 - this.target.y) * 0.035;
     this.camera.position.set(this.target.x, this.target.y, 22);
@@ -470,40 +509,24 @@ export class HomeHeader3dComponent implements AfterViewInit, OnDestroy {
     this.renderer.render(this.scene, this.camera);
   };
 
+  // ── Cleanup ───────────────────────────────────────────────────────────────
+
   ngOnDestroy() {
-    if (this.animationFrameId) {
-      cancelAnimationFrame(this.animationFrameId);
-    }
-    if (this.themeObserver) {
-      this.themeObserver.disconnect();
-    }
-    
+    if (this.animationFrameId) cancelAnimationFrame(this.animationFrameId);
+    if (this.themeObserver)    this.themeObserver.disconnect();
+
     window.removeEventListener('mousemove', this.onMouseMove);
-    window.removeEventListener('resize', this.onResize);
+    window.removeEventListener('resize',    this.onResize);
 
-    // Dispose all THREE assets
-    if (this.scene) {
-      this.scene.traverse((object) => {
-        if (object instanceof THREE.Mesh) {
-          object.geometry.dispose();
-          if (Array.isArray(object.material)) {
-            object.material.forEach((mat) => mat.dispose());
-          } else {
-            object.material.dispose();
-          }
-        } else if (object instanceof THREE.Points) {
-          object.geometry.dispose();
-          if (Array.isArray(object.material)) {
-            object.material.forEach((mat) => mat.dispose());
-          } else {
-            object.material.dispose();
-          }
-        }
-      });
-    }
+    this.scene?.traverse((object) => {
+      if (object instanceof THREE.Mesh || object instanceof THREE.Points) {
+        object.geometry.dispose();
+        const mat = object.material;
+        if (Array.isArray(mat)) mat.forEach(m => m.dispose());
+        else (mat as THREE.Material).dispose();
+      }
+    });
 
-    if (this.renderer) {
-      this.renderer.dispose();
-    }
+    this.renderer?.dispose();
   }
 }

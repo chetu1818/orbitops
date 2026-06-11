@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -55,6 +55,29 @@ import { OrderService, Order } from '../../services/order.service';
             <div class="metric-info">
               <span class="m-val">{{ getTotalInvestmentValue() }}</span>
               <span class="m-lbl">Total Investment</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notifications Panel -->
+        <div class="notif-panel card" *ngIf="getNotifications().length > 0">
+          <div class="notif-header" (click)="notifPanelOpen = !notifPanelOpen" style="cursor:pointer; display:flex; align-items:center; justify-content:space-between;">
+            <div style="display:flex; align-items:center; gap:0.65rem;">
+              <span style="position:relative; display:inline-flex;">
+                <i class="bi bi-bell-fill" style="color: var(--gold); font-size:1.05rem;"></i>
+                <span style="position:absolute; top:-4px; right:-5px; width:8px; height:8px; background:#ef4444; border-radius:50%; animation: badge-pulse 2s infinite;"></span>
+              </span>
+              <strong style="font-size:0.9rem;">Notifications</strong>
+              <span style="font-size:0.7rem; font-family:var(--font-mono); background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.25); color:#f87171; padding:0.1rem 0.45rem; border-radius:999px;">{{ getNotifications().length }}</span>
+            </div>
+            <i class="bi" [ngClass]="notifPanelOpen ? 'bi-chevron-up' : 'bi-chevron-down'" style="color:var(--text-muted); font-size:0.8rem;"></i>
+          </div>
+          <div *ngIf="notifPanelOpen" style="margin-top:1rem; display:flex; flex-direction:column; gap:0.5rem;">
+            <div *ngFor="let n of getNotifications()" class="notif-item">
+              <span class="notif-dot" [style.background]="n.color"></span>
+              <span class="notif-text">{{ n.text }}</span>
+              <span class="notif-time">{{ n.time }}</span>
+              <button *ngIf="n.action" (click)="n.action()" class="btn btn-primary btn-xs" style="flex-shrink:0;">{{ n.label }}</button>
             </div>
           </div>
         </div>
@@ -295,6 +318,32 @@ import { OrderService, Order } from '../../services/order.service';
           </ng-template>
         </div>
 
+        <!-- Activity Timeline -->
+        <div class="integrations-section card" style="margin-top:0;">
+          <div class="section-title" style="margin-bottom:1.25rem;">
+            <h3><i class="bi bi-activity" style="margin-right:0.5rem; color:var(--accent);"></i>Activity Timeline</h3>
+            <p>Recent status changes and milestones across your automation pipelines.</p>
+          </div>
+          <div *ngIf="getActivityTimeline().length > 0; else emptyTimeline">
+            <div *ngFor="let ev of getActivityTimeline()" class="activity-feed-item" style="position:relative;">
+              <div class="act-icon" [style.background]="ev.bg" [style.color]="ev.color">
+                <i class="bi" [ngClass]="ev.icon"></i>
+              </div>
+              <div class="act-body">
+                <div class="act-title">{{ ev.title }}</div>
+                <div class="act-meta">{{ ev.workflow }} &bull; {{ ev.time }}</div>
+              </div>
+              <span class="status-badge" [ngClass]="ev.status.toLowerCase().replace(' ','-')" style="flex-shrink:0;">{{ ev.status }}</span>
+            </div>
+          </div>
+          <ng-template #emptyTimeline>
+            <div class="empty-state" style="padding: 2rem;">
+              <i class="bi bi-clock-history"></i>
+              <p style="margin:0;">No pipeline activity recorded yet.</p>
+            </div>
+          </ng-template>
+        </div>
+
         <!-- Client Sub-persons Team Settings Section -->
         <div *ngIf="user.role === 'Client'" class="team-section card" style="margin-top: 2.5rem;">
           <div class="section-title">
@@ -351,43 +400,99 @@ import { OrderService, Order } from '../../services/order.service';
             <h2>Operations Control Portal</h2>
             <p>Review feasibility requests, approve costing, and monitor platform health. (Admin console)</p>
           </div>
-        </div>
-
-        <!-- Admin Dashboard Metrics Overview -->
-        <div class="metrics-grid" style="margin-top: 1.5rem; margin-bottom: 2rem;">
-          <div class="metric-card card">
-            <div class="metric-icon primary-glow"><i class="bi bi-people-fill"></i></div>
-            <div class="metric-info">
-              <span class="m-val">{{ getAdminClientsCount() }}</span>
-              <span class="m-lbl">Registered Clients</span>
-            </div>
-          </div>
-          <div class="metric-card card">
-            <div class="metric-icon accent-glow"><i class="bi bi-person-workspace"></i></div>
-            <div class="metric-info">
-              <span class="m-val">{{ getAdminEngineersCount() }}</span>
-              <span class="m-lbl">Automation Architects</span>
-            </div>
-          </div>
-          <div class="metric-card card">
-            <div class="metric-icon violet-glow"><i class="bi bi-arrow-left-right"></i></div>
-            <div class="metric-info">
-              <span class="m-val">{{ getAdminActivePipelinesCount() }}</span>
-              <span class="m-lbl">Active Sync Mappings</span>
-            </div>
-          </div>
-          <div class="metric-card card">
-            <div class="metric-icon gold-glow"><i class="bi bi-wallet2"></i></div>
-            <div class="metric-info">
-              <span class="m-val">{{ getAdminTotalVolume() }}</span>
-              <span class="m-lbl">Transaction Volume</span>
-            </div>
+          <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+            <button class="quick-action-btn" (click)="scrollToSection('admin-pending')">
+              <span class="qa-icon"><i class="bi bi-clipboard-check" style="color:#a78bfa;"></i></span>
+              Review Queue
+            </button>
+            <button class="quick-action-btn" (click)="scrollToSection('admin-engineers')">
+              <span class="qa-icon"><i class="bi bi-person-plus-fill" style="color:#34d399;"></i></span>
+              Add Engineer
+            </button>
+            <button class="quick-action-btn" (click)="scrollToSection('admin-all-pipelines')">
+              <span class="qa-icon"><i class="bi bi-diagram-3-fill" style="color:#60a5fa;"></i></span>
+              All Pipelines
+            </button>
           </div>
         </div>
 
-        <div class="integrations-section card">
+        <!-- System Health Monitor -->
+        <div class="integrations-section card" style="padding:1.75rem !important;">
+          <div class="section-title" style="margin-bottom:1.25rem;">
+            <h3><i class="bi bi-heart-pulse-fill" style="margin-right:0.5rem; color:#ef4444;"></i>System Health Monitor</h3>
+            <p>Real-time platform metrics and operational health indicators.</p>
+          </div>
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap:1rem;">
+            <div class="health-stat">
+              <span class="hs-icon" style="color:#34d399;"><i class="bi bi-person-workspace"></i></span>
+              <span class="hs-val">{{ getEngineersOnlineCount() }}</span>
+              <span class="hs-lbl">Engineers Online</span>
+            </div>
+            <div class="health-stat">
+              <span class="hs-icon" style="color:#fbbf24;"><i class="bi bi-hourglass-split"></i></span>
+              <span class="hs-val">{{ pendingOrders().length }}</span>
+              <span class="hs-lbl">Pending Reviews</span>
+            </div>
+            <div class="health-stat">
+              <span class="hs-icon" style="color:#60a5fa;"><i class="bi bi-arrow-left-right"></i></span>
+              <span class="hs-val">{{ getAdminActivePipelinesCount() }}</span>
+              <span class="hs-lbl">Active Pipelines</span>
+            </div>
+            <div class="health-stat">
+              <span class="hs-icon" style="color:#a78bfa;"><i class="bi bi-wallet2"></i></span>
+              <span class="hs-val" style="font-size:1.4rem;">{{ getAdminTotalVolume() }}</span>
+              <span class="hs-lbl">Total Revenue</span>
+            </div>
+            <div class="health-stat">
+              <span class="hs-icon" style="color:#34d399;"><i class="bi bi-check-circle-fill"></i></span>
+              <span class="hs-val">{{ getPipelineSuccessRate() }}%</span>
+              <span class="hs-lbl">Success Rate</span>
+            </div>
+            <div class="health-stat">
+              <span class="hs-icon" style="color:#f87171;"><i class="bi bi-people-fill"></i></span>
+              <span class="hs-val">{{ getAdminClientsCount() }}</span>
+              <span class="hs-lbl">Registered Clients</span>
+            </div>
+          </div>
+          <!-- Revenue Bar Chart -->
+          <div style="margin-top:2rem;">
+            <div style="font-size:0.78rem; font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted); margin-bottom:1rem;">Revenue by Month</div>
+            <div style="display:flex; align-items:flex-end; gap:0.75rem; height:100px; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:0.5rem;">
+              <div *ngFor="let bar of getRevenueChartData()" class="rev-bar">
+                <span class="rev-bar-val">{{ bar.val > 0 ? '$' + bar.val : '' }}</span>
+                <div class="rev-bar-inner" [style.height]="bar.pct + '%'" [style.background]="'linear-gradient(to top, ' + bar.color + ' 0%, ' + bar.colorLight + ' 100%)'" [style.minHeight]="bar.val > 0 ? '8px' : '2px'"></div>
+                <span class="rev-bar-lbl">{{ bar.label }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Platform Activity Feed -->
+        <div class="integrations-section card" style="margin-top:0;">
+          <div class="section-title" style="margin-bottom:1.25rem;">
+            <h3><i class="bi bi-broadcast" style="margin-right:0.5rem; color:var(--primary);"></i>Platform Activity Feed</h3>
+            <p>Latest events across all client pipelines, registrations, and payments.</p>
+          </div>
+          <div *ngFor="let ev of getAdminActivityFeed()" class="activity-feed-item">
+            <div class="act-icon" [style.background]="ev.bg" [style.color]="ev.color">
+              <i class="bi" [ngClass]="ev.icon"></i>
+            </div>
+            <div class="act-body">
+              <div class="act-title">{{ ev.title }}</div>
+              <div class="act-meta">{{ ev.meta }}</div>
+            </div>
+          </div>
+          <div *ngIf="getAdminActivityFeed().length === 0" class="empty-state" style="padding:2rem;">
+            <i class="bi bi-broadcast"></i>
+            <p style="margin:0;">No activity recorded yet.</p>
+          </div>
+        </div>
+
+
+
+        <div id="admin-pending" class="integrations-section card">
           <div class="section-title">
-            <h3>Awaiting Admin Review & Costing</h3>
+            <h3>Awaiting Admin Review &amp; Costing</h3>
             <p>Inspect connection credentials, evaluate complexity, and set target pricing for clients.</p>
           </div>
 
@@ -575,7 +680,7 @@ import { OrderService, Order } from '../../services/order.service';
         </div>
 
         <!-- Superpower All Pipelines Monitor -->
-        <div class="integrations-section card" style="margin-top: 2.5rem;">
+        <div id="admin-all-pipelines" class="integrations-section card" style="margin-top: 2.5rem;">
           <div class="section-title">
             <h3>Operations Monitor (All Pipelines)</h3>
             <p>Admin superpower console: Reassign architects, override sync status, and view client credentials.</p>
@@ -794,7 +899,7 @@ import { OrderService, Order } from '../../services/order.service';
         </div>
 
         <!-- Admin Engineer Management Section -->
-        <div class="team-section card" style="margin-top: 2.5rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+        <div id="admin-engineers" class="team-section card" style="margin-top: 2.5rem; max-width: 600px; margin-left: auto; margin-right: auto;">
           <div class="section-title">
             <h3>Engineer Management</h3>
             <p>Create and register a secure portal account for a new OrbitOps Automation Architect / Engineer.</p>
@@ -845,16 +950,74 @@ import { OrderService, Order } from '../../services/order.service';
                 <span>Status: {{ engAvailable() ? 'Online' : 'Offline' }}</span>
                 <i class="bi bi-chevron-down" style="font-size: 0.75rem;"></i>
               </button>
-              <div *ngIf="statusDropdownOpen" class="status-dropdown-menu" style="position: absolute; right: 0; top: 110%; background: #080e1a; border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); z-index: 100; min-width: 120px; padding: 0.25rem 0;">
-                <button (click)="selectEngineerAvailability(true)" class="dropdown-item" style="width: 100%; text-align: left; padding: 0.5rem 1rem; background: none; border: none; color: #ECFDF5; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
+              <div *ngIf="statusDropdownOpen" class="status-dropdown-menu" style="position: absolute; right: 0; top: 110%; background: var(--bg-secondary); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); z-index: 100; min-width: 120px; padding: 0.25rem 0;">
+                <button (click)="selectEngineerAvailability(true)" class="dropdown-item" style="width: 100%; text-align: left; padding: 0.5rem 1rem; background: none; border: none; color: var(--text-primary); font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
                   <span style="width: 8px; height: 8px; border-radius: 50%; background: #34d399; display: inline-block;"></span>
                   Online
                 </button>
-                <button (click)="selectEngineerAvailability(false)" class="dropdown-item" style="width: 100%; text-align: left; padding: 0.5rem 1rem; background: none; border: none; color: #ECFDF5; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
+                <button (click)="selectEngineerAvailability(false)" class="dropdown-item" style="width: 100%; text-align: left; padding: 0.5rem 1rem; background: none; border: none; color: var(--text-primary); font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
                   <span style="width: 8px; height: 8px; border-radius: 50%; background: #f87171; display: inline-block;"></span>
                   Offline
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Engineer Workload Summary -->
+        <div class="metrics-grid">
+          <div class="metric-card card">
+            <div class="metric-icon primary-glow"><i class="bi bi-folder2-open"></i></div>
+            <div class="metric-info">
+              <span class="m-val">{{ orders().length }}</span>
+              <span class="m-lbl">Assigned Projects</span>
+            </div>
+          </div>
+          <div class="metric-card card">
+            <div class="metric-icon accent-glow"><i class="bi bi-check2-all"></i></div>
+            <div class="metric-info">
+              <span class="m-val">{{ getEngCompletedCount() }}</span>
+              <span class="m-lbl">Completed</span>
+            </div>
+          </div>
+          <div class="metric-card card">
+            <div class="metric-icon violet-glow"><i class="bi bi-arrow-repeat"></i></div>
+            <div class="metric-info">
+              <span class="m-val">{{ getEngActiveCount() }}</span>
+              <span class="m-lbl">In Progress</span>
+            </div>
+          </div>
+          <div class="metric-card card" style="background: rgba(16,185,129,0.04) !important; border-color: rgba(16,185,129,0.12) !important;">
+            <div class="metric-icon accent-glow"><i class="bi bi-clock-fill"></i></div>
+            <div class="metric-info">
+              <span class="session-timer" style="font-size:1.3rem;">{{ sessionTimerDisplay() }}</span>
+              <span class="m-lbl">Time {{ engAvailable() ? 'Online' : 'Offline' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick-Update Panel -->
+        <div *ngIf="orders().length > 0" class="integrations-section card" style="padding:1.75rem !important;">
+          <div class="section-title" style="margin-bottom:1rem;">
+            <h3><i class="bi bi-lightning-fill" style="margin-right:0.5rem; color:var(--gold);"></i>Quick Status Updates</h3>
+            <p>Update pipeline status without expanding each row.</p>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:0.75rem;">
+            <div *ngFor="let order of orders()" style="display:flex; align-items:center; gap:1rem; padding:0.75rem 1rem; background:rgba(255,255,255,0.015); border:1px solid rgba(255,255,255,0.05); border-radius:10px; flex-wrap:wrap;">
+              <div style="flex:1; min-width:120px;">
+                <div style="font-size:0.82rem; font-weight:600; color:var(--text-primary);">{{ order.workflowType }}</div>
+                <div style="font-size:0.72rem; color:var(--text-muted); font-family:var(--font-mono);">{{ order.sourceSystem }} &rarr; {{ order.destinationSystem }}</div>
+              </div>
+              <span class="status-badge" [ngClass]="order.status.toLowerCase().replace(' ','-')" style="flex-shrink:0;">{{ order.status }}</span>
+              <select class="form-control" [value]="order.status" (change)="onUpdateStatus(order.id, $event)" style="max-width:200px; background:var(--bg-secondary); border-color:rgba(255,255,255,0.1); color:var(--text-primary); padding:0.35rem 0.55rem; border-radius:6px; font-size:0.78rem;">
+                <option value="Awaiting Assignment">Awaiting Assignment</option>
+                <option value="Connection Setup">1. Connection Setup</option>
+                <option value="Mapping Schema">2. Mapping Schema</option>
+                <option value="Testing Sync">3. Testing Sync</option>
+                <option value="In Progress">4. In Progress</option>
+                <option value="Completed">5. Completed</option>
+                <option value="On Hold">On Hold</option>
+              </select>
             </div>
           </div>
         </div>
@@ -1004,9 +1167,9 @@ import { OrderService, Order } from '../../services/order.service';
 
                         <!-- Progress Status Updater -->
                         <div class="status-updater-box" style="background: rgba(255, 255, 255, 0.015); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 1.25rem; margin-top: 1.75rem;">
-                          <h5 style="margin: 0 0 0.75rem 0; color: #fff; font-size: 0.88rem; display: flex; align-items: center; gap: 0.35rem;"><i class="bi bi-arrow-repeat"></i> Update Pipeline Progress Status</h5>
+                          <h5 style="margin: 0 0 0.75rem 0; color: var(--text-primary); font-size: 0.88rem; display: flex; align-items: center; gap: 0.35rem;"><i class="bi bi-arrow-repeat"></i> Update Pipeline Progress Status</h5>
                           <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
-                            <select class="form-control" [value]="order.status" (change)="onUpdateStatus(order.id, $event)" style="max-width: 250px; background: #080e1a; border-color: rgba(16, 185, 129, 0.2); color: #fff; padding: 0.4rem 0.6rem; border-radius: 6px;">
+                            <select class="form-control" [value]="order.status" (change)="onUpdateStatus(order.id, $event)" style="max-width: 250px; background: var(--bg-secondary); border-color: rgba(16, 185, 129, 0.2); color: var(--text-primary); padding: 0.4rem 0.6rem; border-radius: 6px;">
                               <option value="Awaiting Assignment">Awaiting Assignment</option>
                               <option value="Connection Setup">1. Connection Setup</option>
                               <option value="Mapping Schema">2. Mapping Schema</option>
@@ -1859,9 +2022,17 @@ import { OrderService, Order } from '../../services/order.service';
     }
   `]
 })
-export class PortalHomeComponent implements OnInit {
+export class PortalHomeComponent implements OnInit, OnDestroy {
   authService = inject(AuthService);
   private orderService = inject(OrderService);
+
+  // Session timer
+  private sessionStartTime = Date.now();
+  sessionTimerDisplay = signal('00:00:00');
+  private timerInterval: any;
+
+  // UI state
+  notifPanelOpen = true;
 
   orders = signal<Order[]>([]);
   pendingOrders = signal<Order[]>([]);
@@ -2135,6 +2306,19 @@ Thank you for choosing OrbitOps Automation!
         }
       }
     }
+    // Start session timer
+    this.sessionStartTime = Date.now();
+    this.timerInterval = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - this.sessionStartTime) / 1000);
+      const h = Math.floor(elapsed / 3600).toString().padStart(2, '0');
+      const m = Math.floor((elapsed % 3600) / 60).toString().padStart(2, '0');
+      const s = (elapsed % 60).toString().padStart(2, '0');
+      this.sessionTimerDisplay.set(`${h}:${m}:${s}`);
+    }, 1000);
+  }
+
+  ngOnDestroy() {
+    if (this.timerInterval) clearInterval(this.timerInterval);
   }
 
   loadOrders() {
@@ -2176,6 +2360,161 @@ Thank you for choosing OrbitOps Automation!
 
   getKeysCount(dict: any): number {
     return dict ? Object.keys(dict).length : 0;
+  }
+
+  // ── Client helpers ─────────────────────────────────────────────
+  getNotifications(): any[] {
+    const notifs: any[] = [];
+    const fmt = (d: string) => new Date(d).toLocaleDateString('en-US', { month:'short', day:'numeric' });
+    this.orders().forEach(o => {
+      if (o.status === 'Awaiting Payment') {
+        notifs.push({ text: `Payment required for "${o.workflowType}"`, color: '#fbbf24', time: fmt(o.createdAt), label: 'Pay Now', action: () => this.openCheckout(o) });
+      }
+      if (o.status === 'Cost Proposed by Admin') {
+        notifs.push({ text: `Admin proposed $${o.price} for "${o.workflowType}" — review needed`, color: '#a78bfa', time: fmt(o.createdAt), label: null, action: null });
+      }
+    });
+    return notifs;
+  }
+
+  getActivityTimeline(): any[] {
+    const statusMeta: Record<string, { icon: string, color: string, bg: string, label: string }> = {
+      'Awaiting Admin Review': { icon: 'bi-hourglass',         color: '#a78bfa', bg: 'rgba(139,92,246,0.1)',  label: 'Awaiting Review' },
+      'Cost Proposed by Admin':{ icon: 'bi-cash-coin',        color: '#fbbf24', bg: 'rgba(245,158,11,0.1)',  label: 'Cost Proposed' },
+      'Awaiting Payment':      { icon: 'bi-credit-card',      color: '#fbbf24', bg: 'rgba(245,158,11,0.1)',  label: 'Awaiting Payment' },
+      'Awaiting Assignment':   { icon: 'bi-person-plus',      color: '#2dd4bf', bg: 'rgba(20,184,166,0.1)',  label: 'Awaiting Assignment' },
+      'Connection Setup':      { icon: 'bi-plug-fill',        color: '#60a5fa', bg: 'rgba(59,130,246,0.1)',  label: 'Connection Setup' },
+      'Mapping Schema':        { icon: 'bi-map-fill',         color: '#60a5fa', bg: 'rgba(59,130,246,0.1)',  label: 'Mapping Schema' },
+      'Testing Sync':          { icon: 'bi-bug-fill',         color: '#f9a8d4', bg: 'rgba(236,72,153,0.1)', label: 'Testing Sync' },
+      'In Progress':           { icon: 'bi-arrow-repeat',     color: '#60a5fa', bg: 'rgba(59,130,246,0.1)',  label: 'In Progress' },
+      'Completed':             { icon: 'bi-check-circle-fill',color: '#34d399', bg: 'rgba(16,185,129,0.1)', label: 'Completed' },
+      'Declined':              { icon: 'bi-x-circle-fill',    color: '#f87171', bg: 'rgba(239,68,68,0.1)',  label: 'Declined' },
+      'On Hold':               { icon: 'bi-pause-circle-fill',color: '#94a3b8', bg: 'rgba(148,163,184,0.1)',label: 'On Hold' },
+    };
+    return this.orders().map(o => {
+      const meta = statusMeta[o.status] || { icon: 'bi-circle', color: '#94a3b8', bg: 'rgba(148,163,184,0.1)', label: o.status };
+      return {
+        title: `${o.workflowType}: ${o.sourceSystem} → ${o.destinationSystem}`,
+        workflow: meta.label,
+        time: new Date(o.createdAt).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }),
+        icon: meta.icon,
+        color: meta.color,
+        bg: meta.bg,
+        status: o.status,
+      };
+    });
+  }
+
+  // ── Admin helpers ───────────────────────────────────────────────
+  getEngineersOnlineCount(): number {
+    return this.allUsers().filter(u => u.role === 'Engineer' && u.isAvailable).length;
+  }
+
+  getPipelineSuccessRate(): number {
+    const total = this.allOrders().length;
+    if (!total) return 0;
+    const completed = this.allOrders().filter(o => o.status === 'Completed').length;
+    return Math.round((completed / total) * 100);
+  }
+
+  getRevenueChartData(): any[] {
+    const now = new Date();
+    const months: { label: string, val: number }[] = [];
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      months.push({ label: d.toLocaleString('default', { month: 'short' }), val: 0 });
+    }
+    this.allOrders().forEach(o => {
+      if (!o.price || o.status === 'Awaiting Admin Review' || o.status === 'Declined') return;
+      const d = new Date(o.createdAt);
+      const diffMonths = (now.getFullYear() - d.getFullYear()) * 12 + (now.getMonth() - d.getMonth());
+      if (diffMonths >= 0 && diffMonths < 6) {
+        months[5 - diffMonths].val += o.price;
+      }
+    });
+    const maxVal = Math.max(...months.map(m => m.val), 1);
+    const colors = [
+      { c: 'rgba(59,130,246,0.6)',  l: 'rgba(96,165,250,0.9)' },
+      { c: 'rgba(139,92,246,0.6)', l: 'rgba(167,139,250,0.9)' },
+      { c: 'rgba(16,185,129,0.6)', l: 'rgba(52,211,153,0.9)'  },
+      { c: 'rgba(245,158,11,0.6)', l: 'rgba(251,191,36,0.9)'  },
+      { c: 'rgba(59,130,246,0.6)',  l: 'rgba(96,165,250,0.9)' },
+      { c: 'rgba(139,92,246,0.6)', l: 'rgba(167,139,250,0.9)' },
+    ];
+    return months.map((m, i) => ({
+      label: m.label,
+      val: m.val > 0 ? `${(m.val / 1000).toFixed(1)}k` : '',
+      pct: Math.round((m.val / maxVal) * 85),
+      color: colors[i].c,
+      colorLight: colors[i].l,
+    }));
+  }
+
+  getAdminActivityFeed(): any[] {
+    const feed: any[] = [];
+    const ordersToProcess = [...this.allOrders()]
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, 10);
+    ordersToProcess.forEach(o => {
+      let icon = 'bi-circle', color = '#94a3b8', bg = 'rgba(148,163,184,0.1)', title = '', meta = '';
+      if (o.status === 'Completed') {
+        icon = 'bi-check-circle-fill'; color = '#34d399'; bg = 'rgba(16,185,129,0.1)';
+        title = `Pipeline completed: ${o.workflowType}`;
+      } else if (o.status === 'Awaiting Payment') {
+        icon = 'bi-credit-card-fill'; color = '#fbbf24'; bg = 'rgba(245,158,11,0.1)';
+        title = `Payment awaiting: ${o.clientName || 'Client'} — $${o.price}`;
+      } else if (o.status === 'Cost Proposed by Admin') {
+        icon = 'bi-cash-coin'; color = '#a78bfa'; bg = 'rgba(139,92,246,0.1)';
+        title = `Cost proposal sent to ${o.clientName || 'Client'}: $${o.price}`;
+      } else if (o.status === 'In Progress') {
+        icon = 'bi-arrow-repeat'; color = '#60a5fa'; bg = 'rgba(59,130,246,0.1)';
+        title = `Pipeline active: ${o.workflowType}`;
+      } else if (o.status === 'Awaiting Admin Review') {
+        icon = 'bi-hourglass'; color = '#a78bfa'; bg = 'rgba(139,92,246,0.1)';
+        title = `New request from ${o.clientName || 'Client'}: ${o.workflowType}`;
+      } else {
+        title = `${o.workflowType}: ${o.status}`;
+      }
+      meta = `${o.sourceSystem} → ${o.destinationSystem} · ${new Date(o.createdAt).toLocaleDateString('en-US', { month:'short', day:'numeric' })}`;
+      feed.push({ icon, color, bg, title, meta });
+    });
+    return feed;
+  }
+
+  scrollToSection(id: string) {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // ── Engineer helpers ─────────────────────────────────────────────
+  getEngCompletedCount(): number {
+    return this.orders().filter(o => o.status === 'Completed').length;
+  }
+
+  getEngActiveCount(): number {
+    return this.orders().filter(o => ['Connection Setup','Mapping Schema','Testing Sync','In Progress'].includes(o.status)).length;
+  }
+
+  // Returns 'done', 'active', or '' for step progress tracker
+  getStepClass(currentStatus: string, stepName: string): string {
+    const steps = ['Connection Setup', 'Mapping Schema', 'Testing Sync', 'In Progress', 'Completed'];
+    const currentIdx = steps.indexOf(currentStatus);
+    const stepIdx = steps.indexOf(stepName);
+    if (currentIdx === -1 || stepIdx === -1) return '';
+    if (stepIdx < currentIdx) return 'done';
+    if (stepIdx === currentIdx) return 'active';
+    return '';
+  }
+
+  getPipelinePercent(status: string): number {
+    const map: Record<string, number> = {
+      'Awaiting Admin Review': 0, 'Cost Proposed by Admin': 0,
+      'Awaiting Payment': 0, 'Awaiting Assignment': 5,
+      'Connection Setup': 20, 'Mapping Schema': 45,
+      'Testing Sync': 65, 'In Progress': 80, 'Completed': 100,
+      'On Hold': 35, 'Declined': 0,
+    };
+    return map[status] ?? 0;
   }
 
   // Admin Costing approval

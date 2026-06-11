@@ -13,13 +13,18 @@
   transition: background var(--dur-med) ease, box-shadow var(--dur-med) ease;
 }
 
-/* Glassmorphic background activated immediately */
 .app-header {
-  background: rgba(2, 5, 16, 0.72);
+  background: var(--header-bg, rgba(2, 5, 16, 0.72));
   backdrop-filter: blur(22px) saturate(180%);
   -webkit-backdrop-filter: blur(22px) saturate(180%);
-  border-bottom: 1px solid rgba(100,160,255,0.09);
-  box-shadow: 0 1px 0 rgba(255,255,255,0.03), 0 8px 32px rgba(0,0,0,0.45);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.03), 0 8px 32px rgba(0,0,0,0.35);
+}
+/* Light (Aurora) header needs a white tint instead of dark */
+[data-theme="aurora"] .app-header {
+  background: rgba(243, 246, 248, 0.92);
+  border-bottom: 1px solid rgba(16,185,129,0.12);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.8), 0 4px 20px rgba(0,0,0,0.06);
 }
 
 /* Animated accent line at the very bottom of the header */
@@ -116,6 +121,9 @@
   0%,100% { opacity: 0; transform: scale(0.4) rotate(0deg); }
   50%     { opacity: 1; transform: scale(1.4) rotate(180deg); filter: drop-shadow(0 0 6px #fbbf24); }
 }
+/* Hide sparkles on light themes — clash with white backgrounds */
+[data-theme="aurora"] .logo-wrapper::before,
+[data-theme="aurora"] .logo-wrapper::after { display: none; }
 
 /* ─── Navigation Links ────────────────────────────────────────── */
 .nav-links {
@@ -140,12 +148,16 @@
     box-shadow var(--dur-fast);
   position: relative;
   white-space: nowrap;
+  text-decoration: none;
 }
 .nav-links a:hover {
   color: var(--text-primary);
   background: rgba(255,255,255,0.05);
 }
-.nav-links a.active { color: #93c5fd; }
+[data-theme="aurora"] .nav-links a:hover {
+  background: rgba(0,0,0,0.05);
+}
+.nav-links a.active { color: var(--accent); }
 .nav-links a.active::after {
   content: '';
   position: absolute;
@@ -478,13 +490,18 @@
   left: 0;
   width: 100%;
   height: 0;
-  background: rgba(8, 15, 30, 0.96);
+  background: var(--header-bg, rgba(8, 15, 30, 0.96));
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--border);
   z-index: 1000;
   overflow: hidden;
   transition: height 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+/* Light theme mobile nav */
+[data-theme="aurora"] .mobile-nav-dropdown {
+  background: rgba(243, 246, 248, 0.97);
+  border-bottom-color: rgba(16,185,129,0.15);
 }
 
 .mobile-nav-dropdown.open {
