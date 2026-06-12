@@ -20,11 +20,11 @@
   border-bottom: 1px solid var(--border);
   box-shadow: 0 1px 0 rgba(255,255,255,0.03), 0 8px 32px rgba(0,0,0,0.35);
 }
-/* Light (Aurora) header needs a white tint instead of dark */
-[data-theme="aurora"] .app-header {
+/* Light header needs a white tint instead of dark */
+[data-theme="light"] .app-header {
   background: rgba(243, 246, 248, 0.92);
-  border-bottom: 1px solid rgba(16,185,129,0.12);
-  box-shadow: 0 1px 0 rgba(255,255,255,0.8), 0 4px 20px rgba(0,0,0,0.06);
+  border-bottom: 1px solid rgba(0, 113, 227, 0.12);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8), 0 4px 20px rgba(0,0,0,0.06);
 }
 
 /* Animated accent line at the very bottom of the header */
@@ -122,8 +122,8 @@
   50%     { opacity: 1; transform: scale(1.4) rotate(180deg); filter: drop-shadow(0 0 6px #fbbf24); }
 }
 /* Hide sparkles on light themes — clash with white backgrounds */
-[data-theme="aurora"] .logo-wrapper::before,
-[data-theme="aurora"] .logo-wrapper::after { display: none; }
+[data-theme="light"] .logo-wrapper::before,
+[data-theme="light"] .logo-wrapper::after { display: none; }
 
 /* ─── Navigation Links ────────────────────────────────────────── */
 .nav-links {
@@ -154,7 +154,7 @@
   color: var(--text-primary);
   background: rgba(255,255,255,0.05);
 }
-[data-theme="aurora"] .nav-links a:hover {
+[data-theme="light"] .nav-links a:hover {
   background: rgba(0,0,0,0.05);
 }
 .nav-links a.active { color: var(--accent); }
@@ -392,8 +392,9 @@
 .global-loading-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(2,5,16,0.92);
-  backdrop-filter: blur(20px);
+  background: rgba(2, 5, 16, 0.75); /* Semi-transparent dark mask */
+  backdrop-filter: none; /* Removed background blur */
+  -webkit-backdrop-filter: none;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -499,9 +500,9 @@
   transition: height 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 /* Light theme mobile nav */
-[data-theme="aurora"] .mobile-nav-dropdown {
+[data-theme="light"] .mobile-nav-dropdown {
   background: rgba(243, 246, 248, 0.97);
-  border-bottom-color: rgba(16,185,129,0.15);
+  border-bottom-color: rgba(0, 113, 227, 0.15);
 }
 
 .mobile-nav-dropdown.open {

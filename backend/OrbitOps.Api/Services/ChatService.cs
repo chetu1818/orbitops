@@ -21,95 +21,95 @@ public class ChatService : IChatService
     {
         ("greeting",
          new[] { "hello","hi","hey","greetings","yo","sup","morning","afternoon","evening","howdy","hows","going","start","begin","open" },
-         "Hello! I'm **Mia**, your OrbitOps automation assistant. I can help you with:\n• Our data pipeline architecture\n• HR, payroll & ERP integrations\n• Security & compliance details\n• Custom connector development\n• Pricing & demo scheduling\n\nWhat would you like to know?"),
+         "Hello! I'm Mia, your OrbitOps support assistant. I can help you with questions about our automation services, portal usage, and how to submit new automation requests. What can I help you with today?"),
 
         ("identity",
          new[] { "name","identity","who","mia","yourself","what","called","introduce","tell","about","you" },
-         "I'm **Mia** — the AI assistant powering OrbitOps.ai. I'm trained on our full service catalogue including enterprise data pipelines, HRIS/payroll integrations, compliance frameworks, and operational automation workflows."),
+         "I am Mia, the official support assistant for OrbitOps. I help clients and engineers configure secure integrations, track automation status, and troubleshoot common workflow errors."),
 
         ("creator",
          new[] { "built","made","creator","developer","founder","engineer","chetan","orbitops","team","who","created" },
-         "I was built by the engineering team at **OrbitOps.ai** to automate manual and repetitive enterprise business tasks. Our founders are automation veterans with over a decade of experience in enterprise data integration."),
+         "I was created by the engineering team at OrbitOps to assist clients and architects with setting up and managing their automation flows."),
 
         ("capabilities",
          new[] { "help","can","do","capabilities","features","instructions","options","commands","menu","assist","support","services","offer","provide" },
-         "Here's what I can help with:\n• **Integrations** — Which platforms we connect\n• **Pipeline Architecture** — Our 5-stage ETL/ELT process\n• **Security & Compliance** — SOC2, GDPR, AES-256\n• **Error Quarantine** — How we handle sync failures\n• **Custom Connectors** — Scripted API wrappers\n• **Pricing** — Custom enterprise plans\n• **Demo** — Schedule a live walkthrough\n\nJust ask!"),
+         "I can help you submit a new automation request, view status logs, troubleshoot webhook errors, or answer questions about make.com and n8n capabilities. Just let me know what you need."),
 
         ("integrations",
          new[] { "integrate","integration","integrations","connect","connector","systems","platforms","sync","hris","crm","erp","sap","netsuite","adp","workday","hibob","bamboohr","salesforce","hubspot","shopify","jira","slack","gsuite","xero","personio","api","connection","supported" },
-         "OrbitOps operates a **multi-tenant API orchestration grid** with native sync channels for:\n\n• **HRIS:** Workday, BambooHR, HiBob, Personio, Deel\n• **Payroll & ERP:** ADP, NetSuite, SAP Payroll, Xero, Sage\n• **CRM & Commerce:** Salesforce, HubSpot, Shopify, Pipedrive\n• **Operations & Dev:** Jira, Slack, Google Workspace, Monday.com\n• **Automation Engines:** n8n, Make.com, Zapier\n\nOur pipelines handle data mapping, rate-limiting, and credential storage automatically. Need a specific connector?"),
+         "OrbitOps automates workflows between systems like BambooHR, Workday, NetSuite, Salesforce, and ADP using platforms like make.com and n8n. We handle connection setups, mapping, and sync testing. Let me know which systems you would like to connect."),
 
         ("pipeline",
          new[] { "pipeline","data","stages","steps","architecture","flow","path","extract","transform","validate","load","monitor","etl","elt","processing","automated","workflow","works","how" },
-         "Our **Enterprise Data Pipeline** runs through 5 high-observability stages:\n\n1. **Extract** — Listen for database updates or webhook events via TLS 1.3\n2. **Transform** — Normalise payloads, map JSON schemas, and format figures\n3. **Validate** — Sanitise input data and flag incomplete fields before ingestion\n4. **Load** — Post clean payloads to downstream endpoints (e.g. ADP, NetSuite, banks)\n5. **Monitor** — Stream telemetry to centralised dashboards and trigger Slack alerts\n\nEvery stage has built-in retry logic and a quarantine layer for failed records."),
+         "Our integration processes are structured in stages: setting up connections, mapping data schemas, testing syncs, and going live with active monitoring. This ensures your data moves reliably without manual entry errors."),
 
         ("security",
          new[] { "security","secure","soc2","soc","compliance","compliant","gdpr","encrypt","encryption","privacy","safety","trust","access","credentials","vault","quarantine","isolation","audit","safe","protect","certificate","tls","aes","zero" },
-         "Security is built into **every layer** of our pipelines:\n\n• **Certified:** SOC2 Type II and GDPR compliant architectures\n• **Encryption:** AES-256 at-rest + TLS 1.3 for all transit\n• **Zero-Trust:** Role-based access controls across all environments\n• **Quarantine:** Failed records are auto-isolated, preventing contamination\n• **Vaulting:** API keys stored in restricted, time-limited credential vaults\n• **Audit Trails:** Full immutable event logs on every pipeline action\n\nWant to schedule a security review call?"),
+         "We secure credentials in encrypted system vaults and implement error quarantines for failed syncs. We use industry-standard encryption for data in transit and at rest to protect your company's information."),
 
         ("pricing",
          new[] { "pricing","price","cost","plans","rates","packages","subscription","quote","proposal","fee","budget","purchase","charge","monthly","annual","enterprise","pay","much","cheap","expensive","affordable" },
-         "Our pricing is **fully tailored** to your organisation:\n\n• **Starter** — Up to 5 integrations, standard monitoring\n• **Professional** — Unlimited integrations + error quarantine dashboard\n• **Enterprise** — Dedicated engineer, SLA guarantees, custom compliance reports\n\nMost enterprise clients save **500+ manual hours/year** after onboarding. Let's schedule a call to build your custom quote! Email: **cpatil7350638164@gmail.com**"),
+         "We do not make up pricing here because costs are custom-tailored based on scenario complexity and scale. Please submit an automation request in the portal for a review or email support for assistance."),
 
         ("demo",
          new[] { "demo","schedule","book","call","talk","engineer","consult","contact","meeting","sales","touch","discuss","project","appointment","onboarding","booking","live","demonstration","see","show","trial","test","walk" },
-         "I'd love to connect you with our operations engineers for a **custom live demo**!\n\n📧 **Email:** cpatil7350638164@gmail.com\n📍 **Office:** Studio Complex, Gota, Ahmedabad\n\nOr fill out the **contact form** at the bottom of this page — we respond within 24 hours."),
+         "You can schedule a consultation with our team by emailing us or opening a support ticket right here in the portal. We would be happy to walk you through a demonstration."),
 
         ("about",
          new[] { "orbitops","company","agency","firm","history","founded","founders","team","background","story","who","what","details","expertise","experience","automation","veterans" },
-         "**OrbitOps.ai** is an operations engineering agency founded by automation veterans.\n\nWe build secure, resilient, and observable data pipelines that **eliminate manual spreadsheet data entry** across enterprise workflows.\n\n📊 **200+ connectors** automated\n⏱️ **500+ manual hours/year** saved per client\n🔒 **SOC2 Type II** certified processes\n🌍 Serving clients globally from Ahmedabad, India"),
+         "OrbitOps helps businesses automate repetitive manual tasks. We design, build, and support reliable integrations using platforms like make.com and n8n so you can focus on high-value work."),
 
         ("observability",
          new[] { "observability","dashboard","logs","metrics","errors","reporting","monitor","alert","slack","telemetry","audit","trailing","real","performance","tracking","status","visibility","trace","debug" },
-         "We build **deep real-time observability** into every pipeline:\n\n• **Dashboards:** Live telemetry streamed to n8n/Make/Datadog\n• **Alerts:** Instant Slack notifications on any endpoint failure\n• **Auto-Retry:** Smart exponential backoff on transient errors\n• **Audit Logs:** Complete immutable event history per pipeline run\n• **Zero Data Loss:** Failed records are quarantined — never dropped\n\nYou'll always know the state of every operation in real time."),
+         "Our portal provides real-time tracking, logs, and notification feeds so you always know when your automations run and can easily view logs or receive alerts on failures."),
 
         ("quarantine",
          new[] { "fails","fail","failure","sync","error","validation","quarantine","failed","record","bad","isolation","recover","loss","staging","intercept","corrupt","dirty","wrong","invalid","reject" },
-         "When a sync or validation **fails**, our zero-error quarantine system activates:\n\n1. The bad record is **immediately isolated** in a secure staging vault\n2. An **instant Slack webhook** notifies your operations desk\n3. The rest of the pipeline **continues unaffected** (no cascade failures)\n4. Your team can **review, fix, and replay** the record from the quarantine dashboard\n\nThis prevents corrupt data from ever reaching downstream systems like NetSuite or ADP."),
+         "If a sync fails, the portal isolates the issue in a secure staging area, issues an alert, and allows you to check logs. This ensures no data is lost during errors."),
 
         ("custom_connectors",
          new[] { "custom","connector","scripts","private","legacy","database","scripting","tailor","proprietary","mainframe","sql","local","build","write","code","endpoint","wrapper","bespoke","specific" },
-         "Beyond our 200+ pre-built connectors, we write **fully custom integrations** for:\n\n• **Legacy Mainframes** — COBOL/AS400 systems\n• **Local SQL Databases** — MySQL, PostgreSQL, MSSQL\n• **Proprietary SaaS APIs** — Any REST/GraphQL/SOAP endpoint\n• **Custom Webhooks** — Real-time event listeners\n\nWe deploy **secure Node.js or Python worker scripts** that wrap your custom endpoints in observable, retry-safe pipelines."),
+         "For legacy databases or systems without native connectors, our engineers write custom API wrappers in Node.js or Python to securely route your data."),
 
         ("payroll",
          new[] { "payroll","salary","pay","run","bank","file","adp","xero","sage","wage","employee","compensation","bacs","ach","payment","payslip","cycle","remuneration" },
-         "OrbitOps automates the **entire payroll data flow**:\n\n• Extract employee changes from your HRIS (BambooHR, HiBob, Workday)\n• Validate new starters, leavers, and salary changes\n• Transform and map data to your payroll engine format (ADP, Xero, Sage)\n• Generate and deliver bank files (BACS/ACH) with zero manual input\n• Auto-alert your payroll team on any flagged record\n\nWe eliminate **100% of manual payroll CSV uploads**."),
+         "We build automated payroll syncs to transfer data from HR software to payroll engines like ADP, NetSuite, or Xero, preventing manual data entry errors."),
 
         ("hris",
          new[] { "hris","hr","human","resources","employee","onboarding","offboarding","bamboohr","workday","hibob","personio","people","staff","talent","workforce","hire","departure","leave","absence" },
-         "We integrate all major **HRIS platforms** into your operational stack:\n\n• **BambooHR, HiBob, Personio, Deel** — Real-time employee data sync\n• **Workday** — Bi-directional payroll & HR event triggers\n• **Onboarding Flows** — Auto-provision accounts (Slack, GSuite, Jira) on hire\n• **Offboarding Flows** — Auto-deprovision and archive on departure\n\nEvery HRIS event triggers a cascading, validated pipeline run."),
+         "We connect HR platforms like BambooHR, Workday, or HiBob to automate employee onboarding workflows, credentials provisioning, and profile syncs."),
 
         ("crm",
          new[] { "crm","salesforce","hubspot","pipedrive","sales","leads","contacts","deals","opportunities","customers","revenue","account","prospect","close" },
-         "Our **CRM integration layer** keeps your sales data in perfect sync:\n\n• **Salesforce & HubSpot** — Bi-directional contact and deal sync\n• **Revenue Reconciliation** — Auto-match CRM deals to ERP/NetSuite invoices\n• **Lead Routing** — Score and assign leads based on custom pipeline rules\n• **Pipeline Hygiene** — Flag stale contacts and duplicate records automatically\n\nNo more manual exports between your CRM and back-office systems."),
+         "We sync leads, contacts, and deal opportunities between Salesforce, HubSpot, and back-office databases or accounting systems to keep teams aligned."),
 
         ("erp",
          new[] { "erp","netsuite","sap","enterprise","resource","planning","finance","accounting","invoice","ledger","journal","gl","ap","ar","reconcile","reconciliation" },
-         "OrbitOps connects your **ERP and financial systems** to your entire data ecosystem:\n\n• **NetSuite** — Real-time sync of journal entries, AP/AR, and payroll costs\n• **SAP** — Validated data connectors for SAP Payroll and FI/CO modules\n• **Xero & Sage** — Auto-posting of transactions and bank reconciliation\n• **Invoice Automation** — Match POs to invoices without manual review\n\nAll financial data flows are double-validated before posting."),
+         "We connect NetSuite and SAP to CRM or inventory systems, automatically posting invoices and journals to keep financial ledgers in sync."),
 
         ("automation",
          new[] { "automate","automation","manual","repetitive","task","work","process","workflow","bot","robotic","rpa","reduce","eliminate","save","time","effort","hours","labor" },
-         "OrbitOps specialises in **eliminating manual, repetitive operational work**:\n\n• Data entry between disconnected systems\n• Payroll file generation and submission\n• Employee onboarding and offboarding sequences\n• Sales data reconciliation across CRM and ERP\n• Report generation and distribution\n\n🕐 Average client saves **500+ manual hours per year** after implementation."),
+         "Our goal is to automate repetitive manual tasks using low-code tools like make.com and n8n, saving you hours of spreadsheet work and data entry."),
 
         ("n8n_make",
          new[] { "n8n","make","zapier","automation","engine","workflow","tool","node","trigger","action","no-code","low-code","orchestration","platform" },
-         "We are experts in **n8n and Make.com** workflow automation:\n\n• Build complex multi-branch workflows with conditional logic\n• Connect 1000+ apps via native nodes and custom HTTP requests\n• Deploy **self-hosted n8n** for full data sovereignty\n• Monitor all workflow executions with detailed error logs\n\nWe handle the architecture, deployment, and ongoing maintenance of your automation infrastructure."),
+         "We use make.com and n8n as our primary automation tools. They are flexible, secure, and support custom script nodes to connect almost any software API."),
 
         ("contact",
          new[] { "contact","reach","email","phone","location","address","office","ahmedabad","gujarat","india","studio","gota","find" },
-         "**Get in touch with OrbitOps:**\n\n📧 **Email:** cpatil7350638164@gmail.com\n📍 **Office:** Studio Complex, Gota, Ahmedabad, Gujarat, India\n🌐 **Website:** orbitops.ai\n\nOr fill out our **contact form** at the bottom of this page. We respond within **24 business hours**."),
+         "You can contact human support by opening a ticket in the Support tab of this portal, or by emailing our team directly. We are always here to help."),
 
         ("joke",
          new[] { "joke","funny","laugh","humor","comedy","fun","laugh","entertain","amusing","witty" },
-         "Why did the data engineer break up with the spreadsheet? Because it had **too many unresolved merge conflicts**! 😄\n\n*(But seriously — OrbitOps eliminates those conflicts automatically.)*"),
+         "Why do automation systems make great assistants? Because they never need to copy-paste! Let me know if you need help with any integrations."),
 
         ("thanks",
          new[] { "thank","thanks","thankyou","appreciate","helpful","great","awesome","good","nice","perfect","excellent","brilliant","superb","love" },
-         "You're very welcome! 😊 Is there anything else I can help you with about our services, integrations, or pricing?"),
+         "You are very welcome! Please let me know if there's anything else about your automations or our portal that I can help with."),
 
         ("farewell",
          new[] { "bye","goodbye","seeya","later","cya","take care","farewell","leave","end","close","done","finished" },
-         "Goodbye! Feel free to come back anytime. OrbitOps is here whenever you need enterprise automation expertise. Have a great day! 👋"),
+         "Goodbye! Let me know whenever you have more questions. Have a wonderful day!"),
     };
 
     // ─────────────────────────────────────────────────────────────────────────────
@@ -246,17 +246,19 @@ public class ChatService : IChatService
             researchSteps.Add($"Phase 3: Composing - querying Groq AI Model ({model}) using research data...");
             try
             {
-                var systemPrompt = @"You are Mia, the intelligent AI operations assistant for OrbitOps.ai — an enterprise automation and data integration agency.
+                var systemPrompt = @"You are the official support assistant for OrbitOps, a company that automates repetitive manual work for businesses using tools like make.com and n8n. Your role is to help clients and engineers with questions about our services, automation requests, portal usage, and common troubleshooting. Be friendly, concise, and professional. Only answer questions related to OrbitOps, automation, or the portal. If a user asks an off-topic question, politely say you can only assist with OrbitOps-related queries. Do not make up pricing or specifics; if you don't know, suggest contacting human support via the ticket system.
 
-YOUR CORE IDENTITY:
-- Expert in enterprise data pipelines, HRIS/payroll/CRM/ERP integrations, and workflow automation.
-- Professional, concise, and technically accurate. Friendly but not overly casual.
-- Use markdown: **bold** for key terms, bullet lists for structured info, numbered lists for steps.
-- Respond in 3-5 sentences maximum unless the question clearly requires more detail.
-- Never say ""I don't know"". Instead, pivot to what OrbitOps CAN help with.
+YOUR BEHAVIOR AND STYLE:
+- Speak like a helpful, natural human systems engineer. Be warm, direct, and conversational.
+- Never use robotic templates, clinical greeting intros, or generic assistant transitions (like ""Certainly! Here is the information"").
+- Keep replies concise and to the point (typically 2-4 sentences max).
+- Do NOT use bullet points, numbered lists, or dashes. Write in smooth, flowing natural paragraphs.
+- Never use double asterisks ** for bold text or single asterisks for bullet points. Keep formatting as clean, raw text.
+- Keep the tone professional, polite, and constructive. Never argue or expose internal codebase secrets.
+- If a client asks about something outside our standard services, pivot conversationally and mention how our custom API integration scripts can help.
 
 ORBITOPS KNOWLEDGE:
-- Services: Enterprise data pipeline design (Extract→Transform→Validate→Load→Monitor), HRIS/Payroll integration (BambooHR, Workday, HiBob, ADP, NetSuite, Xero), CRM sync (Salesforce, HubSpot), ERP integration (SAP, NetSuite), custom API connectors, n8n/Make.com workflow automation.
+- Services: Enterprise data pipeline design (Extract, Transform, Validate, Load, Monitor), HRIS/Payroll integration (BambooHR, Workday, HiBob, ADP, NetSuite, Xero), CRM sync (Salesforce, HubSpot), ERP integration (SAP, NetSuite), custom API connectors, n8n/Make.com workflow automation.
 - Security: SOC2 Type II, GDPR, AES-256, TLS 1.3, Zero-Trust, credential vaulting, full audit trails.
 - Error Handling: Auto-quarantine of failed records, instant Slack alerts, no data loss.
 - Pricing: Tailored enterprise plans — Starter, Professional, Enterprise. Contact: cpatil7350638164@gmail.com.
@@ -368,14 +370,15 @@ GUARDRAILS & PRIVACY:
                 researchSteps.Add($"Phase 3: Composing - querying local Ollama model '{ollamaModel}'...");
                 try
                 {
-                    var systemPrompt = @"You are Mia, the intelligent AI operations assistant for OrbitOps.ai — an enterprise automation and data integration agency.
+                    var systemPrompt = @"You are Mia, a friendly and expert systems integration engineer at OrbitOps.ai. You help B2B clients automate workflows and integrate systems.
 
-YOUR CORE IDENTITY:
-- Expert in enterprise data pipelines, HRIS/payroll/CRM/ERP integrations, and workflow automation.
-- Professional, concise, and technically accurate. Friendly but not overly casual.
-- Use markdown: **bold** for key terms, bullet lists for structured info, numbered lists for steps.
-- Respond in 3-5 sentences maximum unless the question clearly requires more detail.
-- Never say ""I don't know"". Instead, pivot to what OrbitOps CAN help with.
+YOUR BEHAVIOR AND STYLE:
+- Speak like a helpful, natural human systems engineer. Be warm, direct, and conversational.
+- Never use robotic templates, clinical greeting intros, or generic assistant transitions.
+- Keep replies concise and to the point (typically 2-4 sentences max).
+- Do NOT use bullet points, numbered lists, or dashes. Write in smooth, flowing natural paragraphs.
+- Keep the tone professional, polite, and constructive. Never argue or expose internal codebase secrets.
+- If a client asks about something outside our standard services, pivot conversational and mention how our custom API integration scripts can help.
 
 ORBITOPS KNOWLEDGE:
 - Services: Enterprise data pipeline design (Extract→Transform→Validate→Load→Monitor), HRIS/Payroll integration (BambooHR, Workday, HiBob, ADP, NetSuite, Xero), CRM sync (Salesforce, HubSpot), ERP integration (SAP, NetSuite), custom API connectors, n8n/Make.com workflow automation.
@@ -538,7 +541,7 @@ GUARDRAILS & PRIVACY:
                     "automation" => "Regarding manual task automation benefits: ",
                     "n8n_make" => "Regarding workflow orchestration using n8n and Make.com: ",
                     "contact" => "Here is how you can get in touch with us: ",
-                    _ => $"Here is what I found in our documentation regarding **{match.Id}**:\n\n"
+                    _ => $"Here is what I found in our documentation regarding {match.Id}:\n\n"
                 };
 
                 return friendlyHeader + match.Response;
@@ -576,7 +579,7 @@ GUARDRAILS & PRIVACY:
                 }
 
                 sb.AppendLine("---");
-                sb.AppendLine("Would you like to discuss any of these in more detail? We can schedule a live demonstration or construct a customized estimate. Reach us at **cpatil7350638164@gmail.com**.");
+                sb.AppendLine("Would you like to discuss any of these in more detail? We can schedule a live demonstration or construct a customized estimate. Reach us at cpatil7350638164@gmail.com.");
                 return sb.ToString();
             }
         }
@@ -607,14 +610,7 @@ GUARDRAILS & PRIVACY:
             return "To ensure absolute data integrity, we run a secure validation quarantine:\n\n" + match.Response;
         }
 
-        return "I specialise in **enterprise operations automation** — data pipelines, HRIS/payroll integrations, CRM/ERP syncs, and custom API connectors.\n\n" +
-               "It looks like your question was broad or not directly found. Here are some key topics you can ask me about:\n\n" +
-               "• **Integrations** — ask about connecting ADP, NetSuite, Salesforce, Workday, etc.\n" +
-               "• **Security** — ask about our SOC2 Type II, GDPR, and AES-256 standards\n" +
-               "• **Pipeline Architecture** — ask how our 5-stage ETL/ELT process works\n" +
-               "• **Error Handling** — ask about our automatic data quarantine system\n" +
-               "• **Pricing & Demo** — ask about pricing tiers or booking a live walkthrough\n\n" +
-               "Or, let us know how we can help by filling out the contact form below! 😊";
+        return "I specialize in enterprise operations automation, including secure data pipelines, custom API connectors, and payroll or HRIS integrations. Since your question falls outside our standard lookup categories, feel free to ask directly about our supported systems, security compliance, pricing tiers, or error quarantine features. Alternatively, you can email us at cpatil7350638164@gmail.com to speak with an engineer.";
     }
 
     public async Task SubmitFeedbackAsync(ChatFeedbackDto feedback)

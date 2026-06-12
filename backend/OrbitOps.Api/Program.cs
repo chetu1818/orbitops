@@ -74,6 +74,16 @@ using (var scope = app.Services.CreateScope())
             END
         END");
 
+    // Auto-create IsDisabled column in Users table if it doesn't exist
+    context.Database.ExecuteSqlRaw(@"
+        IF EXISTS (SELECT * FROM sys.tables WHERE name = 'Users')
+        BEGIN
+            IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID('Users') AND name = 'IsDisabled')
+            BEGIN
+                ALTER TABLE [Users] ADD [IsDisabled] bit NOT NULL DEFAULT 0;
+            END
+        END");
+
     var authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
     authService.InitializeDatabase();
 }

@@ -111,6 +111,14 @@ export class AuthService {
     return this.http.get<any[]>(`${this.apiUrl}/all-users`, { headers: this.getHeaders() });
   }
 
+  updateUserStatus(userId: string, isEnabled: boolean): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/user-status`, { userId, isEnabled }, { headers: this.getHeaders() });
+  }
+
+  updateUserRole(userId: string, role: string): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/user-role`, { userId, role }, { headers: this.getHeaders() });
+  }
+
   private setSession(auth: AuthResponse) {
     localStorage.setItem('orbitops_auth_token', auth.token);
     localStorage.setItem('orbitops_auth_user', JSON.stringify(auth.user));

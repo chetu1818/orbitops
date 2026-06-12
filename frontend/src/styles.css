@@ -26,8 +26,8 @@
   --rose:           hsl(350,90%,62%);
 
   --text-primary:   #f0f6ff;
-  --text-secondary: #8ba3c7;
-  --text-muted:     #4d6080;
+  --text-secondary: #94aed0;
+  --text-muted:     #7a8faa;
 
   --border:         rgba(100,160,255,0.10);
   --border-bright:  rgba(100,160,255,0.28);
@@ -69,7 +69,8 @@
 /* ─── Theme Overrides ───────────────────────────────────────── */
 
 /* 1. Nova (explicit override to match :root) */
-[data-theme="nova"] {
+/* 1. Dark Mode (replacing Nova) */
+[data-theme="dark"] {
   --bg-void:        #020510;
   --bg-primary:     #030712;
   --bg-secondary:   #080e1a;
@@ -82,10 +83,11 @@
   --accent-dark:    hsl(168,82%,38%);
   --violet:         hsl(263,90%,65%);
   --text-primary:   #f0f6ff;
-  --text-secondary: #8ba3c7;
-  --text-muted:     #4d6080;
+  --text-secondary: #94aed0;
+  --text-muted:     #7a8faa;
   --border:         rgba(100,160,255,0.10);
   --border-bright:  rgba(100,160,255,0.28);
+  --border-focus:   rgba(59,130,246,0.55);
   --font-display:   'Outfit', system-ui, sans-serif;
   --font-sans:      'Plus Jakarta Sans', system-ui, sans-serif;
   --anim-drift-dur: 12s;
@@ -121,85 +123,62 @@
   --shadow-glow-blue:   0 0 35px rgba(255, 0, 127, 0.25);
 }
 
-/* 3. Nordic Aurora (Premium Forest Green Dark) */
-[data-theme="aurora"] {
-  --bg-void:        #020805; /* Deep Forest Black */
-  --bg-primary:     #04120a; /* Dark Forest Green */
-  --bg-secondary:   #071d11; /* Slightly lighter forest */
-  --bg-card:        rgba(10, 32, 20, 0.55);
-  --bg-card-hover:  rgba(16, 48, 30, 0.80);
-  --bg-surface:     rgba(16, 185, 129, 0.03);
-  --primary:        #10B981; /* Emerald Green */
-  --primary-dark:   #059669;
-  --accent:         #34D399; /* Mint Green */
-  --accent-dark:    #0D9488;
-  --violet:         #059669; /* Dark Emerald */
-  --text-primary:   #ECFDF5; /* Soft Mint White */
-  --text-secondary: #A7F3D0; /* Readable Light Mint */
-  --text-muted:     #34D399; /* Muted Mint Green */
-  --border:         rgba(16, 185, 129, 0.12);
-  --border-bright:  rgba(52, 211, 153, 0.45);
+/* 3. Explicit Light Mode Theme */
+[data-theme="light"] {
+  --bg-void:        #F4F6F9;
+  --bg-primary:     #ffffff;
+  --bg-secondary:   #E9ECF0;
+  --bg-card:        #ffffff;
+  --bg-card-hover:  #f1f5f9;
+  --bg-surface:     rgba(0,0,0,0.015);
+  --primary:        #0071E3; /* Apple Blue */
+  --primary-dark:   #005bb5;
+  --accent:         #00B4D8;
+  --accent-dark:    #0096b4;
+  --violet:         #7c3aed;
+  --text-primary:   #1D1D1F; /* Apple Black */
+  --text-secondary: #434e5e; /* Sleek Dark Slate */
+  --text-muted:     #5e6e82; /* Deep Muted Slate */
+  --border:         rgba(0, 0, 0, 0.08);
+  --border-bright:  rgba(0, 0, 0, 0.16);
+  --border-focus:   rgba(0, 113, 227, 0.55);
   --font-display:   'Outfit', system-ui, sans-serif;
   --font-sans:      'Plus Jakarta Sans', system-ui, sans-serif;
-  --anim-drift-dur: 15s;
+  --anim-drift-dur: 14s;
   --anim-float-dur: 8s;
   --card-transition: transform var(--dur-med) var(--ease-spring), box-shadow var(--dur-med) var(--ease-spring), border-color var(--dur-med) var(--ease-spring);
-  --shadow-glow-blue:   0 0 30px rgba(16, 185, 129, 0.18);
+  --shadow-glow-blue:   0 0 30px rgba(0, 113, 227, 0.12);
+  --gold:           #d97706;
+  --rose:           #dc2626;
 }
 
-/* 4. Sunset Horizon (Warm Solar Dark) */
-[data-theme="sunset"] {
-  --bg-void:        #0e0404;
-  --bg-primary:     #170808;
-  --bg-secondary:   #230c0c;
-  --bg-card:        rgba(249, 115, 22, 0.05);
-  --bg-card-hover:  rgba(249, 115, 22, 0.12);
-  --bg-surface:     rgba(239, 68, 68, 0.03);
-  --primary:        #F97316; /* Sunset Orange */
-  --primary-dark:   #C2410C;
-  --accent:         #EF4444; /* Crimson Red */
-  --accent-dark:    #B91C1C;
-  --violet:         #F59E0B; /* Gold */
-  --text-primary:   #FAF8F5;
-  --text-secondary: #f5c6a0; /* Warm peach — readable on dark orange backgrounds */
-  --text-muted:     #c97a56; /* Muted warm brown — visible against dark bg */
-  --border:         rgba(249, 115, 22, 0.15);
-  --border-bright:  rgba(239, 68, 68, 0.40);
-  --border-focus:   rgba(249, 115, 22, 0.55);
-  --font-display:   'Outfit', system-ui, sans-serif;
-  --font-sans:      'Plus Jakarta Sans', system-ui, sans-serif;
-  --anim-drift-dur: 10s;
-  --anim-float-dur: 6s;
-  --card-transition: transform var(--dur-med) var(--ease-spring), box-shadow var(--dur-med) var(--ease-spring), border-color var(--dur-med) var(--ease-spring);
-  --shadow-glow-blue:   0 0 30px rgba(249, 115, 22, 0.22);
+/* Light-mode component overrides */
+[data-theme="light"] .card {
+  background: #ffffff;
+  border-color: rgba(0,0,0,0.08);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  backdrop-filter: none;
+}
+[data-theme="light"] .card:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06);
+  border-color: rgba(0,0,0,0.14);
+}
+[data-theme="light"] body {
+  background: #F4F6F9;
+}
+[data-theme="light"] body::before {
+  opacity: 0;
+}
+[data-theme="light"] .btn-secondary {
+  background: rgba(0,0,0,0.03);
+  border-color: rgba(0,0,0,0.12);
+  color: var(--text-primary);
+}
+[data-theme="light"] .btn-secondary:hover {
+  background: rgba(0,0,0,0.06);
+  border-color: rgba(0,0,0,0.18);
 }
 
-/* 5. Matrix Code (Phosphor Terminal Black) */
-[data-theme="matrix"] {
-  --bg-void:        #000000;
-  --bg-primary:     #040404;
-  --bg-secondary:   #080808;
-  --bg-card:        #010904;
-  --bg-card-hover:  #031408;
-  --bg-surface:     rgba(16, 185, 129, 0.05);
-  --primary:        #10B981; /* Green Phosphor */
-  --primary-dark:   #065F46;
-  --accent:         #34D399; /* Bright Green */
-  --accent-dark:    #047857;
-  --violet:         #059669;
-  --text-primary:   #00FF66; /* Terminal green */
-  --text-secondary: #5de8a0; /* Lighter green — readable on near-black cards */
-  --text-muted:     #2db36b; /* Mid-tone green — visible on dark backgrounds */
-  --border:         rgba(0, 255, 102, 0.18);
-  --border-bright:  #00FF66;
-  --border-focus:   rgba(0, 255, 102, 0.55);
-  --font-display:   'JetBrains Mono', monospace;
-  --font-sans:      'JetBrains Mono', monospace;
-  --anim-drift-dur: 0s;
-  --anim-float-dur: 0s;
-  --card-transition: none; /* Instant snap */
-  --shadow-glow-blue:   0 0 30px rgba(0, 255, 102, 0.35);
-}
 
 /* ─── Reset ─────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -653,43 +632,45 @@ select option {
   color: var(--text-primary);
 }
 
-/* ─── Aurora Light Theme Overrides ─────────────────────────── */
-[data-theme="aurora"] .card {
+/* ─── Light Theme Overrides ─────────────────────────── */
+[data-theme="light"] .card {
   background: rgba(255,255,255,0.72);
-  border-color: rgba(16,185,129,0.15);
-  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  border-color: rgba(0,113,227,0.08);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.04);
 }
-[data-theme="aurora"] .card:hover {
-  box-shadow: 0 12px 40px rgba(0,0,0,0.12), 0 0 0 1px rgba(16,185,129,0.2);
+[data-theme="light"] .card:hover {
+  box-shadow: 0 12px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,113,227,0.15);
 }
-[data-theme="aurora"] .btn-secondary {
+[data-theme="light"] .btn-secondary {
   background: rgba(255,255,255,0.7);
-  border-color: rgba(16,185,129,0.2);
-  color: #0F172A;
+  border-color: rgba(0,113,227,0.12);
+  color: #1D1D1F;
 }
-[data-theme="aurora"] .btn-secondary:hover {
-  background: rgba(255,255,255,0.9);
+[data-theme="light"] .btn-secondary:hover {
+  background: rgba(255,255,255,0.95);
+  border-color: rgba(0,113,227,0.25);
 }
-[data-theme="aurora"] .section::before {
-  background: linear-gradient(90deg, transparent, rgba(16,185,129,0.2) 30%, rgba(13,148,136,0.2) 70%, transparent);
+[data-theme="light"] .section::before {
+  background: linear-gradient(90deg, transparent, rgba(0,113,227,0.1) 30%, rgba(124,58,237,0.1) 70%, transparent);
 }
-[data-theme="aurora"] .health-stat {
+[data-theme="light"] .health-stat {
   background: rgba(255,255,255,0.55);
-  border-color: rgba(16,185,129,0.12);
+  border-color: rgba(0,113,227,0.08);
 }
-[data-theme="aurora"] .notif-item {
+[data-theme="light"] .notif-item {
   background: rgba(255,255,255,0.55);
-  border-color: rgba(16,185,129,0.12);
+  border-color: rgba(0,113,227,0.08);
 }
-[data-theme="aurora"] .quick-action-btn {
+[data-theme="light"] .quick-action-btn {
   background: rgba(255,255,255,0.55);
-  border-color: rgba(16,185,129,0.12);
-  color: #334155;
+  border-color: rgba(0,113,227,0.08);
+  color: #515154;
 }
-[data-theme="aurora"] .quick-action-btn:hover {
+[data-theme="light"] .quick-action-btn:hover {
   background: rgba(255,255,255,0.8);
-  color: #0F172A;
+  color: #1D1D1F;
 }
+
 
 /* ─── Portal Dashboard Responsive Tables ────────────────────── */
 .table-scroll-wrapper {

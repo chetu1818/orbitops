@@ -36,16 +36,15 @@ export class App implements OnInit {
   protected readonly authService = inject(AuthService);
   protected readonly activeSection = signal('hero');
   protected readonly mobileMenuOpen = signal(false);
-  protected readonly currentTheme = signal<string>('aurora');
+  protected readonly currentTheme = signal<string>('dark');
   protected readonly showLandingLayout = signal(true);
   private readonly router = inject(Router);
   private readonly platformId = inject(PLATFORM_ID);
 
   protected readonly themes: Theme[] = [
-    { id: 'nova',   label: 'Nova Void',       color: '#3b82f6', glow: 'rgba(59,130,246,0.6)'  },
+    { id: 'light',  label: 'Light Mode',      color: '#F4F6F9', glow: 'rgba(244,246,249,0.6)' },
+    { id: 'dark',   label: 'Dark Mode',       color: '#020510', glow: 'rgba(59,130,246,0.6)'  },
     { id: 'cyber',  label: 'Cyberpunk',        color: '#FF007F', glow: 'rgba(255,0,127,0.6)'   },
-    { id: 'aurora', label: 'Nordic Aurora',    color: '#10B981', glow: 'rgba(16,185,129,0.6)'  },
-    { id: 'sunset', label: 'Sunset Horizon',   color: '#F97316', glow: 'rgba(249,115,22,0.6)'  },
   ];
 
   constructor() {
@@ -81,7 +80,7 @@ export class App implements OnInit {
 
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
-      const saved = localStorage.getItem('orbitops-theme') || 'aurora';
+      const saved = localStorage.getItem('orbitops-theme') || 'dark';
       this.applyTheme(saved);
     }
     this.checkRouteVisibility(this.router.url);

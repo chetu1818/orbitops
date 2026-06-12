@@ -64,7 +64,7 @@ export class HomeHeader3dComponent implements AfterViewInit, OnDestroy {
   private lastMeteoroidSpawn = 0;
 
   private themeObserver!: MutationObserver;
-  private activeTheme = 'nova';
+  private activeTheme = 'dark';
 
   // Mouse tilt parameters
   private mouse = { x: 0, y: 0 };
@@ -137,7 +137,7 @@ export class HomeHeader3dComponent implements AfterViewInit, OnDestroy {
   // ── Galaxy creation (cache-aware) ─────────────────────────────────────────
 
   private async createGalaxyAsync() {
-    this.activeTheme = document.documentElement.getAttribute('data-theme') || 'nova';
+    this.activeTheme = document.documentElement.getAttribute('data-theme') || 'dark';
 
     const cached = await this.sceneCache.loadGalaxyData(this.activeTheme);
 
@@ -267,22 +267,12 @@ export class HomeHeader3dComponent implements AfterViewInit, OnDestroy {
         else if (t < 0.5) color.lerpColors(new THREE.Color(0xff007f), new THREE.Color(0x8b5cf6), (t - 0.18) * 3.1);
         else color.lerpColors(new THREE.Color(0x00f0ff), new THREE.Color(0x0a0f2b), (t - 0.5) * 2.0);
         break;
-      case 'aurora':
-        if (t < 0.18) color.lerpColors(new THREE.Color(0xffffff), new THREE.Color(0xa7f3d0), t * 5.5);
-        else if (t < 0.5) color.lerpColors(new THREE.Color(0x10b981), new THREE.Color(0x059669), (t - 0.18) * 3.1);
-        else color.lerpColors(new THREE.Color(0x0d9488), new THREE.Color(0x022c22), (t - 0.5) * 2.0);
+      case 'light':
+        if (t < 0.18) color.lerpColors(new THREE.Color(0x0071E3), new THREE.Color(0x00B4D8), t * 5.5);
+        else if (t < 0.5) color.lerpColors(new THREE.Color(0x7c3aed), new THREE.Color(0x2563eb), (t - 0.18) * 3.1);
+        else color.lerpColors(new THREE.Color(0x1d4ed8), new THREE.Color(0xf4f6f9), (t - 0.5) * 2.0);
         break;
-      case 'sunset':
-        if (t < 0.18) color.lerpColors(new THREE.Color(0xffffff), new THREE.Color(0xfde047), t * 5.5);
-        else if (t < 0.5) color.lerpColors(new THREE.Color(0xf97316), new THREE.Color(0xef4444), (t - 0.18) * 3.1);
-        else color.lerpColors(new THREE.Color(0x881337), new THREE.Color(0x18001a), (t - 0.5) * 2.0);
-        break;
-      case 'matrix':
-        if (t < 0.18) color.lerpColors(new THREE.Color(0xffffff), new THREE.Color(0xdcfce7), t * 5.5);
-        else if (t < 0.5) color.lerpColors(new THREE.Color(0x00ff66), new THREE.Color(0x10b981), (t - 0.18) * 3.1);
-        else color.lerpColors(new THREE.Color(0x064e3b), new THREE.Color(0x000000), (t - 0.5) * 2.0);
-        break;
-      case 'nova':
+      case 'dark':
       default:
         if (t < 0.18) color.lerpColors(new THREE.Color(0xffffff), new THREE.Color(0xffe5cc), t * 5.5);
         else if (t < 0.5) color.lerpColors(new THREE.Color(0xff44aa), new THREE.Color(0x9433ff), (t - 0.18) * 3.1);
@@ -296,7 +286,7 @@ export class HomeHeader3dComponent implements AfterViewInit, OnDestroy {
 
   private setupThemeObserver() {
     this.themeObserver = new MutationObserver(() => {
-      const newTheme = document.documentElement.getAttribute('data-theme') || 'nova';
+      const newTheme = document.documentElement.getAttribute('data-theme') || 'dark';
       if (newTheme !== this.activeTheme) {
         this.activeTheme = newTheme;
         // Try to load new theme from cache first
@@ -399,9 +389,8 @@ export class HomeHeader3dComponent implements AfterViewInit, OnDestroy {
 
     let trailColor = new THREE.Color('#00f0ff');
     if (this.activeTheme === 'cyber')  trailColor = new THREE.Color('#ff007f');
-    if (this.activeTheme === 'aurora') trailColor = new THREE.Color('#10b981');
-    if (this.activeTheme === 'sunset') trailColor = new THREE.Color('#f97316');
-    if (this.activeTheme === 'matrix') trailColor = new THREE.Color('#00ff66');
+    if (this.activeTheme === 'light')  trailColor = new THREE.Color('#0071e3');
+    if (this.activeTheme === 'dark')   trailColor = new THREE.Color('#3b82f6');
 
     for (let k = 0; k < maxTrail; k++) {
       const c = trailColor.clone().multiplyScalar(k / maxTrail);

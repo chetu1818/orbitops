@@ -36,6 +36,22 @@ import { AuthService } from '../../services/auth.service';
 
           <!-- Right: user badge + logout + hamburger -->
           <div class="portal-right">
+            
+            <!-- Theme Selector -->
+            <div class="theme-selector" role="group" aria-label="Select theme" style="margin-right: 0.5rem;">
+              <span class="theme-label">Theme</span>
+              <button
+                *ngFor="let t of themes"
+                class="theme-pill"
+                [class.active]="currentTheme() === t.id"
+                [attr.title]="t.label"
+                [style.--theme-accent]="t.color"
+                [style.background-color]="t.color"
+                (click)="setTheme(t.id)"
+                [attr.aria-label]="'Switch to ' + t.label + ' theme'"
+              ></button>
+            </div>
+
             <div class="portal-user" *ngIf="authService.currentUser() as user">
               <div class="user-badge">
                 <i class="bi bi-person-workspace"></i>
@@ -121,9 +137,9 @@ import { AuthService } from '../../services/auth.service';
     }
 
     /* Light theme header */
-    :host-context([data-theme="aurora"]) .portal-header {
+    :host-context([data-theme="light"]) .portal-header {
       background: rgba(243,246,248,0.95);
-      border-bottom-color: rgba(16,185,129,0.14);
+      border-bottom-color: rgba(0,113,227,0.14);
       box-shadow: 0 2px 12px rgba(0,0,0,0.06);
     }
 
@@ -200,7 +216,7 @@ import { AuthService } from '../../services/auth.service';
       background: rgba(20,184,166,0.08);
       border: 1px solid rgba(20,184,166,0.18);
     }
-    :host-context([data-theme="aurora"]) .portal-nav a:hover {
+    :host-context([data-theme="light"]) .portal-nav a:hover {
       background: rgba(0,0,0,0.04);
     }
 
@@ -432,6 +448,34 @@ export class PortalLayoutComponent {
   authService   = inject(AuthService);
   private router = inject(Router);
   mobileNavOpen = signal(false);
+
+  currentTheme = signal<string>('dark');
+  themes = [
+    { id: 'light',  label: 'Light Mode',      color: '#F4F6F9', glow: 'rgba(244,246,249,0.6)' },
+    { id: 'dark',   label: 'Dark Mode',       color: '#020510', glow: 'rgba(59,130,246,0.6)'  },
+    { id: 'cyber',  label: 'Cyberpunk',        color: '#FF007F', glow: 'rgba(255,0,127,0.6)'   },
+  ];
+
+  constructor() {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('orbitops-theme') || 'dark';
+      this.applyTheme(saved);
+    }
+  }
+
+  setTheme(themeId: string) {
+    this.applyTheme(themeId);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('orbitops-theme', themeId);
+    }
+  }
+
+  private applyTheme(themeId: string) {
+    this.currentTheme.set(themeId);
+    if (typeof window !== 'undefined') {
+      document.documentElement.setAttribute('data-theme', themeId);
+    }
+  }
 
   onLogout() {
     this.authService.logout();

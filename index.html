@@ -22,35 +22,7 @@
   <style>
     /* CSS Variables & Core Themes (Apple Inspired) */
     :root {
-      /* Softer Light theme (default) - eye-friendly cool gray */
-      --primary: #1D1D1F;
-      --secondary: #515154;
-      --accent: #0071E3;
-      --accent-secondary: #00B4D8;
-      --bg-light: #F4F6F9;
-      --bg-alt: #E9ECF0;
-      --bg-subtle: #DFE3E8;
-      --border: rgba(0, 0, 0, 0.06);
-      --card-bg: #FFFFFF;
-      --header-bg: rgba(244, 246, 249, 0.85);
-      --header-shadow: rgba(0, 0, 0, 0.03);
-      --code-bg: #E9ECF0;
-      --code-text: #1D1D1F;
-      --header-height: 72px;
-      --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-      
-      /* Chatbot variables */
-      --chatbot-bg: rgba(255, 255, 255, 0.85);
-      --chatbot-border: rgba(0, 0, 0, 0.08);
-      --chatbot-shadow: rgba(0, 0, 0, 0.1);
-      --chatbot-msg-bot: #F1F5F9;
-      --chatbot-msg-bot-text: #1E293B;
-      --chatbot-msg-user: #0071E3;
-      --chatbot-msg-user-text: #FFFFFF;
-    }
-
-    /* 1. Nova (Default Dark Void) */
-    [data-theme="nova"] {
+      /* Default Dark Mode (Nova Void) */
       --primary: #F5F5F7;
       --secondary: #8ba3c7;
       --accent: #0071E3;
@@ -64,7 +36,10 @@
       --header-shadow: rgba(0, 0, 0, 0.4);
       --code-bg: #0c1527;
       --code-text: #F5F5F7;
+      --header-height: 72px;
+      --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
       
+      /* Chatbot variables */
       --chatbot-bg: rgba(10, 20, 40, 0.9);
       --chatbot-border: rgba(100, 160, 255, 0.15);
       --chatbot-shadow: rgba(0, 0, 0, 0.5);
@@ -73,8 +48,36 @@
       --chatbot-msg-user: #0071E3;
       --chatbot-msg-user-text: #FFFFFF;
     }
-    [data-theme="nova"] body {
+    body {
       background-image: radial-gradient(rgba(0, 113, 227, 0.08) 1.5px, transparent 1.5px);
+    }
+
+    /* 1. Light Mode (Apple Inspired Cool Gray/White) */
+    [data-theme="light"] {
+      --primary: #1D1D1F;
+      --secondary: #434e5e;
+      --accent: #0071E3;
+      --accent-secondary: #00B4D8;
+      --bg-light: #F4F6F9;
+      --bg-alt: #E9ECF0;
+      --bg-subtle: #DFE3E8;
+      --border: rgba(0, 0, 0, 0.06);
+      --card-bg: #FFFFFF;
+      --header-bg: rgba(244, 246, 249, 0.85);
+      --header-shadow: rgba(0, 0, 0, 0.03);
+      --code-bg: #E9ECF0;
+      --code-text: #1D1D1F;
+
+      --chatbot-bg: rgba(255, 255, 255, 0.85);
+      --chatbot-border: rgba(0, 0, 0, 0.08);
+      --chatbot-shadow: rgba(0, 0, 0, 0.1);
+      --chatbot-msg-bot: #F1F5F9;
+      --chatbot-msg-bot-text: #1E293B;
+      --chatbot-msg-user: #0071E3;
+      --chatbot-msg-user-text: #FFFFFF;
+    }
+    [data-theme="light"] body {
+      background-image: none;
     }
 
     /* 2. Cyberpunk Neon (Ultra-Colorful Cyber Dark) */
@@ -103,90 +106,6 @@
     }
     [data-theme="cyber"] body {
       background-image: radial-gradient(rgba(255, 0, 127, 0.15) 1.5px, transparent 1.5px);
-    }
-
-    /* 3. Nordic Aurora (Aurora Ice Light) */
-    [data-theme="aurora"] {
-      --primary: #0F172A; /* Dark Slate */
-      --secondary: #334155; /* Slate Gray */
-      --accent: #10B981; /* Emerald Green */
-      --accent-secondary: #0D9488;
-      --bg-light: #F3F6F8;
-      --bg-alt: #E6ECEF;
-      --bg-subtle: #DEE4E9;
-      --border: rgba(16, 185, 129, 0.18);
-      --card-bg: #ffffff;
-      --header-bg: rgba(243, 246, 248, 0.88);
-      --header-shadow: rgba(16, 185, 129, 0.06);
-      --code-bg: #DEE4E9;
-      --code-text: #0D9488;
-      
-      --chatbot-bg: rgba(255, 255, 255, 0.95);
-      --chatbot-border: rgba(16, 185, 129, 0.18);
-      --chatbot-shadow: rgba(0, 0, 0, 0.1);
-      --chatbot-msg-bot: #E6ECEF;
-      --chatbot-msg-bot-text: #0F172A;
-      --chatbot-msg-user: #10B981;
-      --chatbot-msg-user-text: #ffffff;
-    }
-    [data-theme="aurora"] body {
-      background-image: radial-gradient(rgba(16, 185, 129, 0.12) 1.5px, transparent 1.5px);
-    }
-
-    /* 4. Sunset Horizon (Warm Solar Dark) */
-    [data-theme="sunset"] {
-      --primary: #FAF8F5;
-      --secondary: #E2C39B;
-      --accent: #F97316;
-      --accent-secondary: #EF4444;
-      --bg-light: #180816;
-      --bg-alt: #11040f;
-      --bg-subtle: #250c23;
-      --border: rgba(249, 115, 22, 0.22);
-      --card-bg: rgba(249, 115, 22, 0.07);
-      --header-bg: rgba(24, 8, 22, 0.88);
-      --header-shadow: rgba(0, 0, 0, 0.4);
-      --code-bg: #250c23;
-      --code-text: #FAF8F5;
-      
-      --chatbot-bg: rgba(24, 8, 22, 0.95);
-      --chatbot-border: rgba(249, 115, 22, 0.25);
-      --chatbot-shadow: rgba(0, 0, 0, 0.5);
-      --chatbot-msg-bot: #250c23;
-      --chatbot-msg-bot-text: #FAF8F5;
-      --chatbot-msg-user: #F97316;
-      --chatbot-msg-user-text: #ffffff;
-    }
-    [data-theme="sunset"] body {
-      background-image: radial-gradient(rgba(249, 115, 22, 0.14) 1.5px, transparent 1.5px);
-    }
-
-    /* 5. Matrix Code (Phosphor Terminal Black) */
-    [data-theme="matrix"] {
-      --primary: #00FF66;
-      --secondary: #34B36F;
-      --accent: #10B981;
-      --accent-secondary: #34D399;
-      --bg-light: #000000;
-      --bg-alt: #040404;
-      --bg-subtle: #080808;
-      --border: #105e38;
-      --card-bg: #010904;
-      --header-bg: rgba(0, 0, 0, 0.95);
-      --header-shadow: rgba(0, 255, 102, 0.1);
-      --code-bg: #080808;
-      --code-text: #00FF66;
-      
-      --chatbot-bg: rgba(0, 0, 0, 0.98);
-      --chatbot-border: #105e38;
-      --chatbot-shadow: rgba(0, 255, 102, 0.2);
-      --chatbot-msg-bot: #040404;
-      --chatbot-msg-bot-text: #00FF66;
-      --chatbot-msg-user: #10B981;
-      --chatbot-msg-user-text: #000000;
-    }
-    [data-theme="matrix"] body {
-      background-image: radial-gradient(rgba(0, 255, 102, 0.15) 1.5px, transparent 1.5px);
     }
 
     /* Selection & Scrollbar styling */
@@ -1141,7 +1060,7 @@
       padding: 80px 0 40px 0;
       color: #F5F5F7;
     }
-    :root:not([data-theme="nova"]):not([data-theme="cyber"]):not([data-theme="sunset"]):not([data-theme="matrix"]):not([data-theme="nordic"]) .premium-footer {
+    [data-theme="light"] .premium-footer {
       background: linear-gradient(135deg, #E9ECF0 0%, #DFE3E8 100%);
       border-top: 1px solid rgba(0, 0, 0, 0.08);
       color: #1D1D1F;
@@ -1227,7 +1146,7 @@
       background: rgba(255, 255, 255, 0.08);
       margin-bottom: 2rem;
     }
-    :root:not([data-theme="nova"]):not([data-theme="cyber"]):not([data-theme="sunset"]):not([data-theme="matrix"]):not([data-theme="nordic"]) .footer-divider {
+    [data-theme="light"] .footer-divider {
       background: rgba(0, 0, 0, 0.08);
     }
 
@@ -1347,25 +1266,22 @@
       fill: currentColor;
     }
 
-    /* Glassmorphic Preloader styling */
+    /* Clean Preloader styling (No Blur on background) */
     #preloader {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: #020510; /* Default dark */
+      background: #020510; /* Default solid dark */
       z-index: 9999;
       display: flex;
       align-items: center;
       justify-content: center;
       transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    [data-theme="nova"] #preloader { background: #020510; }
+    [data-theme="light"] #preloader { background: #F4F6F9; }
     [data-theme="cyber"] #preloader { background: #000000; }
-    [data-theme="sunset"] #preloader { background: #0b0202; }
-    [data-theme="matrix"] #preloader { background: #000000; }
-    [data-theme="aurora"] #preloader { background: #F4F6F9; }
     
     #preloader.fade-out {
       opacity: 0;
@@ -1377,69 +1293,80 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 24px;
-      padding: 30px;
-      border-radius: 24px;
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
-      backdrop-filter: blur(15px);
-      -webkit-backdrop-filter: blur(15px);
+      gap: 20px;
+      padding: 20px;
       text-align: center;
-    }
-    :root:not([data-theme="nova"]):not([data-theme="cyber"]):not([data-theme="sunset"]):not([data-theme="matrix"]):not([data-theme="aurora"]) .loader-wrapper {
-      background: rgba(255, 255, 255, 0.6);
-      border: 1px solid rgba(0, 0, 0, 0.06);
-    }
-
-    /* Circular progress ring */
-    .loader-circle-container {
-      position: relative;
-      width: 120px;
-      height: 120px;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
     }
 
-    .loader-circle-container svg {
-      width: 120px;
-      height: 120px;
-      transform: rotate(-90deg);
+    .logo-loader-svg {
+      width: 100px;
+      height: 100px;
+      overflow: visible;
+    }
+    .loader-core-globe {
+      transform-origin: 50px 50px;
+      animation: corePulse 1.6s ease-in-out infinite alternate;
+    }
+    .globe-details {
+      transform-origin: 50px 50px;
+      animation: detailsRotate 3.5s linear infinite;
+    }
+    
+    .orbit-group-1 {
+      transform-origin: 50px 50px;
+      animation: groupRotate1 3.5s linear infinite;
+    }
+    .orbiting-dot-1 {
+      animation: dotPulse 1.4s ease-in-out infinite alternate;
+    }
+    
+    .orbit-group-2 {
+      transform-origin: 50px 50px;
+      animation: groupRotate2 3s linear infinite;
+    }
+    .orbiting-dot-2 {
+      animation: dotPulse 1.1s ease-in-out infinite alternate;
     }
 
-    .loader-circle-bg {
-      fill: none;
-      stroke: rgba(255, 255, 255, 0.05);
-      stroke-width: 8;
-    }
-    [data-theme="nova"] .loader-circle-bg,
-    [data-theme="cyber"] .loader-circle-bg,
-    [data-theme="sunset"] .loader-circle-bg,
-    [data-theme="matrix"] .loader-circle-bg,
-    [data-theme="aurora"] .loader-circle-bg {
-      stroke: rgba(255, 255, 255, 0.06);
-    }
-    :root:not([data-theme="nova"]):not([data-theme="cyber"]):not([data-theme="sunset"]):not([data-theme="matrix"]):not([data-theme="aurora"]) .loader-circle-bg {
-      stroke: rgba(0, 0, 0, 0.06);
-    }
+    .node-sparkle-1 { animation: twinkle 0.8s ease-in-out infinite alternate; }
+    .node-sparkle-2 { animation: twinkle 1.2s ease-in-out infinite alternate 0.2s; }
+    .node-sparkle-3 { animation: twinkle 1.5s ease-in-out infinite alternate 0.4s; }
+    .node-sparkle-4 { animation: twinkle 1s ease-in-out infinite alternate 0.6s; }
 
-    .loader-circle-progress {
-      fill: none;
-      stroke: url(#loader-gradient);
-      stroke-width: 8;
-      stroke-linecap: round;
-      stroke-dasharray: 339.292; /* 2 * PI * r (r=54) */
-      stroke-dashoffset: 339.292;
-      transition: stroke-dashoffset 0.1s ease;
+    @keyframes corePulse {
+      from { 
+        transform: scale(0.92); 
+        filter: drop-shadow(0 0 3px rgba(59, 130, 246, 0.4)) url(#premiumGlow); 
+      }
+      to { 
+        transform: scale(1.03); 
+        filter: drop-shadow(0 0 9px rgba(59, 130, 246, 0.75)) url(#premiumGlow); 
+      }
     }
-
-    .loader-percentage {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--primary);
+    @keyframes detailsRotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    @keyframes groupRotate1 {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    @keyframes groupRotate2 {
+      from { transform: rotate(360deg); }
+      to { transform: rotate(0deg); }
+    }
+    @keyframes dotPulse {
+      from { r: 2.2; opacity: 0.6; }
+      to { r: 4.2; opacity: 1; }
+    }
+    @keyframes twinkle {
+      0% { opacity: 0.15; transform: scale(0.6); }
+      100% { opacity: 1; transform: scale(1.25); }
     }
 
     .loader-text {
@@ -2107,22 +2034,84 @@
 </head>
 <body>
 
-  <!-- Preloader / Orbit Animated Loader -->
+  <!-- Preloader / Orbit Animated Loader active until page loads -->
   <div id="preloader">
     <div class="loader-wrapper">
-      <div class="loader-circle-container">
-        <svg viewBox="0 0 120 120">
-          <defs>
-            <linearGradient id="loader-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="var(--accent)" />
-              <stop offset="100%" stop-color="var(--accent-secondary)" />
-            </linearGradient>
-          </defs>
-          <circle cx="60" cy="60" r="54" class="loader-circle-bg" />
-          <circle cx="60" cy="60" r="54" class="loader-circle-progress" />
-        </svg>
-        <div id="loader-percentage" class="loader-percentage">0%</div>
-      </div>
+      <svg viewBox="0 0 100 100" class="logo-loader-svg">
+        <defs>
+          <!-- Core Radial Gradient -->
+          <radialGradient id="loaderCoreGrad" cx="35%" cy="35%" r="65%">
+            <stop offset="0%" stop-color="#c084fc" />
+            <stop offset="40%" stop-color="#3b82f6" />
+            <stop offset="100%" stop-color="#1d4ed8" />
+          </radialGradient>
+          
+          <!-- Ring Gradients for fading tails -->
+          <linearGradient id="tealRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#10b981" stop-opacity="1" />
+            <stop offset="60%" stop-color="#059669" stop-opacity="0.3" />
+            <stop offset="100%" stop-color="#047857" stop-opacity="0" />
+          </linearGradient>
+          
+          <linearGradient id="purpleRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#8b5cf6" stop-opacity="1" />
+            <stop offset="60%" stop-color="#6d28d9" stop-opacity="0.3" />
+            <stop offset="100%" stop-color="#4c1d95" stop-opacity="0" />
+          </linearGradient>
+
+          <!-- Glow Filter -->
+          <filter id="premiumGlow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="3.5" result="blur1" />
+            <feGaussianBlur in="SourceGraphic" stdDeviation="1.2" result="blur2" />
+            <feMerge>
+              <feMergeNode in="blur1" />
+              <feMergeNode in="blur2" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+
+        <!-- Orbit Background Guides -->
+        <g class="orbit-bg-guides" opacity="0.2">
+          <ellipse cx="50" cy="50" rx="34" ry="11" fill="none" stroke="#ffffff" stroke-width="0.8" transform="rotate(35 50 50)" />
+          <ellipse cx="50" cy="50" rx="34" ry="11" fill="none" stroke="#ffffff" stroke-width="0.8" transform="rotate(-35 50 50)" />
+        </g>
+
+        <!-- Orbit Ring 1 (Teal) with rotating dot -->
+        <g class="orbit-group-1">
+          <ellipse cx="50" cy="50" rx="34" ry="11" fill="none" stroke="url(#tealRingGrad)" stroke-width="2.2" stroke-linecap="round" transform="rotate(35 50 50)" />
+          <g transform="rotate(35 50 50)">
+            <circle cx="84" cy="50" r="3.2" fill="#10b981" filter="url(#premiumGlow)" class="orbiting-dot-1" />
+          </g>
+        </g>
+
+        <!-- Orbit Ring 2 (Purple) with rotating dot -->
+        <g class="orbit-group-2">
+          <ellipse cx="50" cy="50" rx="34" ry="11" fill="none" stroke="url(#purpleRingGrad)" stroke-width="2.2" stroke-linecap="round" transform="rotate(-35 50 50)" />
+          <g transform="rotate(-35 50 50)">
+            <circle cx="16" cy="50" r="3.2" fill="#8b5cf6" filter="url(#premiumGlow)" class="orbiting-dot-2" />
+          </g>
+        </g>
+
+        <!-- Central Globe with glow -->
+        <circle cx="50" cy="50" r="19" fill="url(#loaderCoreGrad)" filter="url(#premiumGlow)" class="loader-core-globe" />
+        
+        <!-- Tech detail lines on the globe -->
+        <g class="globe-details" opacity="0.45" stroke="#ffffff" stroke-width="0.8" fill="none">
+          <circle cx="50" cy="50" r="13" stroke-dasharray="6 5" />
+          <circle cx="50" cy="50" r="7" stroke-dasharray="2 3" />
+          <line x1="50" y1="31" x2="50" y2="69" />
+          <line x1="31" y1="50" x2="69" y2="50" />
+        </g>
+
+        <!-- Twinkling Sparkles (tech nodes) -->
+        <g class="tech-nodes">
+          <circle cx="28" cy="34" r="1.5" fill="#ffffff" filter="url(#premiumGlow)" class="node-sparkle-1" />
+          <circle cx="72" cy="66" r="1.5" fill="#ffffff" filter="url(#premiumGlow)" class="node-sparkle-2" />
+          <circle cx="69" cy="28" r="2" fill="#10b981" filter="url(#premiumGlow)" class="node-sparkle-3" />
+          <circle cx="31" cy="72" r="2" fill="#8b5cf6" filter="url(#premiumGlow)" class="node-sparkle-4" />
+        </g>
+      </svg>
       <div class="loader-text">Synchronizing Orbit Matrix...</div>
     </div>
   </div>
@@ -2151,11 +2140,9 @@
 
     <!-- Theme Selector Unit -->
     <div class="theme-selector" id="theme-selector">
-      <button class="theme-pill active" data-theme="nova" title="Nova Void" style="--theme-accent: #0071E3;"></button>
-      <button class="theme-pill" data-theme="cyber" title="Cyber Neon" style="--theme-accent: #FF007F;"></button>
-      <button class="theme-pill" data-theme="aurora" title="Nordic Aurora" style="--theme-accent: #10B981;"></button>
-      <button class="theme-pill" data-theme="sunset" title="Sunset Horizon" style="--theme-accent: #F97316;"></button>
-      <button class="theme-pill" data-theme="matrix" title="Matrix Code" style="--theme-accent: #00FF66;"></button>
+      <button class="theme-pill active" data-theme="dark" title="Dark Mode" style="--theme-accent: #0071E3;"></button>
+      <button class="theme-pill" data-theme="light" title="Light Mode" style="--theme-accent: #F4F6F9;"></button>
+      <button class="theme-pill" data-theme="cyber" title="Cyberpunk" style="--theme-accent: #FF007F;"></button>
     </div>
 
     <!-- Hamburger menu -->
@@ -2964,7 +2951,7 @@
       const numArms = 4;
       const armSpiral = 2.45;
 
-      const getActiveTheme = () => document.documentElement.getAttribute('data-theme') || 'nova';
+      const getActiveTheme = () => document.documentElement.getAttribute('data-theme') || 'dark';
 
       function createStarTexture() {
         const canvas = document.createElement('canvas');
@@ -2989,22 +2976,12 @@
             else if (t < 0.5) color.lerpColors(new THREE.Color(0xff007f), new THREE.Color(0x8b5cf6), (t - 0.18) * 3.1);
             else color.lerpColors(new THREE.Color(0x00f0ff), new THREE.Color(0x0a0f2b), (t - 0.5) * 2.0);
             break;
-          case 'aurora':
-            if (t < 0.18) color.lerpColors(new THREE.Color(0xffffff), new THREE.Color(0xa7f3d0), t * 5.5);
-            else if (t < 0.5) color.lerpColors(new THREE.Color(0x10b981), new THREE.Color(0x059669), (t - 0.18) * 3.1);
-            else color.lerpColors(new THREE.Color(0x0d9488), new THREE.Color(0x022c22), (t - 0.5) * 2.0);
+          case 'light':
+            if (t < 0.18) color.lerpColors(new THREE.Color(0x0071E3), new THREE.Color(0x00B4D8), t * 5.5);
+            else if (t < 0.5) color.lerpColors(new THREE.Color(0x7c3aed), new THREE.Color(0x2563eb), (t - 0.18) * 3.1);
+            else color.lerpColors(new THREE.Color(0x1d4ed8), new THREE.Color(0xf4f6f9), (t - 0.5) * 2.0);
             break;
-          case 'sunset':
-            if (t < 0.18) color.lerpColors(new THREE.Color(0xffffff), new THREE.Color(0xfde047), t * 5.5);
-            else if (t < 0.5) color.lerpColors(new THREE.Color(0xf97316), new THREE.Color(0xef4444), (t - 0.18) * 3.1);
-            else color.lerpColors(new THREE.Color(0x881337), new THREE.Color(0x18001a), (t - 0.5) * 2.0);
-            break;
-          case 'matrix':
-            if (t < 0.18) color.lerpColors(new THREE.Color(0xffffff), new THREE.Color(0xdcfce7), t * 5.5);
-            else if (t < 0.5) color.lerpColors(new THREE.Color(0x00ff66), new THREE.Color(0x10b981), (t - 0.18) * 3.1);
-            else color.lerpColors(new THREE.Color(0x064e3b), new THREE.Color(0x000000), (t - 0.5) * 2.0);
-            break;
-          case 'nova':
+          case 'dark':
           default:
             if (t < 0.18) color.lerpColors(new THREE.Color(0xffffff), new THREE.Color(0xffe5cc), t * 5.5);
             else if (t < 0.5) color.lerpColors(new THREE.Color(0xff44aa), new THREE.Color(0x9433ff), (t - 0.18) * 3.1);
@@ -3179,9 +3156,8 @@
         let trailColor = new THREE.Color('#00f0ff');
         const activeTheme = getActiveTheme();
         if (activeTheme === 'cyber') trailColor = new THREE.Color('#ff007f');
-        else if (activeTheme === 'aurora') trailColor = new THREE.Color('#10b981');
-        else if (activeTheme === 'sunset') trailColor = new THREE.Color('#f97316');
-        else if (activeTheme === 'matrix') trailColor = new THREE.Color('#00ff66');
+        else if (activeTheme === 'light') trailColor = new THREE.Color('#0071e3');
+        else if (activeTheme === 'dark') trailColor = new THREE.Color('#3b82f6');
 
         for (let k = 0; k < maxTrail; k++) {
           const ratio = k / maxTrail;
@@ -3417,10 +3393,10 @@
     });
 
     // -------------------------------------------------------------
-    // MULTI-THEME ORBITOPS SYSTEM (5 PLUGINS)
+    // MULTI-THEME ORBITOPS SYSTEM
     // -------------------------------------------------------------
     const themePills = document.querySelectorAll('.theme-pill');
-    const savedTheme = localStorage.getItem('orbitops-theme') || 'nova';
+    const savedTheme = localStorage.getItem('orbitops-theme') || 'dark';
     let currentTheme = savedTheme;
 
     function applyTheme(theme) {
@@ -3455,31 +3431,15 @@
           emissiveIntensity = 0.9;
           galaxyTint = 0xffaaff;
           break;
-        case 'aurora':
-          sphereColor = 0x10B981;
-          sphereEmissive = 0x059669;
-          ring1Color = 0x34D399;
-          ring2Color = 0xF59E0B;
-          emissiveIntensity = 0.7;
-          galaxyTint = 0xaaffdd;
+        case 'light':
+          sphereColor = 0x0071E3;
+          sphereEmissive = 0x002288;
+          ring1Color = 0x00B4D8;
+          ring2Color = 0x7c3aed;
+          emissiveIntensity = 0.45;
+          galaxyTint = 0x0055ff;
           break;
-        case 'sunset':
-          sphereColor = 0xF97316;
-          sphereEmissive = 0xEF4444;
-          ring1Color = 0xF97316;
-          ring2Color = 0xF59E0B;
-          emissiveIntensity = 0.8;
-          galaxyTint = 0xffcc88;
-          break;
-        case 'matrix':
-          sphereColor = 0x00FF66;
-          sphereEmissive = 0x047857;
-          ring1Color = 0x10B981;
-          ring2Color = 0x34D399;
-          emissiveIntensity = 1.0;
-          galaxyTint = 0x34d399;
-          break;
-        case 'nova':
+        case 'dark':
         default:
           sphereColor = 0x0071E3;
           sphereEmissive = 0x0033aa;
@@ -3527,50 +3487,26 @@
       applyTheme(currentTheme);
     }, 100);
 
-    // Percentage Preloader with Session Storage Caching
-    (function() {
+    // Clean Fade-out Preloader (No numerical countdowns)
+    (function () {
       const preloader = document.getElementById('preloader');
-      const loaderProgress = document.querySelector('.loader-circle-progress');
-      const loaderPercentage = document.getElementById('loader-percentage');
-      const isCached = sessionStorage.getItem('orbitops_cached_visit');
-
-      if (isCached) {
-        // Fast-load: bypass preloader in 200ms
-        if (preloader) {
-          preloader.style.transition = 'opacity 0.2s ease, visibility 0.2s ease';
-          if (loaderProgress) loaderProgress.style.strokeDashoffset = 0;
-          if (loaderPercentage) loaderPercentage.textContent = '100%';
-          setTimeout(() => {
+      const start = Date.now();
+      
+      function hidePreloader() {
+        const elapsed = Date.now() - start;
+        const delay = Math.max(0, 800 - elapsed); // Keep visible for at least 800ms for visual smoothness
+        
+        setTimeout(() => {
+          if (preloader) {
             preloader.classList.add('fade-out');
-          }, 200);
-        }
+          }
+        }, delay);
+      }
+
+      if (document.readyState === 'complete') {
+        hidePreloader();
       } else {
-        // Normal load: count from 0% to 100% over 1.2s
-        let count = 0;
-        const duration = 1200; // ms
-        const startTime = performance.now();
-        const circumference = 339.292; // 2 * Math.PI * 54
-
-        function updateLoader(timestamp) {
-          const elapsed = timestamp - startTime;
-          const progress = Math.min(elapsed / duration, 1);
-          count = Math.floor(progress * 100);
-          
-          if (loaderPercentage) loaderPercentage.textContent = `${count}%`;
-          if (loaderProgress) {
-            loaderProgress.style.strokeDashoffset = circumference - (progress * circumference);
-          }
-
-          if (progress < 1) {
-            requestAnimationFrame(updateLoader);
-          } else {
-            sessionStorage.setItem('orbitops_cached_visit', 'true');
-            setTimeout(() => {
-              if (preloader) preloader.classList.add('fade-out');
-            }, 150);
-          }
-        }
-        requestAnimationFrame(updateLoader);
+        window.addEventListener('load', hidePreloader);
       }
     })();
 

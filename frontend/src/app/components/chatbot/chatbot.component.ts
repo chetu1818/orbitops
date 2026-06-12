@@ -30,9 +30,6 @@ export class ChatbotComponent implements OnInit, OnDestroy {
 
   isOpen = false;
   inputText = '';
-  isListening = false;
-  isSpeaking = false;
-  voiceOut = false;
   isThinking = false;
   thinkingSteps: string[] = [];
   currentStepIndex = 0; // 0=Understand, 1=Research, 2=Compose
@@ -41,58 +38,14 @@ export class ChatbotComponent implements OnInit, OnDestroy {
   conversationId = '';
   backendOk = false;
 
-  // Web Speech API references
-  private recognition: any = null;
-  private synth = typeof window !== 'undefined' ? window.speechSynthesis : null;
-
   constructor(private http: HttpClient, private ngZone: NgZone) {}
 
   ngOnInit() {
-    this.initVoice();
     this.restoreOrWelcome();
     this.probeBackend();
   }
 
-  ngOnDestroy() {
-    this.stopSpeaking();
-    if (this.recognition) {
-      this.recognition.abort();
-    }
-  }
-
-  // --- Initialize Web Speech API ---
-  private initVoice() {
-    if (typeof window !== 'undefined') {
-      const SpeechReg = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-      if (SpeechReg) {
-        this.recognition = new SpeechReg();
-        this.recognition.continuous = false;
-        this.recognition.interimResults = false;
-        this.recognition.lang = 'en-US';
-
-        this.recognition.onstart = () => {
-          this.isListening = true;
-        };
-
-        this.recognition.onend = () => {
-          this.isListening = false;
-        };
-
-        this.recognition.onerror = () => {
-          this.isListening = false;
-        };
-
-        this.recognition.onresult = (event: any) => {
-          const resultText = event.results[0][0].transcript;
-          if (resultText && resultText.trim()) {
-            this.ngZone.run(() => {
-              this.inputText = resultText;
-            });
-          }
-        };
-      }
-    }
-  }
+  ngOnDestroy() {}
 
   // --- Probe Backend Uptime ---
   private probeBackend() {
@@ -122,7 +75,7 @@ export class ChatbotComponent implements OnInit, OnDestroy {
             {
               role: 'bot',
               ts: Date.now(),
-              text: `Hello! I'm <strong>Mia</strong>, your OrbitOps AI assistant. 👋<br><br>I understand your questions, research our knowledge base, and compile detailed answers. You can also use the <strong>🎤 mic</strong> to speak your query!<br><br>What would you like to know about enterprise automation?`,
+              text: `Hello! I'm Mia, your OrbitOps support assistant. 👋<br><br>I'm here to help you design data pipelines, connect your business systems, and automate repetitive workflows. What kind of integration can we build today?`,
               model: 'Mia'
             }
           ];
@@ -147,28 +100,6 @@ export class ChatbotComponent implements OnInit, OnDestroy {
     this.isOpen = !this.isOpen;
     if (this.isOpen) {
       setTimeout(() => this.scrollToBottom(), 50);
-    } else {
-      this.stopSpeaking();
-      if (this.recognition) {
-        this.recognition.abort();
-      }
-    }
-  }
-
-  toggleMic() {
-    if (!this.recognition) return;
-    if (this.isListening) {
-      this.recognition.stop();
-    } else {
-      this.stopSpeaking();
-      this.recognition.start();
-    }
-  }
-
-  toggleVoiceOut() {
-    this.voiceOut = !this.voiceOut;
-    if (!this.voiceOut) {
-      this.stopSpeaking();
     }
   }
 
@@ -280,10 +211,6 @@ export class ChatbotComponent implements OnInit, OnDestroy {
         botMsg.text = fullText;
         this.saveHistory();
         this.scrollToBottom();
-        
-        if (this.voiceOut) {
-          this.speak(fullText);
-        }
         return;
       }
 
@@ -297,45 +224,6 @@ export class ChatbotComponent implements OnInit, OnDestroy {
         this.scrollToBottom();
       }
     }, this.STREAM_SPEED);
-  }
-
-  // --- Voice Output Reader ---
-  speak(text: string) {
-    if (!this.synth) return;
-    this.synth.cancel();
-
-    const clean = this.cleanHtml(text);
-    const utterance = new SpeechSynthesisUtterance(clean);
-    utterance.rate = 0.95;
-    utterance.pitch = 1.05;
-
-    const voices = this.synth.getVoices();
-    const bestVoice = voices.find(v => 
-      /samantha|karen|aria|google uk english female|zira/i.test(v.name)
-    ) || voices.find(v => v.lang.startsWith('en'));
-
-    if (bestVoice) {
-      utterance.voice = bestVoice;
-    }
-
-    utterance.onstart = () => {
-      this.isSpeaking = true;
-    };
-    utterance.onend = () => {
-      this.isSpeaking = false;
-    };
-    utterance.onerror = () => {
-      this.isSpeaking = false;
-    };
-
-    this.synth.speak(utterance);
-  }
-
-  stopSpeaking() {
-    if (this.synth) {
-      this.synth.cancel();
-    }
-    this.isSpeaking = false;
   }
 
   // --- Thumbs Up / Down Feedback ---
@@ -375,12 +263,11 @@ export class ChatbotComponent implements OnInit, OnDestroy {
   }
 
   clearChat() {
-    this.stopSpeaking();
     this.messages = [
       {
         role: 'bot',
         ts: Date.now(),
-        text: `Chat cleared. Hello! I'm <strong>Mia</strong>, how can I help optimize your automation workflows?`,
+        text: `Chat cleared. Hello! I'm Mia, how can I help optimize your automation workflows?`,
         model: 'Mia'
       }
     ];
@@ -432,42 +319,42 @@ export class ChatbotComponent implements OnInit, OnDestroy {
       {
         id: "greeting",
         keywords: ["hello","hi","hey","greetings","yo","sup","morning","afternoon","evening","howdy"],
-        response: "Hello! I'm <strong>Mia</strong>, your OrbitOps automation assistant. I can help you with:\n• Our data pipeline architecture\n• HR, payroll & ERP integrations\n• Security & compliance details\n• Custom connector development\n• Pricing & demo scheduling\n\nWhat would you like to know?"
+        response: "Hello! I'm Mia, your OrbitOps automation assistant. I can help you design secure data pipelines, connect your HR, payroll, or ERP applications, check our security compliance details, or schedule a live demo. What's on your mind today?"
       },
       {
         id: "identity",
         keywords: ["name","identity","who","mia","yourself","what","called","introduce"],
-        response: "I'm <strong>Mia</strong> — the AI assistant powering OrbitOps.ai. I'm trained on our full service catalogue including enterprise data pipelines, HRIS/payroll integrations, compliance frameworks, and operational automation workflows."
+        response: "I'm Mia, the operations assistant for OrbitOps.ai. I help B2B clients design automated workflows, set up database pipelines, configure integrations, and navigate security standards."
       },
       {
         id: "capabilities",
         keywords: ["help","can","do","capabilities","features","instructions","options","menu","assist","support","services"],
-        response: "Here's what I can help with:\n• <strong>Integrations</strong> — Which platforms we connect\n• <strong>Pipeline Architecture</strong> — Our 5-stage ETL/ELT process\n• <strong>Security & Compliance</strong> — SOC2, GDPR, AES-256\n• <strong>Error Quarantine</strong> — How we handle sync failures\n• <strong>Custom Connectors</strong> — Scripted API wrappers\n• <strong>Pricing</strong> — Custom enterprise plans\n• <strong>Demo</strong> — Schedule a live walkthrough"
+        response: "I can answer questions about our API integrations, explain our five-stage secure pipeline structure, or outline our SOC2 security controls. I can also help you understand our error quarantine dashboards or assist you in scheduling a live demo."
       },
       {
         id: "integrations",
         keywords: ["integrate","integration","integrations","connect","connector","systems","platforms","sync","hris","crm","erp","sap","netsuite","adp","workday","hibob","bamboohr","salesforce","hubspot","shopify"],
-        response: "OrbitOps operates a <strong>multi-tenant API orchestration grid</strong> with native sync channels for HRIS (Workday, BambooHR, HiBob), Payroll & ERP (ADP, NetSuite, SAP, Xero), CRM & Commerce (Salesforce, HubSpot, Shopify), and Operations (Jira, Slack, Monday.com)."
+        response: "We operate a multi-tenant API orchestration grid with native channels for applications like Workday, BambooHR, ADP, NetSuite, Salesforce, and HubSpot. We handle API credentials and rate limits automatically to ensure data syncs smoothly."
       },
       {
         id: "pipeline",
         keywords: ["pipeline","data","stages","steps","architecture","flow","path","extract","transform","validate","load","monitor","etl","elt"],
-        response: "Our <strong>Enterprise Data Pipeline</strong> runs through 5 high-observability stages:\n1. <strong>Extract</strong> — Listen for updates or webhook events\n2. <strong>Transform</strong> — Normalise payloads and map schemas\n3. <strong>Validate</strong> — Sanitise input data and check fields\n4. <strong>Load</strong> — Post clean payloads to downstream endpoints\n5. <strong>Monitor</strong> — Stream telemetry and trigger Slack alerts"
+        response: "Our secure data pipelines process your files and API syncs in five automated stages. First, we extract payloads via secure webhooks, then we normalize the format, validate the fields for accuracy, load the clean data into your target endpoints, and monitor the entire flow with real-time Slack alerts."
       },
       {
         id: "security",
         keywords: ["security","secure","soc2","soc","compliance","compliant","gdpr","encrypt","encryption","vault","quarantine"],
-        response: "Security is built into every layer:\n• SOC2 Type II and GDPR compliant architectures\n• AES-256 encryption at-rest and TLS 1.3 in-transit\n• Zero-Trust role-based access controls\n• Secure credential vaulting and immutable audit logs"
+        response: "Security is built into every layer of our system. We are SOC2 Type II and GDPR compliant, encrypt all data using AES-256 at rest and TLS 1.3 in transit, store credentials in restricted vaults, and isolate any sync issues in a secure quarantine area."
       },
       {
         id: "pricing",
         keywords: ["pricing","price","cost","plans","rates","packages","subscription","quote","fee","budget"],
-        response: "Our pricing is <strong>fully tailored</strong> to your organization:\n• <strong>Starter</strong> — Up to 5 integrations, standard monitoring\n• <strong>Professional</strong> — Unlimited integrations + error quarantine dashboard\n• <strong>Enterprise</strong> — Dedicated engineer, SLA guarantees, custom compliance reports\n\nContact us at <strong>cpatil7350638164@gmail.com</strong> for a custom quote."
+        response: "Our pricing plans are custom-tailored to the scale of your business. We offer Starter packages for smaller projects, Professional packages with advanced error quarantine dashboards, and Enterprise plans with SLA guarantees. Please reach out to cpatil7350638164@gmail.com for a custom quote."
       },
       {
         id: "demo",
         keywords: ["demo","schedule","book","call","talk","engineer","consult","contact","meeting","sales"],
-        response: "I'd love to connect you with our operations engineers for a <strong>custom live demo</strong>!\n\n📧 <strong>Email:</strong> cpatil7350638164@gmail.com\n📍 <strong>Office:</strong> Studio Complex, Gota, Ahmedabad\n\nOr fill out the <strong>contact form</strong> at the bottom of this page — we respond within 24 hours."
+        response: "We would love to show you a live demo of our pipelines! You can schedule a session by emailing us at cpatil7350638164@gmail.com, visiting our Gota office in Ahmedabad, or filling out the contact form at the bottom of this page."
       }
     ];
 

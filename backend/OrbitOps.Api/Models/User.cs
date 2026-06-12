@@ -30,6 +30,8 @@ namespace OrbitOps.Api.Models
 
         public string CurrentStatus { get; set; } = "Available"; // "Available", "Busy" for "Engineer"
 
+        public bool IsDisabled { get; set; } = false;
+
         public string? TwoFactorCode { get; set; }
 
         public DateTime? TwoFactorExpiry { get; set; }

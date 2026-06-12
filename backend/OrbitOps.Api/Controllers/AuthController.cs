@@ -299,6 +299,60 @@ namespace OrbitOps.Api.Controllers
 
             return Ok(result);
         }
+
+        [HttpPut("user-status")]
+        public IActionResult UpdateUserStatus([FromBody] UpdateUserStatusDto dto)
+        {
+            var admin = GetAuthenticatedUser();
+            if (admin == null || admin.Role != "Admin")
+            {
+                return Unauthorized(new { message = "Admin privileges required." });
+            }
+
+            var updated = _authService.UpdateUserStatus(dto.UserId, dto.IsEnabled);
+            if (!updated)
+            {
+                return BadRequest(new { message = "User not found or status update failed." });
+            }
+
+            return Ok(new { message = "User status updated successfully." });
+        }
+
+        [HttpPut("user-role")]
+        public IActionResult UpdateUserRole([FromBody] UpdateUserRoleDto dto)
+        {
+            var admin = GetAuthenticatedUser();
+            if (admin == null || admin.Role != "Admin")
+            {
+                return Unauthorized(new { message = "Admin privileges required." });
+            }
+
+            var updated = _authService.UpdateUserRole(dto.UserId, dto.Role);
+            if (!updated)
+            {
+                return BadRequest(new { message = "User not found or role update failed." });
+            }
+
+            return Ok(new { message = "User role updated successfully." });
+        }
+    }
+
+    public class UpdateUserStatusDto
+    {
+        [Required]
+        public string UserId { get; set; } = string.Empty;
+
+        [Required]
+        public bool IsEnabled { get; set; }
+    }
+
+    public class UpdateUserRoleDto
+    {
+        [Required]
+        public string UserId { get; set; } = string.Empty;
+
+        [Required]
+        public string Role { get; set; } = string.Empty;
     }
 
     public class Verify2FaDto

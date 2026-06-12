@@ -25,6 +25,8 @@ namespace OrbitOps.Api.Services
         User? AddSubPerson(string parentClientId, AddSubPersonDto dto, out string error);
         List<User> GetTeamMembers(string parentClientId);
         List<User> GetAllUsers();
+        bool UpdateUserStatus(string userId, bool isEnabled);
+        bool UpdateUserRole(string userId, string newRole);
         void InitializeDatabase();
     }
 
@@ -198,6 +200,12 @@ namespace OrbitOps.Api.Services
             if (user == null || !VerifyPassword(dto.Password, user.PasswordHash))
             {
                 error = "Invalid email or password.";
+                return null;
+            }
+
+            if (user.IsDisabled)
+            {
+                error = "Your account has been disabled. Please contact administration.";
                 return null;
             }
 
@@ -406,6 +414,30 @@ namespace OrbitOps.Api.Services
         public List<User> GetAllUsers()
         {
             return _context.Users.ToList();
+        }
+
+        public bool UpdateUserStatus(string userId, bool isEnabled)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+            if (user != null)
+            {
+                user.IsDisabled = !isEnabled;
+                _context.SaveChanges();
+                return true;
+            }
+            return false;
+        }
+
+        public bool UpdateUserRole(string userId, string newRole)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+            if (user != null)
+            {
+                user.Role = newRole;
+                _context.SaveChanges();
+                return true;
+            }
+            return false;
         }
 
         private static string HashPassword(string password)

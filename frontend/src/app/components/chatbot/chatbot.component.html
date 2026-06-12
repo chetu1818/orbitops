@@ -84,14 +84,6 @@
       </div>
     </div>
     <div class="ob-header-actions">
-      <!-- Toggle read-aloud voice output -->
-      <button (click)="toggleVoiceOut()" [class.ob-active]="voiceOut" class="ob-icon-btn" title="Toggle voice output">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
-          <path d="M15.54 8.46a5 5 0 0 1 0 7.07" *ngIf="voiceOut"/>
-          <path d="M19.07 4.93a10 10 0 0 1 0 14.14" *ngIf="voiceOut"/>
-        </svg>
-      </button>
       <!-- Export conversation transcript -->
       <button (click)="exportChat()" class="ob-icon-btn" title="Export conversation">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -134,12 +126,6 @@
           <button (click)="copyText(msg.text)" class="ob-action-btn" title="Copy response">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-            </svg>
-          </button>
-          <!-- Speak aloud -->
-          <button (click)="speak(msg.text)" class="ob-action-btn" title="Read aloud">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
             </svg>
           </button>
           <!-- Thumbs Up feedback -->
@@ -185,25 +171,7 @@
     <div class="ob-input-wrap">
       <input id="ob-input" class="ob-input" type="text" [(ngModel)]="inputText" name="userInput"
         placeholder="Ask Mia anything..." autocomplete="off" spellcheck="true"
-        aria-label="Chat message" [disabled]="isThinking" />
-      
-      <!-- Speech recording audio wave visualizer -->
-      <div class="ob-voice-wave" *ngIf="isListening">
-        <span></span><span></span><span></span><span></span><span></span>
-      </div>
-
-      <!-- Microphone button -->
-      <button id="ob-mic" class="ob-mic-btn" type="button" (click)="toggleMic()" [class.ob-mic-active]="isListening" title="Voice input" aria-label="Voice input">
-        <svg id="ob-mic-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" *ngIf="!isListening">
-          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-          <line x1="12" y1="19" x2="12" y2="23"/>
-          <line x1="8" y1="23" x2="16" y2="23"/>
-        </svg>
-        <svg id="ob-mic-off" viewBox="0 0 24 24" fill="currentColor" style="color:#ef4444" *ngIf="isListening">
-          <rect x="6" y="6" width="12" height="12" rx="2"/>
-        </svg>
-      </button>
+        aria-label="Chat message" [disabled]="isThinking" style="padding-right: 1rem;" />
     </div>
     <button class="ob-send-btn" type="submit" [disabled]="isThinking" aria-label="Send">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
